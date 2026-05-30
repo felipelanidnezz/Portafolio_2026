@@ -10,11 +10,12 @@ export default function ConnectOneSection() {
   const c = t.connect;
 
   return (
-    <article
+    <section
       id="connect-one"
-      className="relative scroll-mt-24 pt-12 md:pt-16"
+      className="relative scroll-mt-24 px-6 pb-8 pt-28 md:pt-32"
     >
-      <div className="relative overflow-hidden rounded-3xl border border-emerald-400/25 bg-gradient-to-br from-emerald-500/[0.12] via-zinc-900/80 to-[#050505] p-8 md:p-12">
+      <div className="mx-auto max-w-6xl">
+        <article className="relative overflow-hidden rounded-3xl border border-emerald-400/25 bg-gradient-to-br from-emerald-500/[0.12] via-zinc-900/80 to-[#050505] p-8 md:p-12">
           <div
             className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl"
             aria-hidden="true"
@@ -26,7 +27,7 @@ export default function ConnectOneSection() {
                 <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-emerald-400">
                   {c.badge}
                 </span>
-                <span className="font-mono text-xs text-zinc-400">{c.type}</span>
+                <span className="font-mono text-xs text-zinc-500">{c.type}</span>
               </div>
 
               <h2 className="mt-5 text-4xl font-bold tracking-tight md:text-5xl">
@@ -39,7 +40,7 @@ export default function ConnectOneSection() {
               <p className="mt-6 text-base leading-relaxed text-zinc-300 md:text-lg">
                 {c.p1}
               </p>
-              <p className="mt-4 text-base leading-relaxed text-zinc-300">
+              <p className="mt-4 text-base leading-relaxed text-zinc-400">
                 {c.p2}
               </p>
 
@@ -47,7 +48,7 @@ export default function ConnectOneSection() {
                 {STACK.map((item) => (
                   <span
                     key={item}
-                    className="rounded-full border border-zinc-700/80 bg-zinc-900/60 px-3 py-1 font-mono text-[11px] text-zinc-300"
+                    className="rounded-full border border-zinc-700/80 bg-zinc-900/60 px-3 py-1 font-mono text-[11px] text-zinc-400"
                   >
                     {item}
                   </span>
@@ -78,7 +79,7 @@ export default function ConnectOneSection() {
                           </span>
                         )}
                       </div>
-                      <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+                      <p className="mt-2 text-sm leading-relaxed text-zinc-500">
                         {mod.desc}
                       </p>
                     </li>
@@ -90,7 +91,7 @@ export default function ConnectOneSection() {
                         href={mod.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="interactive-focus block h-full rounded-2xl"
+                        className="block h-full"
                       >
                         {inner}
                       </a>
@@ -118,7 +119,8 @@ export default function ConnectOneSection() {
               </div>
             </div>
           </div>
+        </article>
       </div>
-    </article>
+    </section>
   );
 }

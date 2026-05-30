@@ -28,11 +28,9 @@ export type Translation = {
   nav: string[];
   navIds: string[];
   hero: {
-    availability: string;
-    name: string;
-    role: string;
-    valueProp: string;
     taglines: string[];
+    roles: string[];
+    descriptions: string[];
     ctaProjects: string;
     ctaContact: string;
     scroll: string;
@@ -197,18 +195,24 @@ const SHARED_PROJECT_META = {
 
 export const translations: Record<Locale, Translation> = {
   es: {
-    nav: ["Sobre mí", "Proyectos", "Skills", "Experiencia", "Contacto"],
-    navIds: ["sobre-mi", "proyectos", "skills", "experiencia", "contacto"],
+    nav: ["Connect One", "Sobre mí", "Skills", "Proyectos", "Contacto"],
+    navIds: ["connect-one", "sobre-mi", "skills", "proyectos", "contacto"],
     hero: {
-      availability: "Disponible para nuevos proyectos",
-      name: "Felipe Landinez",
-      role: "Frontend Developer",
-      valueProp:
-        "Construyo productos reales para clientes — interfaces modernas con Vue 3, Quasar y experiencias web que convierten.",
       taglines: [
-        "Vue 3 · Quasar · TypeScript",
-        "Proyectos en producción para clientes reales",
-        "Prácticas en Connect One · Full stack en formación",
+        "Disponible para nuevos proyectos",
+        "Abierto a oportunidades",
+        "Listo para crear contigo",
+      ],
+      roles: [
+        "Desarrollador Frontend Junior",
+        "Vue 3 & Quasar Specialist",
+        "UI/UX Enthusiast",
+        "Full Stack en formación",
+      ],
+      descriptions: [
+        "Interfaces modernas con Vue 3, Quasar y Vite.",
+        "Experiencia real en APIs, Pinia y despliegue en Render.",
+        "Diseño responsive que convierte y deja huella.",
       ],
       ctaProjects: "Ver proyectos",
       ctaContact: "Contáctame",
@@ -284,7 +288,7 @@ export const translations: Record<Locale, Translation> = {
       },
     },
     skills: {
-      label: "03 — Habilidades",
+      label: "02 — Habilidades",
       title: "Stack técnico",
       subtitle:
         "Herramientas del ecosistema que uso en proyectos reales — no solo frameworks, sino arquitectura frontend de verdad.",
@@ -298,10 +302,10 @@ export const translations: Record<Locale, Translation> = {
       ],
     },
     projects: {
-      label: "02 — Proyectos",
+      label: "03 — Proyectos",
       title: "Trabajo seleccionado",
       subtitle:
-        "Experiencia profesional y proyectos vendidos a clientes reales. Connect One + productos en producción.",
+        "Proyectos vendidos a clientes reales y desarrollo profesional. Hover para explorar — los enlaces abren el sitio en vivo.",
       featureLabel: "Feature destacada",
       liveLabel: "En producción",
       demoLabel: "Demo en vivo",
@@ -404,18 +408,24 @@ export const translations: Record<Locale, Translation> = {
     cursor: { visit: "Visitar →", view: "Ver →", send: "Enviar →" },
   },
   en: {
-    nav: ["About", "Projects", "Skills", "Experience", "Contact"],
-    navIds: ["sobre-mi", "proyectos", "skills", "experiencia", "contacto"],
+    nav: ["Connect One", "About", "Skills", "Projects", "Contact"],
+    navIds: ["connect-one", "sobre-mi", "skills", "proyectos", "contacto"],
     hero: {
-      availability: "Available for new projects",
-      name: "Felipe Landinez",
-      role: "Frontend Developer",
-      valueProp:
-        "I build real products for real clients — modern interfaces with Vue 3, Quasar and web experiences that convert.",
       taglines: [
-        "Vue 3 · Quasar · TypeScript",
-        "Client projects live in production",
-        "Connect One internship · Full stack in progress",
+        "Available for new projects",
+        "Open to opportunities",
+        "Ready to build with you",
+      ],
+      roles: [
+        "Junior Frontend Developer",
+        "Vue 3 & Quasar Specialist",
+        "UI/UX Enthusiast",
+        "Full Stack in progress",
+      ],
+      descriptions: [
+        "Modern interfaces with Vue 3, Quasar and Vite.",
+        "Hands-on experience with APIs, Pinia and Render deployment.",
+        "Responsive design that converts and makes an impact.",
       ],
       ctaProjects: "View projects",
       ctaContact: "Contact me",
@@ -491,7 +501,7 @@ export const translations: Record<Locale, Translation> = {
       },
     },
     skills: {
-      label: "03 — Skills",
+      label: "02 — Skills",
       title: "Technical stack",
       subtitle:
         "Tools from the ecosystem I use on real projects — not just frameworks, but real frontend architecture.",
@@ -505,10 +515,10 @@ export const translations: Record<Locale, Translation> = {
       ],
     },
     projects: {
-      label: "02 — Projects",
+      label: "03 — Projects",
       title: "Selected work",
       subtitle:
-        "Professional experience and client projects in production. Connect One + shipped products.",
+        "Client projects and professional development. Hover to explore — links open the live site.",
       featureLabel: "Featured",
       liveLabel: "In production",
       demoLabel: "Live demo",

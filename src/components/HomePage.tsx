@@ -5,7 +5,6 @@ import ConnectOneSection from "@/components/ConnectOneSection";
 import ProjectsGrid from "@/components/ProjectsGrid";
 import LanguageToggle from "@/components/LanguageToggle";
 import LiveCodePlayground from "@/components/LiveCodePlayground";
-import Container from "@/components/Container";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { MagneticButton } from "@/components/MagneticCursor";
 
@@ -21,7 +20,7 @@ export default function HomePage() {
       <div className="noise-overlay" aria-hidden="true" />
 
       <nav className="fixed top-0 z-50 w-full border-b border-zinc-800/50 bg-[#050505]/80 pt-[env(safe-area-inset-top)] backdrop-blur-md">
-        <Container className="flex items-center justify-between gap-4 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <MagneticButton strength="strong">
             <a href="#" className="interactive-focus rounded-lg font-mono text-sm font-medium tracking-tight">
               {"<FL />"}
@@ -43,13 +42,14 @@ export default function HomePage() {
             </div>
             <LanguageToggle />
           </div>
-        </Container>
+        </div>
       </nav>
 
       <HeroSection />
+      <ConnectOneSection />
 
-      <section id="sobre-mi" className="relative scroll-mt-24 py-32">
-        <Container className="grid items-start gap-16 lg:grid-cols-2">
+      <section id="sobre-mi" className="relative scroll-mt-24 px-6 py-32">
+        <div className="mx-auto grid max-w-6xl items-start gap-16 lg:grid-cols-2">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-400">
               {t.about.label}
@@ -58,13 +58,13 @@ export default function HomePage() {
               {t.about.title1}
               <span className="block text-zinc-500">{t.about.title2}</span>
             </h2>
-            <p className="mt-6 font-mono text-sm text-zinc-500">
+            <p className="mt-6 font-mono text-sm text-zinc-600">
               Thomas Felipe Acosta Landinez
             </p>
 
             <LiveCodePlayground />
           </div>
-          <div className="space-y-5 text-lg leading-relaxed text-zinc-300">
+          <div className="space-y-5 text-lg leading-relaxed text-zinc-400">
             <p>
               {t.about.p1.split("Connect One")[0]}
               <a
@@ -81,53 +81,28 @@ export default function HomePage() {
               {t.about.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-zinc-700 px-4 py-1.5 font-mono text-xs text-zinc-300"
+                  className="rounded-full border border-zinc-700 px-4 py-1.5 font-mono text-xs text-zinc-400"
                 >
                   {tag}
                 </span>
               ))}
             </div>
           </div>
-        </Container>
-      </section>
-
-      <section id="proyectos" className="scroll-mt-24 py-32">
-        <Container>
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-400">
-            {t.projects.label}
-          </p>
-          <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
-            {t.projects.title}
-          </h2>
-          <p className="mt-4 max-w-lg text-zinc-300">{t.projects.subtitle}</p>
-
-          <ConnectOneSection />
-
-          <ProjectsGrid
-            projects={t.projects.items}
-            labels={{
-              feature: t.projects.featureLabel,
-              live: t.projects.liveLabel,
-              demo: t.projects.demoLabel,
-              visit: t.cursor.visit,
-              view: t.cursor.view,
-            }}
-          />
-        </Container>
+        </div>
       </section>
 
       <section
         id="skills"
-        className="scroll-mt-24 border-y border-zinc-800/50 bg-zinc-950/50 py-32"
+        className="scroll-mt-24 border-y border-zinc-800/50 bg-zinc-950/50 px-6 py-32"
       >
-        <Container>
+        <div className="mx-auto max-w-6xl">
           <p className="text-center font-mono text-xs uppercase tracking-[0.3em] text-emerald-400">
             {t.skills.label}
           </p>
           <h2 className="mt-4 text-center text-4xl font-bold tracking-tight">
             {t.skills.title}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-zinc-400">
+          <p className="mx-auto mt-4 max-w-2xl text-center text-zinc-500">
             {t.skills.subtitle}
           </p>
 
@@ -145,7 +120,7 @@ export default function HomePage() {
                     {cat.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="rounded-full border border-zinc-700/80 bg-zinc-800/50 px-3 py-1 font-mono text-[11px] text-zinc-300 transition-colors group-hover:border-zinc-600 group-hover:text-zinc-200"
+                        className="rounded-full border border-zinc-700/80 bg-zinc-800/50 px-3 py-1 font-mono text-[11px] text-zinc-400 transition-colors group-hover:border-zinc-600 group-hover:text-zinc-300"
                       >
                         {skill}
                       </span>
@@ -155,12 +130,35 @@ export default function HomePage() {
               </MagneticButton>
             ))}
           </div>
-        </Container>
+        </div>
       </section>
 
-      <section id="experiencia" className="bg-zinc-100 py-32 text-zinc-900">
-        <Container>
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-700">
+      <section id="proyectos" className="scroll-mt-24 px-6 py-32">
+        <div className="mx-auto max-w-6xl">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-400">
+            {t.projects.label}
+          </p>
+          <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+            {t.projects.title}
+          </h2>
+          <p className="mt-4 max-w-lg text-zinc-400">{t.projects.subtitle}</p>
+
+          <ProjectsGrid
+            projects={t.projects.items}
+            labels={{
+              feature: t.projects.featureLabel,
+              live: t.projects.liveLabel,
+              demo: t.projects.demoLabel,
+              visit: t.cursor.visit,
+              view: t.cursor.view,
+            }}
+          />
+        </div>
+      </section>
+
+      <section className="bg-zinc-100 px-6 py-32 text-zinc-900">
+        <div className="mx-auto max-w-6xl">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-600">
             {t.experience.label}
           </p>
           <h2 className="mt-4 text-4xl font-bold tracking-tight">
@@ -171,14 +169,14 @@ export default function HomePage() {
             {t.experience.items.map((exp) => (
               <MagneticButton key={exp.year} cursorText="→">
                 <div className="group flex flex-col gap-4 border-t border-zinc-300 py-8 transition-colors hover:bg-zinc-200/50 md:flex-row md:items-start md:gap-12">
-                  <span className="shrink-0 font-mono text-xs text-zinc-600">
+                  <span className="shrink-0 font-mono text-xs text-zinc-500">
                     {exp.year}
                   </span>
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold">{exp.role}</h3>
-                    <p className="text-sm text-emerald-800">{exp.company}</p>
+                    <p className="text-sm text-emerald-700">{exp.company}</p>
                   </div>
-                  <p className="max-w-md text-sm leading-relaxed text-zinc-700">
+                  <p className="max-w-md text-sm leading-relaxed text-zinc-600">
                     {exp.detail}
                   </p>
                 </div>
@@ -187,25 +185,25 @@ export default function HomePage() {
           </div>
 
           <div className="mt-12 border-t border-zinc-300 pt-12">
-            <h3 className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-700">
+            <h3 className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-600">
               {t.experience.coursesTitle}
             </h3>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {t.experience.courses.map((course) => (
                 <MagneticButton key={course} cursorText="✓">
-                  <li className="flex items-center gap-3 rounded-xl border border-zinc-300 bg-white/60 px-5 py-4 text-sm text-zinc-800 transition-colors hover:border-emerald-500/50">
-                    <span className="font-mono text-emerald-700">→</span>
+                  <li className="flex items-center gap-3 rounded-xl border border-zinc-300 bg-white/60 px-5 py-4 text-sm text-zinc-700 transition-colors hover:border-emerald-400/50">
+                    <span className="font-mono text-emerald-600">→</span>
                     {course}
                   </li>
                 </MagneticButton>
               ))}
             </ul>
           </div>
-        </Container>
+        </div>
       </section>
 
-      <section id="contacto" className="scroll-mt-24 py-32 pb-[calc(2rem+env(safe-area-inset-bottom))]">
-        <Container size="md" className="text-center">
+      <section id="contacto" className="scroll-mt-24 px-6 py-32">
+        <div className="mx-auto max-w-3xl text-center">
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-400">
             {t.contact.label}
           </p>
@@ -213,7 +211,7 @@ export default function HomePage() {
             {t.contact.title1}
             <span className="block text-emerald-400">{t.contact.title2}</span>
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-zinc-300">
+          <p className="mx-auto mt-6 max-w-md text-zinc-400">
             {t.contact.subtitle}
           </p>
 
@@ -231,7 +229,7 @@ export default function HomePage() {
                 href="https://github.com/felipelanidnezz"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="interactive-focus rounded-full border border-zinc-600 px-10 py-5 text-sm font-semibold text-zinc-200 transition-colors hover:border-zinc-400 hover:text-white"
+                className="interactive-focus rounded-full border border-zinc-600 px-10 py-5 text-sm font-semibold text-zinc-300 transition-colors hover:border-zinc-400 hover:text-white"
               >
                 GitHub
               </a>
@@ -241,21 +239,19 @@ export default function HomePage() {
                 href="https://www.linkedin.com/in/felipelandinez/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="interactive-focus rounded-full border border-zinc-600 px-10 py-5 text-sm font-semibold text-zinc-200 transition-colors hover:border-zinc-400 hover:text-white"
+                className="interactive-focus rounded-full border border-zinc-600 px-10 py-5 text-sm font-semibold text-zinc-300 transition-colors hover:border-zinc-400 hover:text-white"
               >
                 LinkedIn
               </a>
             </MagneticButton>
           </div>
-        </Container>
+        </div>
       </section>
 
-      <footer className="border-t border-zinc-800 py-8 pb-[calc(2rem+env(safe-area-inset-bottom))] text-center">
-        <Container>
-          <p className="font-mono text-xs text-zinc-500">
-            © {new Date().getFullYear()} {t.footer}
-          </p>
-        </Container>
+      <footer className="border-t border-zinc-800 px-6 py-8 text-center">
+        <p className="font-mono text-xs text-zinc-600">
+          © {new Date().getFullYear()} {t.footer}
+        </p>
       </footer>
     </div>
   );
