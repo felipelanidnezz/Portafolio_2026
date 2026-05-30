@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Felipe Landinez — Frontend Developer",
+  title: "Felipe Landinez · Frontend Developer",
   description:
     "Portfolio de Thomas Felipe Acosta Landinez. Desarrollador frontend junior especializado en Vue 3, Quasar, Pinia, Node.js y experiencias web modernas.",
 };

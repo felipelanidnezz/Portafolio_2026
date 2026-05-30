@@ -273,7 +273,7 @@ export const translations: Record<Locale, Translation> = {
         showcaseTitle: "Capturas del producto",
         privateAccess: "Acceso corporativo privado",
         showcaseNote:
-          "Sin enlace público — la plataforma requiere credenciales internas. Capturas autorizadas del entorno de trabajo; demo disponible bajo NDA en entrevista.",
+          "Sin enlace público. La plataforma requiere credenciales internas. Capturas autorizadas del entorno de trabajo; demo disponible bajo NDA en entrevista.",
         browserUrl: "connect-one.internal",
         modulesTitle: "Módulos en los que trabajé",
         contributionsTitle: "Contribuciones clave",
@@ -293,7 +293,7 @@ export const translations: Record<Locale, Translation> = {
             width: 1024,
             height: 503,
             caption:
-              "Administración de roles del sistema — creación, búsqueda, edición y asignación de permisos.",
+              "Administración de roles del sistema: creación, búsqueda, edición y asignación de permisos.",
           },
           {
             id: "trabajadores",
@@ -347,7 +347,7 @@ export const translations: Record<Locale, Translation> = {
         type: "Portal de clientes",
         subtitle: "Dashboard para clientes y supervisores",
         p1: "Actualmente desarrollo Connect One Clientes, el portal donde clientes y supervisores monitorean la actividad de sus equipos en tiempo real desde un dashboard unificado.",
-        p2: "Estoy desarrollando Calendario con Google Calendar, Productividad/Analytics con ApexCharts, y Mi cuenta — perfil, actividad, seguridad y facturas — además del home y tours guiados de onboarding.",
+        p2: "Estoy desarrollando Calendario con Google Calendar, Productividad/Analytics con ApexCharts, y Mi cuenta (perfil, actividad, seguridad y facturas), además del home y tours guiados de onboarding.",
         showcaseTitle: "Capturas del producto",
         privateAccess: "Acceso corporativo privado",
         showcaseNote:
@@ -371,7 +371,7 @@ export const translations: Record<Locale, Translation> = {
             width: 1024,
             height: 497,
             caption:
-              "Dashboard principal — métricas, equipos, reuniones, calendario, analíticas y facturas en una sola vista.",
+              "Dashboard principal con métricas, equipos, reuniones, calendario, analíticas y facturas en una sola vista.",
           },
           {
             id: "calendario",
@@ -398,7 +398,7 @@ export const translations: Record<Locale, Translation> = {
             width: 1024,
             height: 497,
             caption:
-              "Dashboard de productividad — KPIs, gráfico de horas trabajadas, radar de rendimiento y selector de equipos.",
+              "Dashboard de productividad con KPIs, gráfico de horas trabajadas, radar de rendimiento y selector de equipos.",
           },
           {
             id: "perfil",
@@ -407,7 +407,7 @@ export const translations: Record<Locale, Translation> = {
             width: 1024,
             height: 498,
             caption:
-              "Perfil personal — detalles de cuenta, lista de actividad con progreso, pestañas de seguridad y facturación.",
+              "Perfil personal con detalles de cuenta, lista de actividad con progreso, pestañas de seguridad y facturación.",
           },
         ],
         contributions: [
@@ -421,12 +421,12 @@ export const translations: Record<Locale, Translation> = {
       },
     },
     about: {
-      label: "01 — Sobre mí",
+      label: "01 · Sobre mí",
       title1: "Código con alma,",
       title2: "diseño con propósito",
       p1: "Desarrollador de software enfocado en frontend, con experiencia en la intranet Connect One, desarrollo web full stack y construcción de interfaces modernas, dinámicas y responsivas.",
-      p2: "He desarrollado productos para clientes reales — como Raíz Viajera y Las Piedras Minca, ambos en producción — y PawClinic Admin, sistema interno veterinario vendido a una clínica real. También Ouija AI, demo multi-agente con Gemini API. Manejo Vue 3, Quasar, Astro, Supabase, React Native y TypeScript, además de backend con Node.js y Express.",
-      p3: "Experiencia con bases de datos SQL y NoSQL — MySQL, MariaDB, PostgreSQL y MongoDB — despliegue en Render, y herramientas como Git, GitHub y Postman. Metodologías ágiles con Scrum.",
+      p2: "He desarrollado productos para clientes reales, como Raíz Viajera y Las Piedras Minca, ambos en producción, y PawClinic Admin, un sistema interno veterinario vendido a una clínica real. Manejo Vue 3, Quasar, Astro, Supabase, React Native y TypeScript, además de backend con Node.js y Express.",
+      p3: "Experiencia con bases de datos SQL y NoSQL (MySQL, MariaDB, PostgreSQL y MongoDB), despliegue en Render, y herramientas como Git, GitHub y Postman. Metodologías ágiles con Scrum.",
       tags: ["ES / EN", "Remoto / Presencial", "Junior → Mid", "Scrum"],
       playground: {
         filename: "ArcadeInvaders.vue",
@@ -449,10 +449,10 @@ export const translations: Record<Locale, Translation> = {
       },
     },
     skills: {
-      label: "02 — Habilidades",
+      label: "02 · Habilidades",
       title: "Stack técnico",
       subtitle:
-        "Herramientas del ecosistema que uso en proyectos reales — no solo frameworks, sino arquitectura frontend de verdad.",
+        "Herramientas del ecosistema que uso en proyectos reales: no solo frameworks, sino arquitectura frontend de verdad.",
       categories: [
         { emoji: "🚀", title: "Core Frontend", skills: ["Vue 3", "Quasar", "Astro", "JavaScript", "TypeScript", "HTML5", "CSS3", "Vite", "Bootstrap"] },
         { emoji: "⚡", title: "State & APIs", skills: ["Pinia", "Axios", "REST APIs", "API Consumption", "Supabase", "PokéAPI", "Gemini API"] },
@@ -463,10 +463,10 @@ export const translations: Record<Locale, Translation> = {
       ],
     },
     projects: {
-      label: "03 — Proyectos",
+      label: "03 · Proyectos",
       title: "Trabajo seleccionado",
       subtitle:
-        "Proyectos vendidos a clientes reales y desarrollo profesional. Hover para explorar — los enlaces abren el sitio en vivo.",
+        "Proyectos vendidos a clientes reales y desarrollo profesional. Hover para explorar; los enlaces abren el sitio en vivo.",
       featureLabel: "Feature destacada",
       liveLabel: "En producción",
       demoLabel: "Demo en vivo",
@@ -476,52 +476,52 @@ export const translations: Record<Locale, Translation> = {
           title: "Raíz Viajera",
           subtitle: "Mapa interactivo de senderismo · Web + App móvil",
           highlight:
-            "MapaRutas — 8 rutas trazadas sobre Leaflet con GPX reales: el visitante ve el recorrido exacto de cada caminata antes de reservar. Perfil de elevación, distancia, tiempo, desnivel, puntos de interés (miradores, ríos, spots fotográficos), enlace a Wikiloc y modo en vivo con ubicación del guía y fotos del tour sincronizadas vía Supabase Realtime.",
-          desc: "Plataforma completa para una operadora de tours en Barichara, Colombia — en producción en raizviajera.com. Catálogo de experiencias bilingüe ES/EN, SEO optimizado, reseñas con Google OAuth, UX mobile-first y reservas por WhatsApp. Complementé el ecosistema con una app React Native/Expo para guías: tracking GPS, subida de fotos y sincronización en tiempo real.",
-          role: "Full-stack — UI/UX, backend, app móvil y despliegue",
+            "MapaRutas: 8 rutas trazadas sobre Leaflet con GPX reales. El visitante ve el recorrido exacto de cada caminata antes de reservar. Perfil de elevación, distancia, tiempo, desnivel, puntos de interés (miradores, ríos, spots fotográficos), enlace a Wikiloc y modo en vivo con ubicación del guía y fotos del tour sincronizadas vía Supabase Realtime.",
+          desc: "Plataforma completa para una operadora de tours en Barichara, Colombia, en producción en raizviajera.com. Catálogo de experiencias bilingüe ES/EN, SEO optimizado, reseñas con Google OAuth, UX mobile-first y reservas por WhatsApp. Complementé el ecosistema con una app React Native/Expo para guías: tracking GPS, subida de fotos y sincronización en tiempo real.",
+          role: "Full-stack · UI/UX, backend, app móvil y despliegue",
         },
         {
           ...SHARED_PROJECT_META["02"],
           title: "Las Piedras Minca",
           subtitle: "Landing de hospedaje ecológico · Vue 3 SPA",
           highlight:
-            "SEO local y conversión — Schema.org (LodgingBusiness, FAQPage, TouristAttraction), meta geo con coordenadas GPS de Minca, sitemap con imágenes indexables y rich snippets. Mapa de ubicación con Google Maps embebido (ruta desde el centro de Minca hasta la cabaña), CTAs directos a Airbnb, WhatsApp e Instagram, y botón flotante de reserva siempre visible.",
-          desc: "Landing page oficial de un eco-lodge artesanal en Minca, Colombia — en producción en cabañalaspiedrasminca.com. Cabañas talladas en roca viva junto al río, en la Sierra Nevada de Santa Marta. SPA en Vue 3 con diseño mobile-first, tipografía editorial y paleta cálida. Showcase de 6 espacios únicos, galería interactiva, experiencias del día y navegación bilingüe ES/EN con toggle en la misma página.",
-          role: "Frontend completo — diseño UI/UX, componentes Vue, i18n, SEO y despliegue",
+            "SEO local y conversión: Schema.org (LodgingBusiness, FAQPage, TouristAttraction), meta geo con coordenadas GPS de Minca, sitemap con imágenes indexables y rich snippets. Mapa de ubicación con Google Maps embebido (ruta desde el centro de Minca hasta la cabaña), CTAs directos a Airbnb, WhatsApp e Instagram, y botón flotante de reserva siempre visible.",
+          desc: "Landing page oficial de un eco-lodge artesanal en Minca, Colombia, en producción en cabañalaspiedrasminca.com. Cabañas talladas en roca viva junto al río, en la Sierra Nevada de Santa Marta. SPA en Vue 3 con diseño mobile-first, tipografía editorial y paleta cálida. Showcase de 6 espacios únicos, galería interactiva, experiencias del día y navegación bilingüe ES/EN con toggle en la misma página.",
+          role: "Frontend completo · diseño UI/UX, componentes Vue, i18n, SEO y despliegue",
         },
         {
           ...SHARED_PROJECT_META["03"],
           title: "Pokédex Interactiva",
           subtitle: "Explorador Pokémon · JavaScript vanilla",
           highlight:
-            "Consumo de PokéAPI v2 con fetch nativo — endpoints encadenados (/pokemon, /pokemon-species, /type) y Promise.all para peticiones en paralelo. Búsqueda por nombre o número, modo aleatorio, navegación con flechas y teclado, stats con barras animadas, debilidades calculadas dinámicamente y fondo que cambia según el tipo del Pokémon — todo con nombres en español.",
+            "Consumo de PokéAPI v2 con fetch nativo: endpoints encadenados (/pokemon, /pokemon-species, /type) y Promise.all para peticiones en paralelo. Búsqueda por nombre o número, modo aleatorio, navegación con flechas y teclado, stats con barras animadas, debilidades calculadas dinámicamente y fondo que cambia según el tipo del Pokémon, todo con nombres en español.",
           desc: "SPA de una sola página sin frameworks ni build tools. Interfaz dark mode mobile-first con estados de carga y error, tipografía Outfit y CSS moderno (custom properties, color-mix, reduced motion). Demuestra manipulación del DOM dinámica, async/await e internacionalización manual desde la API.",
           displayUrl: "Demo en vivo",
-          role: "Frontend — integración API REST, lógica de datos, UI interactiva",
+          role: "Frontend · integración API REST, lógica de datos, UI interactiva",
         },
         {
           ...SHARED_PROJECT_META["04"],
           title: "Ouija AI",
           subtitle: "Conversación autónoma entre dos IAs · Gemini API",
           highlight:
-            "Dos agentes con prompts separados (joven escéptico y entidad demoníaca) comparten el mismo historial y responden en turnos — Youth → Demon → Youth — con instrucciones anti-repetición y de respuesta directa al último mensaje. Modo auto-conversación, UI en tiempo real, toggle EN/ES y exportación PDF.",
-          desc: "Demo web interactiva donde dos personalidades de IA conversan en vivo a través de una sesión de ouija. Cada turno se genera con Google Gemini API usando el contexto completo del diálogo, logrando conversación dinámica y contextual — no líneas guionadas. Backend Node.js/Express con fallback en memoria si MongoDB no está disponible y reintentos automáticos ante rate limits.",
-          role: "Full-stack — orquestación de agentes, API, UI en tiempo real y despliegue",
+            "Dos agentes con prompts separados (joven escéptico y entidad demoníaca) comparten el mismo historial y responden en turnos (Youth → Demon → Youth), con instrucciones anti-repetición y de respuesta directa al último mensaje. Modo auto-conversación, UI en tiempo real, toggle EN/ES y exportación PDF.",
+          desc: "Proyecto personal: demo web interactiva donde dos personalidades de IA conversan en vivo a través de una sesión de ouija. Cada turno se genera con Google Gemini API usando el contexto completo del diálogo, logrando conversación dinámica y contextual, no líneas guionadas. Backend Node.js/Express con fallback en memoria si MongoDB no está disponible y reintentos automáticos ante rate limits.",
+          role: "Full-stack · orquestación de agentes, API, UI en tiempo real y despliegue",
         },
         {
           ...SHARED_PROJECT_META["05"],
           title: "PawClinic Admin",
           subtitle: "Sistema interno de gestión veterinaria · Vendido e implementado",
           highlight:
-            "Dashboard operativo con estadísticas en tiempo real (total, abiertas, terminadas, anuladas), CRUD completo de citas, filtros por estado, búsqueda por mascota o propietario, cambio de estado desde cada tarjeta y persistencia en localStorage — pensado para el uso diario del personal de una clínica real.",
+            "Dashboard operativo con estadísticas en tiempo real (total, abiertas, terminadas, anuladas), CRUD completo de citas, filtros por estado, búsqueda por mascota o propietario, cambio de estado desde cada tarjeta y persistencia en localStorage, pensado para el uso diario del personal de una clínica real.",
           desc: "Sistema interno B2B vendido e implementado en una clínica veterinaria. Permite agendar consultas con datos de mascota y propietario, validaciones de negocio (teléfono 10 dígitos, fechas futuras, horario 8:00–20:00, síntomas máx. 400 caracteres), numeración automática y feedback visual con SweetAlert2. Interfaz tipo SaaS con Bootstrap 5 y JavaScript vanilla.",
           displayUrl: "Demo en vivo",
-          role: "Frontend completo — UI/UX, lógica de negocio, validaciones y entrega al cliente",
+          role: "Frontend completo · UI/UX, lógica de negocio, validaciones y entrega al cliente",
         },
       ],
     },
     experience: {
-      label: "04 — Experiencia & Formación",
+      label: "04 · Experiencia & Formación",
       title: "Mi trayectoria",
       coursesTitle: "Cursos & Certificaciones",
       items: [
@@ -533,14 +533,14 @@ export const translations: Record<Locale, Translation> = {
             "Modernización de la plataforma: rediseño de Home, Roles, Permisos, Trabajadores, PQRS y LearnDash. Modo oscuro, estandarización visual, optimización de tablas/filtros/búsqueda, pruebas funcionales, corrección de incidencias y despliegues a producción con Vue 3 y Quasar.",
         },
         {
-          year: "2024 — Presente",
+          year: "2024 / Presente",
           role: "Desarrollador Full-Stack · Proyectos para clientes",
           company: "Freelance & proyectos reales",
           detail:
             "Raíz Viajera (raizviajera.com): plataforma web + app móvil con MapaRutas. Las Piedras Minca: landing Vue 3 para eco-lodge. PawClinic Admin: sistema interno veterinario vendido e implementado con dashboard de citas, CRUD y localStorage.",
         },
         {
-          year: "Ene 2024 — Jun 2025",
+          year: "Ene 2024 / Jun 2025",
           role: "Desarrollador de Software Junior",
           company: "Enfoque Frontend · Formación profesional",
           detail:
@@ -548,21 +548,21 @@ export const translations: Record<Locale, Translation> = {
         },
       ],
       courses: [
-        "Python — Nivel intermedio",
-        "SQL Total — Domina bases de datos",
+        "Python · Nivel intermedio",
+        "SQL Total · Domina bases de datos",
         "JavaScript desde cero",
         "Git + GitHub",
-        "FreeCodeCamp — Desarrollo Web & Responsive Design",
+        "FreeCodeCamp · Desarrollo Web & Responsive Design",
       ],
     },
     contact: {
-      label: "05 — Contacto",
+      label: "05 · Contacto",
       title1: "¿Hacemos algo",
       title2: "increíble juntos?",
       subtitle:
-        "Gracias por revisar mi trabajo en Connect One y en proyectos adicionales. Estoy listo para seguir aportando al equipo — escríbeme cuando quieras conversar.",
+        "Gracias por revisar mi trabajo en Connect One y en proyectos adicionales. Estoy listo para seguir aportando al equipo. Escríbeme cuando quieras conversar.",
     },
-    footer: "Felipe Landinez — Vue 3 · Quasar · GSAP",
+    footer: "Felipe Landinez · Vue 3 · Quasar · GSAP",
     a11y: {
       skipToContent: "Saltar al contenido",
     },
@@ -606,11 +606,11 @@ export const translations: Record<Locale, Translation> = {
         type: "Corporate intranet",
         subtitle: "My experience on the platform",
         p1: "During my time at Connect One, I contributed to modernizing and evolving the platform, focusing on frontend development and user experience improvements. I redesigned key modules, building more modern, responsive and efficient interfaces.",
-        p2: "I implemented new features, optimized tables, forms, filters and search systems, and helped build dark mode and visual standardization across the system. I also participated in functional testing, bug fixes, production deployments and quality validation — ensuring a consistent, scalable experience for users.",
+        p2: "I implemented new features, optimized tables, forms, filters and search systems, and helped build dark mode and visual standardization across the system. I also participated in functional testing, bug fixes, production deployments and quality validation, ensuring a consistent, scalable experience for users.",
         showcaseTitle: "Product screenshots",
         privateAccess: "Private corporate access",
         showcaseNote:
-          "No public link — the platform requires internal credentials. Authorized work-environment screenshots; live demo available under NDA upon request.",
+          "No public link. The platform requires internal credentials. Authorized work-environment screenshots; live demo available under NDA upon request.",
         browserUrl: "connect-one.internal",
         modulesTitle: "Modules I worked on",
         contributionsTitle: "Key contributions",
@@ -630,7 +630,7 @@ export const translations: Record<Locale, Translation> = {
             width: 1024,
             height: 503,
             caption:
-              "System role administration — create, search, edit and assign permissions.",
+              "System role administration: create, search, edit and assign permissions.",
           },
           {
             id: "trabajadores",
@@ -684,7 +684,7 @@ export const translations: Record<Locale, Translation> = {
         type: "Client portal",
         subtitle: "Dashboard for clients and supervisors",
         p1: "I'm currently building Connect One Clientes, the portal where clients and supervisors monitor their teams' activity in real time from a unified dashboard.",
-        p2: "I'm building Calendar with Google Calendar integration, Productivity/Analytics with ApexCharts, and My Account — profile, activity, security and invoices — plus the home dashboard and guided onboarding tours.",
+        p2: "I'm building Calendar with Google Calendar integration, Productivity/Analytics with ApexCharts, and My Account (profile, activity, security and invoices), plus the home dashboard and guided onboarding tours.",
         showcaseTitle: "Product screenshots",
         privateAccess: "Private corporate access",
         showcaseNote:
@@ -708,7 +708,7 @@ export const translations: Record<Locale, Translation> = {
             width: 1024,
             height: 497,
             caption:
-              "Main dashboard — metrics, teams, meetings, calendar, analytics and invoices in one view.",
+              "Main dashboard with metrics, teams, meetings, calendar, analytics and invoices in one view.",
           },
           {
             id: "calendario",
@@ -735,7 +735,7 @@ export const translations: Record<Locale, Translation> = {
             width: 1024,
             height: 497,
             caption:
-              "Productivity dashboard — KPIs, hours worked chart, performance radar and team selector.",
+              "Productivity dashboard with KPIs, hours worked chart, performance radar and team selector.",
           },
           {
             id: "perfil",
@@ -744,7 +744,7 @@ export const translations: Record<Locale, Translation> = {
             width: 1024,
             height: 498,
             caption:
-              "Personal profile — account details, activity list with progress, security and billing tabs.",
+              "Personal profile with account details, activity list with progress, security and billing tabs.",
           },
         ],
         contributions: [
@@ -758,12 +758,12 @@ export const translations: Record<Locale, Translation> = {
       },
     },
     about: {
-      label: "01 — About me",
+      label: "01 · About me",
       title1: "Code with soul,",
       title2: "design with purpose",
       p1: "Software developer focused on frontend, with experience on the Connect One intranet, full stack web development and building modern, dynamic and responsive interfaces.",
-      p2: "I've shipped products for real clients — including Raíz Viajera and Las Piedras Minca, both in production — and PawClinic Admin, a veterinary internal system sold to a real clinic. Also Ouija AI, a multi-agent Gemini API demo. I work with Vue 3, Quasar, Astro, Supabase, React Native and TypeScript, plus Node.js and Express on the backend.",
-      p3: "Experience with SQL and NoSQL databases — MySQL, MariaDB, PostgreSQL and MongoDB — Render deployment, and tools like Git, GitHub and Postman. Agile methodologies with Scrum.",
+      p2: "I've shipped products for real clients, including Raíz Viajera and Las Piedras Minca, both in production, and PawClinic Admin, a veterinary internal system sold to a real clinic. I work with Vue 3, Quasar, Astro, Supabase, React Native and TypeScript, plus Node.js and Express on the backend.",
+      p3: "Experience with SQL and NoSQL databases (MySQL, MariaDB, PostgreSQL and MongoDB), Render deployment, and tools like Git, GitHub and Postman. Agile methodologies with Scrum.",
       tags: ["ES / EN", "Remote / On-site", "Junior → Mid", "Scrum"],
       playground: {
         filename: "ArcadeInvaders.vue",
@@ -786,10 +786,10 @@ export const translations: Record<Locale, Translation> = {
       },
     },
     skills: {
-      label: "02 — Skills",
+      label: "02 · Skills",
       title: "Technical stack",
       subtitle:
-        "Tools from the ecosystem I use on real projects — not just frameworks, but real frontend architecture.",
+        "Tools from the ecosystem I use on real projects: not just frameworks, but real frontend architecture.",
       categories: [
         { emoji: "🚀", title: "Core Frontend", skills: ["Vue 3", "Quasar", "Astro", "JavaScript", "TypeScript", "HTML5", "CSS3", "Vite", "Bootstrap"] },
         { emoji: "⚡", title: "State & APIs", skills: ["Pinia", "Axios", "REST APIs", "API Consumption", "Supabase", "PokéAPI", "Gemini API"] },
@@ -800,10 +800,10 @@ export const translations: Record<Locale, Translation> = {
       ],
     },
     projects: {
-      label: "03 — Projects",
+      label: "03 · Projects",
       title: "Selected work",
       subtitle:
-        "Client projects and professional development. Hover to explore — links open the live site.",
+        "Client projects and professional development. Hover to explore; links open the live site.",
       featureLabel: "Featured",
       liveLabel: "In production",
       demoLabel: "Live demo",
@@ -813,52 +813,52 @@ export const translations: Record<Locale, Translation> = {
           title: "Raíz Viajera",
           subtitle: "Interactive hiking map · Web + Mobile app",
           highlight:
-            "MapaRutas — 8 routes on Leaflet with real GPX files: visitors see the exact trail before booking. Elevation profile, distance, time, elevation gain, points of interest (viewpoints, rivers, photo spots), Wikiloc link and live mode with guide location and tour photos synced via Supabase Realtime.",
-          desc: "Full platform for a tour operator in Barichara, Colombia — live at raizviajera.com. Bilingual ES/EN experience catalog, SEO, Google OAuth reviews, mobile-first UX and WhatsApp bookings. Extended with a React Native/Expo app for guides: GPS tracking, photo uploads and real-time sync.",
-          role: "Full-stack — UI/UX, backend, mobile app and deployment",
+            "MapaRutas: 8 routes on Leaflet with real GPX files. Visitors see the exact trail before booking. Elevation profile, distance, time, elevation gain, points of interest (viewpoints, rivers, photo spots), Wikiloc link and live mode with guide location and tour photos synced via Supabase Realtime.",
+          desc: "Full platform for a tour operator in Barichara, Colombia, live at raizviajera.com. Bilingual ES/EN experience catalog, SEO, Google OAuth reviews, mobile-first UX and WhatsApp bookings. Extended with a React Native/Expo app for guides: GPS tracking, photo uploads and real-time sync.",
+          role: "Full-stack · UI/UX, backend, mobile app and deployment",
         },
         {
           ...SHARED_PROJECT_META["02"],
           title: "Las Piedras Minca",
           subtitle: "Eco-lodge landing page · Vue 3 SPA",
           highlight:
-            "Local SEO & conversion — Schema.org (LodgingBusiness, FAQPage, TouristAttraction), geo meta with Minca GPS coordinates, indexable image sitemap and rich snippets. Embedded Google Maps (route from Minca center to the cabin), direct CTAs to Airbnb, WhatsApp and Instagram, and always-visible floating booking button.",
-          desc: "Official landing page for an artisanal eco-lodge in Minca, Colombia — live at cabañalaspiedrasminca.com. Cabins carved into living rock by the river, in the Sierra Nevada de Santa Marta. Vue 3 SPA with mobile-first design, editorial typography and warm palette. Showcase of 6 unique spaces, interactive gallery, day experiences and ES/EN toggle on the same page.",
-          role: "Full frontend — UI/UX, Vue components, i18n, SEO and deployment",
+            "Local SEO & conversion: Schema.org (LodgingBusiness, FAQPage, TouristAttraction), geo meta with Minca GPS coordinates, indexable image sitemap and rich snippets. Embedded Google Maps (route from Minca center to the cabin), direct CTAs to Airbnb, WhatsApp and Instagram, and always-visible floating booking button.",
+          desc: "Official landing page for an artisanal eco-lodge in Minca, Colombia, live at cabañalaspiedrasminca.com. Cabins carved into living rock by the river, in the Sierra Nevada de Santa Marta. Vue 3 SPA with mobile-first design, editorial typography and warm palette. Showcase of 6 unique spaces, interactive gallery, day experiences and ES/EN toggle on the same page.",
+          role: "Full frontend · UI/UX, Vue components, i18n, SEO and deployment",
         },
         {
           ...SHARED_PROJECT_META["03"],
           title: "Interactive Pokédex",
           subtitle: "Pokémon explorer · Vanilla JavaScript",
           highlight:
-            "PokéAPI v2 with native fetch — chained endpoints (/pokemon, /pokemon-species, /type) and Promise.all for parallel requests. Search by name or number, random mode, arrow and keyboard navigation, animated stat bars, dynamically calculated weaknesses and background that changes by Pokémon type — all with Spanish names.",
+            "PokéAPI v2 with native fetch: chained endpoints (/pokemon, /pokemon-species, /type) and Promise.all for parallel requests. Search by name or number, random mode, arrow and keyboard navigation, animated stat bars, dynamically calculated weaknesses and background that changes by Pokémon type, all with Spanish names.",
           desc: "Single-page SPA without frameworks or build tools. Mobile-first dark mode UI with loading and error states, Outfit typography and modern CSS (custom properties, color-mix, reduced motion). Demonstrates dynamic DOM manipulation, async/await and manual i18n from the API.",
           displayUrl: "Live demo",
-          role: "Frontend — REST API integration, data logic, interactive UI",
+          role: "Frontend · REST API integration, data logic, interactive UI",
         },
         {
           ...SHARED_PROJECT_META["04"],
           title: "Ouija AI",
           subtitle: "Autonomous dual-agent conversation · Gemini API",
           highlight:
-            "Two agents with separate prompts (skeptical youth and demonic entity) share the same history and respond in turns — Youth → Demon → Youth — with anti-repetition and direct-reply instructions. Auto-conversation mode, real-time UI, EN/ES toggle and PDF export.",
-          desc: "Interactive web demo where two AI personalities converse live through a Ouija session. Each turn is generated with Google Gemini API using full dialogue context — dynamic, contextual conversation, not scripted lines. Node.js/Express backend with in-memory fallback when MongoDB is unavailable and automatic retries on rate limits.",
-          role: "Full-stack — agent orchestration, API, real-time UI and deployment",
+            "Two agents with separate prompts (skeptical youth and demonic entity) share the same history and respond in turns (Youth → Demon → Youth), with anti-repetition and direct-reply instructions. Auto-conversation mode, real-time UI, EN/ES toggle and PDF export.",
+          desc: "Personal project: interactive web demo where two AI personalities converse live through a Ouija session. Each turn is generated with Google Gemini API using full dialogue context, dynamic and contextual conversation, not scripted lines. Node.js/Express backend with in-memory fallback when MongoDB is unavailable and automatic retries on rate limits.",
+          role: "Full-stack · agent orchestration, API, real-time UI and deployment",
         },
         {
           ...SHARED_PROJECT_META["05"],
           title: "PawClinic Admin",
           subtitle: "Veterinary management system · Sold & deployed",
           highlight:
-            "Operational dashboard with real-time stats (total, open, completed, cancelled), full appointment CRUD, status filters, pet or owner search, status changes from each card and localStorage persistence — built for daily use by real clinic staff.",
+            "Operational dashboard with real-time stats (total, open, completed, cancelled), full appointment CRUD, status filters, pet or owner search, status changes from each card and localStorage persistence, built for daily use by real clinic staff.",
           desc: "B2B internal system sold and deployed at a veterinary clinic. Schedule appointments with pet and owner data, business validations (10-digit phone, future dates, 8:00–20:00 hours, 400-char symptom limit), auto-numbering and SweetAlert2 feedback. SaaS-style interface with Bootstrap 5 and vanilla JavaScript.",
           displayUrl: "Live demo",
-          role: "Full frontend — UI/UX, business logic, validations and client delivery",
+          role: "Full frontend · UI/UX, business logic, validations and client delivery",
         },
       ],
     },
     experience: {
-      label: "04 — Experience & Education",
+      label: "04 · Experience & Education",
       title: "My journey",
       coursesTitle: "Courses & Certifications",
       items: [
@@ -870,14 +870,14 @@ export const translations: Record<Locale, Translation> = {
             "Platform modernization: redesign of Home, Roles, Permissions, Employees, PQRS and LearnDash. Dark mode, visual standardization, table/filter/search optimization, functional testing, bug fixes and production deployments with Vue 3 and Quasar.",
         },
         {
-          year: "2024 — Present",
+          year: "2024 / Present",
           role: "Full-Stack Developer · Client projects",
           company: "Freelance & real-world work",
           detail:
             "Raíz Viajera (raizviajera.com): web platform + mobile app with MapaRutas. Las Piedras Minca: Vue 3 eco-lodge landing. PawClinic Admin: sold veterinary internal system with appointment dashboard, CRUD and localStorage.",
         },
         {
-          year: "Jan 2024 — Jun 2025",
+          year: "Jan 2024 / Jun 2025",
           role: "Junior Software Developer",
           company: "Frontend focus · Professional training",
           detail:
@@ -885,21 +885,21 @@ export const translations: Record<Locale, Translation> = {
         },
       ],
       courses: [
-        "Python — Intermediate level",
-        "SQL Total — Master databases",
+        "Python · Intermediate level",
+        "SQL Total · Master databases",
         "JavaScript from scratch",
         "Git + GitHub",
-        "FreeCodeCamp — Web Development & Responsive Design",
+        "FreeCodeCamp · Web Development & Responsive Design",
       ],
     },
     contact: {
-      label: "05 — Contact",
+      label: "05 · Contact",
       title1: "Let's build something",
       title2: "amazing together?",
       subtitle:
-        "Thanks for reviewing my work at Connect One and on additional projects. I'm ready to keep contributing to the team — reach out whenever you'd like to talk.",
+        "Thanks for reviewing my work at Connect One and on additional projects. I'm ready to keep contributing to the team. Reach out whenever you'd like to talk.",
     },
-    footer: "Felipe Landinez — Vue 3 · Quasar · GSAP",
+    footer: "Felipe Landinez · Vue 3 · Quasar · GSAP",
     a11y: {
       skipToContent: "Skip to content",
     },
