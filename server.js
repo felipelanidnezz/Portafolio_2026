@@ -18,7 +18,7 @@ function isAllowedOrigin(origin) {
   if (!origin) return false;
   if (ALLOWED_ORIGINS.some((allowed) => origin.startsWith(allowed))) return true;
   if (origin.endsWith(".onrender.com")) return true;
-  if (origin.endsWith(".vercel.app")) return true;
+  if (origin.endsWith(".glitch.me")) return true;
   return false;
 }
 
@@ -52,10 +52,6 @@ if (!process.env.GEMINI_API_KEY) {
   console.warn("⚠️  Falta GEMINI_API_KEY en .env — las IAs no podrán responder");
 }
 
-if (!process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-  });
-}
-
-export default app;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});

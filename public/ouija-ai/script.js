@@ -15,7 +15,7 @@ const statTotal = document.getElementById("statTotal");
 const statJoven = document.getElementById("statJoven");
 const statDemonio = document.getElementById("statDemonio");
 
-const REMOTE_API = "https://ouija-ai-felipe.glitch.me";
+const REMOTE_API = "https://ouija-ai-felipe.vercel.app";
 
 function getApiBase() {
   const meta = document.querySelector('meta[name="ouija-api"]');
@@ -24,7 +24,7 @@ function getApiBase() {
   if (hostname === "localhost" || hostname === "127.0.0.1") {
     if (port === "3001" || port === "3000") return "";
   }
-  if (hostname.endsWith(".glitch.me")) return "";
+  if (hostname.endsWith(".vercel.app")) return "";
   return REMOTE_API;
 }
 
