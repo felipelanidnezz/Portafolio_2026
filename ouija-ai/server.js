@@ -18,6 +18,7 @@ function isAllowedOrigin(origin) {
   if (!origin) return false;
   if (ALLOWED_ORIGINS.some((allowed) => origin.startsWith(allowed))) return true;
   if (origin.endsWith(".onrender.com")) return true;
+  if (origin.endsWith(".glitch.me")) return true;
   return false;
 }
 

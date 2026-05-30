@@ -15,7 +15,7 @@ const statTotal = document.getElementById("statTotal");
 const statJoven = document.getElementById("statJoven");
 const statDemonio = document.getElementById("statDemonio");
 
-const RENDER_API = "https://ouija-ai-felipe.onrender.com";
+const REMOTE_API = "https://ouija-ai-felipe.glitch.me";
 
 function getApiBase() {
   const meta = document.querySelector('meta[name="ouija-api"]');
@@ -24,7 +24,8 @@ function getApiBase() {
   if (hostname === "localhost" || hostname === "127.0.0.1") {
     if (port === "3001" || port === "3000") return "";
   }
-  return RENDER_API;
+  if (hostname.endsWith(".glitch.me")) return "";
+  return REMOTE_API;
 }
 
 function apiUrl(path) {
