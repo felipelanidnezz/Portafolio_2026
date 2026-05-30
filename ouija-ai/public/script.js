@@ -19,13 +19,20 @@ const REMOTE_API = "https://ouija-ai-felipe.vercel.app";
 
 function getApiBase() {
   const meta = document.querySelector('meta[name="ouija-api"]');
-  if (meta?.content?.trim()) return meta.content.trim().replace(/\/$/, "");
+  const remote = (meta?.content?.trim() || REMOTE_API).replace(/\/$/, "");
   const { hostname, port } = window.location;
-  if (hostname === "localhost" || hostname === "127.0.0.1") {
-    if (port === "3001" || port === "3000") return "";
+
+  if ((hostname === "localhost" || hostname === "127.0.0.1") &&
+      (port === "3001" || port === "3000")) {
+    return "";
   }
-  if (hostname.endsWith(".vercel.app")) return "";
-  return REMOTE_API;
+
+  // Same deployment: ouija-ai-felipe.vercel.app serves UI + API
+  const sub = hostname.split(".")[0] || "";
+  if (/^ouija-ai/i.test(sub)) return "";
+
+  // Portfolio / GitHub Pages → always use remote backend
+  return remote;
 }
 
 function apiUrl(path) {
@@ -329,7 +336,12 @@ async function callIA(url, label) {
     renderMessage(label === "JOVEN" ? "experto1" : "experto2", data.response);
     return true;
   } catch (err) {
-    showError(err.message);
+    const msg = err.message === "Failed to fetch"
+      ? (lang === "es"
+        ? "No se pudo conectar al servidor de IA. Comprueba que ouija-ai-felipe.vercel.app esté activo."
+        : "Could not reach the AI server. Check that ouija-ai-felipe.vercel.app is running.")
+      : err.message;
+    showError(msg);
     return false;
   } finally {
     setLoading(false);
