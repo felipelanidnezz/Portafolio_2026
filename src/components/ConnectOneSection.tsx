@@ -202,11 +202,18 @@ export default function ConnectOneSection() {
 
                 return (
                   <li key={mod.id}>
-                    <div
+                    <button
+                      type="button"
+                      disabled={!hasScreenshot}
+                      onClick={() =>
+                        hasScreenshot && setActiveScreenshot(mod.id)
+                      }
                       className={`group h-full w-full rounded-2xl border p-4 text-left transition-colors ${
                         isActive
                           ? moduleActiveClass
-                          : `border-zinc-700/60 bg-zinc-900/50 ${moduleHoverClass} hover:bg-zinc-900/80`
+                          : hasScreenshot
+                            ? `border-zinc-700/60 bg-zinc-900/50 ${moduleHoverClass} hover:bg-zinc-900/80`
+                            : "cursor-default border-zinc-800/60 bg-zinc-900/30"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
@@ -215,16 +222,20 @@ export default function ConnectOneSection() {
                         </h3>
                         {hasScreenshot ? (
                           <span
-                            className={`font-mono text-[10px] ${moduleLinkActiveClass}`}
+                            className={`font-mono text-[10px] transition-opacity ${
+                              isActive
+                                ? moduleLinkActiveClass
+                                : "text-zinc-600 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
+                            }`}
                           >
-                            ●
+                            {product.viewLink.replace("↗", "→")}
                           </span>
                         ) : null}
                       </div>
                       <p className="mt-2 text-sm leading-relaxed text-zinc-500">
                         {mod.desc}
                       </p>
-                    </div>
+                    </button>
                   </li>
                 );
               })}
