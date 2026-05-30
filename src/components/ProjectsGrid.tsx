@@ -2,6 +2,26 @@
 
 import { MagneticButton } from "@/components/MagneticCursor";
 
+const GH_PAGES_PREFIX = "/Portafolio_2026";
+
+/** Resolve demo links for GitHub Pages vs local dev. */
+export function resolveProjectUrl(url?: string): string | undefined {
+  if (!url || !url.startsWith("/") || typeof window === "undefined") return url;
+
+  const onGhPages = window.location.hostname.endsWith("github.io");
+
+  if (onGhPages) {
+    if (url.startsWith(GH_PAGES_PREFIX)) return url;
+    return `${GH_PAGES_PREFIX}${url}`;
+  }
+
+  if (url.startsWith(GH_PAGES_PREFIX)) {
+    return url.slice(GH_PAGES_PREFIX.length) || "/";
+  }
+
+  return url;
+}
+
 export type Project = {
   id: string;
   title: string;
@@ -96,13 +116,14 @@ function ProjectItem({
   labels: ProjectLabels;
 }) {
   const card = <ProjectCard project={project} labels={labels} />;
-  const isExternal = project.url && !project.url.startsWith("/");
+  const href = resolveProjectUrl(project.url);
+  const isExternal = href && !href.startsWith("/");
 
-  if (project.url) {
+  if (href) {
     return (
       <MagneticButton cursorText={labels.visit}>
         <a
-          href={project.url}
+          href={href}
           target={isExternal ? "_blank" : undefined}
           rel={isExternal ? "noopener noreferrer" : undefined}
           className="block w-full"

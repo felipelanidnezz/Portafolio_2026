@@ -146,7 +146,8 @@ const SHARED_PROJECT_META = {
   "04": {
     id: "04",
     color: "from-violet-500/20 to-violet-900/10",
-    url: "https://github.com/felipelanidnezz/Portafolio_2026/tree/main/ouija-ai",
+    url: `${BASE}/ouija-ai/`,
+    live: true,
     tags: [
       "Node.js",
       "Express",
