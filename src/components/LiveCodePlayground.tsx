@@ -6,11 +6,11 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 type PreviewStep = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 function getPreviewStep(code: string): PreviewStep {
-  if (code.includes("<button")) return 6;
+  if (code.includes("card__cta") || code.includes("@click=\"handleBook\"")) return 6;
   if (code.includes("Mapa GPX") || code.includes("GPX map")) return 5;
-  if (code.includes("Raíz Viajera")) return 4;
+  if (code.includes("'Raíz Viajera'")) return 4;
   if (code.includes('class="badge"')) return 3;
-  if (code.includes("border-radius")) return 2;
+  if (code.includes(".card {")) return 2;
   if (code.includes("<article")) return 1;
   return 0;
 }
@@ -18,6 +18,9 @@ function getPreviewStep(code: string): PreviewStep {
 function highlightCode(code: string) {
   const result: { text: string; className: string }[] = [];
   let i = 0;
+
+  const keywords =
+    /^(script|setup|lang|import|from|interface|const|let|async|function|return|computed|ref|defineProps|defineEmits|withDefaults|template|style|scoped|article|header|footer|span|h3|p|ul|li|button|type|disabled|true|false|null|void|string|boolean|number)\b/;
 
   while (i < code.length) {
     const rest = code.slice(i);
@@ -29,17 +32,15 @@ function highlightCode(code: string) {
     else if ((match = rest.match(/^<!--[\s\S]*?-->/))) className = "text-zinc-600";
     else if ((match = rest.match(/^"[^"]*"/))) className = "text-amber-300/90";
     else if ((match = rest.match(/^'[^']*'/))) className = "text-amber-300/90";
+    else if ((match = rest.match(/^`[^`]*`/))) className = "text-amber-300/90";
     else if ((match = rest.match(/^#[0-9a-fA-F]{3,8}/))) className = "text-violet-400";
-    else if ((match = rest.match(/^[0-9.]+rem/))) className = "text-violet-400";
-    else if (
-      (match = rest.match(
-        /^(template|style|scoped|article|span|h3|p|button|class|color|background|border|padding|font-size|border-radius)\b/
-      ))
-    )
-      className = "text-sky-400";
+    else if ((match = rest.match(/^rgba?\([^)]+\)/))) className = "text-violet-400";
+    else if ((match = rest.match(/^[0-9.]+(?:rem|px|s|ms|%)/))) className = "text-violet-400";
+    else if ((match = rest.match(keywords))) className = "text-sky-400";
+    else if ((match = rest.match(/^@\w+/))) className = "text-rose-400";
+    else if ((match = rest.match(/^:\w+/))) className = "text-amber-200/80";
     else if ((match = rest.match(/^<\/?[\w.-]+/))) className = "text-emerald-400";
-    else if ((match = rest.match(/^@click=/))) className = "text-emerald-400";
-    else if ((match = rest.match(/^[>/{}();:]/))) className = "text-zinc-500";
+    else if ((match = rest.match(/^[>/{}();:,=+\-*/|&?!.[\]]/))) className = "text-zinc-500";
     else match = rest.match(/^./);
 
     if (!match) break;
@@ -69,7 +70,7 @@ function CardPreview({
   const cardReady = step >= 2;
 
   return (
-    <div className="flex h-full min-h-[220px] items-center justify-center bg-[#0a0a0a] p-4 sm:min-h-[260px]">
+    <div className="flex h-full min-h-[360px] items-center justify-center bg-[#0a0a0a] p-4 sm:min-h-[420px]">
       {step === 0 ? (
         <p className="font-mono text-[11px] text-zinc-600">{waiting}</p>
       ) : (
@@ -125,12 +126,13 @@ export default function LiveCodePlayground() {
   const [typedCode, setTypedCode] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const preRef = useRef<HTMLPreElement>(null);
   const pausedRef = useRef(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const previewStep = useMemo(() => getPreviewStep(typedCode), [typedCode]);
   const tokens = useMemo(() => highlightCode(typedCode), [typedCode]);
-  const lineCount = Math.max(typedCode.split("\n").length, 8);
+  const totalLines = fullCode.split("\n").length;
   const progress = fullCode.length
     ? Math.round((typedCode.length / fullCode.length) * 100)
     : 0;
@@ -146,6 +148,13 @@ export default function LiveCodePlayground() {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const pre = preRef.current;
+    if (pre) {
+      pre.scrollTop = pre.scrollHeight;
+    }
+  }, [typedCode]);
 
   useEffect(() => {
     const clearTimers = () => {
@@ -173,7 +182,7 @@ export default function LiveCodePlayground() {
 
     const tick = () => {
       if (pausedRef.current) {
-        schedule(tick, 200);
+        schedule(tick, 150);
         return;
       }
 
@@ -181,22 +190,23 @@ export default function LiveCodePlayground() {
         schedule(() => {
           charIndex = 0;
           setTypedCode("");
-          schedule(tick, 400);
-        }, 3500);
+          schedule(tick, 500);
+        }, 4000);
         return;
       }
 
-      charIndex += 1;
+      const chunk = fullCode[charIndex] === "\n" ? 1 : 2;
+      charIndex = Math.min(charIndex + chunk, fullCode.length);
       setTypedCode(fullCode.slice(0, charIndex));
 
       const char = fullCode[charIndex - 1];
       const delay =
-        char === "\n" ? 110 : char === " " ? 26 : 16 + Math.floor(Math.random() * 12);
+        char === "\n" ? 90 : char === " " ? 18 : 10 + Math.floor(Math.random() * 8);
 
       schedule(tick, delay);
     };
 
-    schedule(tick, 700);
+    schedule(tick, 500);
 
     return clearTimers;
   }, [fullCode, isVisible, locale]);
@@ -235,14 +245,26 @@ export default function LiveCodePlayground() {
       <div className="grid sm:grid-cols-2">
         <div className="relative border-b border-zinc-800 sm:border-b-0 sm:border-r">
           <div
-            className="absolute left-0 top-0 flex h-full select-none flex-col border-r border-zinc-800/60 bg-zinc-900/40 px-2 py-3 text-right font-mono text-[10px] leading-[1.6] text-zinc-700"
+            className="absolute left-0 top-0 z-10 flex min-h-full select-none flex-col border-r border-zinc-800/60 bg-zinc-900/40 px-2 py-3 text-right font-mono text-[10px] leading-[1.55] text-zinc-700"
             aria-hidden="true"
           >
-            {Array.from({ length: lineCount }).map((_, i) => (
-              <span key={i}>{i + 1}</span>
-            ))}
+            {Array.from({ length: totalLines }).map((_, i) => {
+              const typedLines = typedCode.split("\n").length;
+              const isActive = i < typedLines;
+              return (
+                <span
+                  key={i}
+                  className={isActive ? "text-zinc-500" : "text-zinc-800"}
+                >
+                  {i + 1}
+                </span>
+              );
+            })}
           </div>
-          <pre className="max-h-[280px] overflow-auto p-3 pl-9 font-mono text-[11px] leading-[1.6] sm:max-h-[300px] sm:text-xs">
+          <pre
+            ref={preRef}
+            className="max-h-[360px] min-h-[360px] overflow-auto p-3 pl-9 font-mono text-[10px] leading-[1.55] sm:max-h-[420px] sm:min-h-[420px] sm:text-[11px]"
+          >
             <code>
               {tokens.map((tok, i) => (
                 <span key={i} className={tok.className}>
