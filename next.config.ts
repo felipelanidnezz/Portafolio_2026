@@ -1,10 +1,10 @@
 import type { NextConfig } from "next";
 
-const basePath =
-  process.env.GITHUB_PAGES === "true" ? "/Portafolio_2026" : "";
+const isGithubPages = process.env.GITHUB_PAGES === "true";
+const basePath = isGithubPages ? "/Portafolio_2026" : "";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  ...(isGithubPages ? { output: "export" as const } : {}),
   basePath,
   assetPrefix: basePath || undefined,
   devIndicators: false,
