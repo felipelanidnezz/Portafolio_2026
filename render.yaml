@@ -1,4 +1,15 @@
 services:
+  # ── Portafolio Next.js (sitio estático) ──
+  - type: web
+    name: portafolio-2026
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: out
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+
+  # ── Ouija AI backend (Node.js + Gemini API) ──
   - type: web
     name: ouija-ai-felipe
     runtime: node

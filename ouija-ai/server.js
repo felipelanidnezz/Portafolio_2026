@@ -14,9 +14,16 @@ const ALLOWED_ORIGINS = [
   "http://127.0.0.1:3001",
 ];
 
+function isAllowedOrigin(origin) {
+  if (!origin) return false;
+  if (ALLOWED_ORIGINS.some((allowed) => origin.startsWith(allowed))) return true;
+  if (origin.endsWith(".onrender.com")) return true;
+  return false;
+}
+
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && ALLOWED_ORIGINS.some((allowed) => origin.startsWith(allowed))) {
+  if (isAllowedOrigin(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
   res.setHeader("Access-Control-Allow-Methods", "GET, DELETE, OPTIONS");

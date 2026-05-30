@@ -10,6 +10,28 @@ Portfolio profesional con cursor magnético, bilingüe ES/EN y proyectos reales.
 - React 19 · TypeScript · Tailwind CSS 4
 - GSAP (cursor magnético)
 
+## Deploy en Render (portafolio + Ouija AI)
+
+El archivo `render.yaml` despliega **dos servicios** a la vez:
+
+| Servicio | Tipo | URL esperada |
+|----------|------|--------------|
+| **portafolio-2026** | Static Site | `https://portafolio-2026.onrender.com` |
+| **ouija-ai-felipe** | Web Service (Node) | `https://ouija-ai-felipe.onrender.com` |
+
+### Pasos en Render
+
+1. **New** → **Blueprint**
+2. Conecta el repo `Portafolio_2026`
+3. **Blueprint Name:** `portafolio-2026`
+4. **Branch:** `main` · **Blueprint Path:** `render.yaml`
+5. **Apply** → cuando pida variables, agrega **`GEMINI_API_KEY`**
+6. Espera a que ambos servicios queden en **Live**
+
+> En Render **no** uses `GITHUB_PAGES=true` — el portafolio se sirve desde la raíz (`/`).
+
+También puedes seguir usando GitHub Pages: https://felipelanidnezz.github.io/Portafolio_2026/
+
 ## Desarrollo local
 
 ```bash
