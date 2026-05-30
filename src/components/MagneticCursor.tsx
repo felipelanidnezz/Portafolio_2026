@@ -18,6 +18,7 @@ type CursorState = "default" | "hover" | "text" | "click" | "hidden";
 export default function MagneticCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const currentTarget = useRef<Element | null>(null);
@@ -27,12 +28,27 @@ export default function MagneticCursor() {
     start + (end - start) * factor;
 
   const pos = useRef({ x: 0, y: 0 });
+  const glowPos = useRef({ x: 0, y: 0 });
+  const glowVisible = useRef(false);
 
   const setCursorState = useCallback((state: CursorState) => {
     const cursor = cursorRef.current;
     const dot = dotRef.current;
+    const glow = glowRef.current;
     const text = textRef.current;
     if (!cursor || !dot || !text) return;
+
+    const glowScale = state === "hover" || state === "text" ? 1.25 : 1;
+    const glowOpacity = state === "hidden" ? 0 : state === "hover" || state === "text" ? 1 : 0.85;
+
+    if (glow) {
+      gsap.to(glow, {
+        scale: glowScale,
+        opacity: glowOpacity,
+        duration: 0.45,
+        ease: "power2.out",
+      });
+    }
 
     switch (state) {
       case "default":
@@ -89,6 +105,7 @@ export default function MagneticCursor() {
       case "hidden":
         gsap.to(cursor, { opacity: 0, duration: 0.2 });
         gsap.to(dot, { opacity: 0, duration: 0.2 });
+        if (glow) gsap.to(glow, { opacity: 0, duration: 0.2 });
         break;
     }
   }, []);
@@ -118,17 +135,37 @@ export default function MagneticCursor() {
 
     const cursor = cursorRef.current;
     const dot = dotRef.current;
+    const glow = glowRef.current;
     if (!cursor || !dot) return;
 
     gsap.set([cursor, dot], { x: -100, y: -100 });
+    if (glow) gsap.set(glow, { x: -500, y: -500, opacity: 0 });
+
+    const root = document.documentElement;
+    root.style.setProperty("--mouse-x", "50vw");
+    root.style.setProperty("--mouse-y", "50vh");
 
     const loop = () => {
       pos.current.x = lerp(pos.current.x, mouse.current.x, 0.12);
       pos.current.y = lerp(pos.current.y, mouse.current.y, 0.12);
+      glowPos.current.x = lerp(glowPos.current.x, mouse.current.x, 0.07);
+      glowPos.current.y = lerp(glowPos.current.y, mouse.current.y, 0.07);
+
       gsap.set(cursor, {
         x: pos.current.x - cursor.offsetWidth / 2,
         y: pos.current.y - cursor.offsetHeight / 2,
       });
+
+      if (glow) {
+        gsap.set(glow, {
+          x: glowPos.current.x - glow.offsetWidth / 2,
+          y: glowPos.current.y - glow.offsetHeight / 2,
+        });
+      }
+
+      root.style.setProperty("--mouse-x", `${mouse.current.x}px`);
+      root.style.setProperty("--mouse-y", `${mouse.current.y}px`);
+
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
@@ -140,6 +177,11 @@ export default function MagneticCursor() {
         x: e.clientX - dot.offsetWidth / 2,
         y: e.clientY - dot.offsetHeight / 2,
       });
+
+      if (glow && !glowVisible.current) {
+        glowVisible.current = true;
+        gsap.to(glow, { opacity: 0.85, duration: 0.4 });
+      }
     };
 
     const onMouseDown = () => setCursorState("click");
@@ -190,10 +232,15 @@ export default function MagneticCursor() {
     if (reducedMotion.matches) {
       document.body.style.cursor = "auto";
       gsap.set([cursor, dot], { opacity: 0 });
+      if (glow) gsap.set(glow, { opacity: 0 });
+      root.style.removeProperty("--mouse-x");
+      root.style.removeProperty("--mouse-y");
     }
 
     return () => {
       document.body.style.cursor = "auto";
+      root.style.removeProperty("--mouse-x");
+      root.style.removeProperty("--mouse-y");
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mousedown", onMouseDown);
@@ -213,6 +260,10 @@ export default function MagneticCursor() {
 
   return (
     <>
+      <div className="cursor-spotlight" aria-hidden="true" />
+
+      <div ref={glowRef} className="cursor-glow-trail" aria-hidden="true" />
+
       <div
         ref={cursorRef}
         aria-hidden="true"
