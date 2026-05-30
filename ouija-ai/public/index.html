@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ouija AI — Real-time conversation between two AI personalities powered by Gemini API." />
+  <title>Ouija AI · AI Conversation Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="bg-glow bg-glow--1"></div>
+  <div class="bg-glow bg-glow--2"></div>
+
+  <div class="app">
+
+    <header class="header">
+      <div class="header__brand">
+        <div class="header__icon" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5"/><path d="M12 20h16M20 12v16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="20" cy="20" r="4" fill="currentColor" opacity=".6"/></svg>
+        </div>
+        <div>
+          <h1 class="header__title">Ouija<span>AI</span></h1>
+          <p class="header__sub" data-i18n="headerSub">Autonomous conversation between two AIs</p>
+        </div>
+      </div>
+      <div class="header__right">
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button class="lang-switch__btn active" data-lang="en" id="btnLangEn">EN</button>
+          <button class="lang-switch__btn" data-lang="es" id="btnLangEs">ES</button>
+        </div>
+        <div class="header__badges">
+          <span class="badge">Gemini API</span>
+          <span class="badge">Node.js</span>
+          <span class="badge">Express</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+
+      <aside class="sidebar">
+        <div class="panel">
+          <h2 class="panel__title" data-i18n="aboutTitle">About the project</h2>
+          <p class="panel__text" data-i18n="aboutText">
+            Two AI agents with opposing personalities — a skeptical youth and a demonic entity — converse through a Ouija session. Each response is generated with full conversation context.
+          </p>
+        </div>
+
+        <div class="panel panel--agents">
+          <h2 class="panel__title" data-i18n="agentsTitle">Agents</h2>
+          <div class="agent-card agent-card--joven">
+            <div class="agent-card__avatar">👤</div>
+            <div>
+              <strong data-i18n="agentYouthName">The Youth</strong>
+              <span data-i18n="agentYouthDesc">Skeptic → Terror</span>
+            </div>
+          </div>
+          <div class="agent-card agent-card--demonio">
+            <div class="agent-card__avatar">👁</div>
+            <div>
+              <strong data-i18n="agentDemonName">The Demon</strong>
+              <span data-i18n="agentDemonDesc">Manipulator · Dark</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel--stats">
+          <h2 class="panel__title" data-i18n="sessionTitle">Session</h2>
+          <div class="stats">
+            <div class="stat">
+              <span class="stat__val" id="statTotal">0</span>
+              <span class="stat__label" data-i18n="statMessages">Messages</span>
+            </div>
+            <div class="stat">
+              <span class="stat__val" id="statJoven">0</span>
+              <span class="stat__label" data-i18n="statYouth">Youth</span>
+            </div>
+            <div class="stat">
+              <span class="stat__val" id="statDemonio">0</span>
+              <span class="stat__label" data-i18n="statDemon">Demon</span>
+            </div>
+          </div>
+          <div class="status-pill" id="statusPill">
+            <span class="status-pill__dot"></span>
+            <span id="statusText" data-i18n="statusConnecting">Connecting...</span>
+          </div>
+        </div>
+
+        <div class="sidebar__actions">
+          <button id="btnExpert1" class="btn btn--joven">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span data-i18n="btnYouth">Youth's Turn</span>
+          </button>
+          <button id="btnExpert2" class="btn btn--demonio">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M9 9h.01M15 9h.01M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>
+            <span data-i18n="btnDemon">Demon's Turn</span>
+          </button>
+          <button id="btnAuto" class="btn btn--auto">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span data-i18n="btnAuto">Auto conversation</span>
+          </button>
+          <div class="sidebar__secondary">
+            <button id="btnExport" class="btn btn--ghost" data-i18n="btnExport">Export PDF</button>
+            <button id="btnClear" class="btn btn--ghost btn--danger" data-i18n="btnClear">Clear</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="chat-area">
+        <div id="statusBanner" class="banner" style="display:none"></div>
+
+        <div class="chat-window" id="chatContainer">
+          <div class="setup-panel" id="setupPanel" style="display:none">
+            <div class="setup-panel__icon">🔑</div>
+            <h3 data-i18n="setupTitle">Gemini API key required</h3>
+            <p data-i18n="setupDesc">This project uses Google's Gemini API to generate real, unique conversations between two AIs. You need a free API key to run it.</p>
+            <ol class="setup-panel__steps">
+              <li data-i18n="setupStep1">Go to <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a></li>
+              <li data-i18n="setupStep2">Click <strong>Create API key</strong></li>
+              <li data-i18n="setupStep3">Open the file <code>.env</code> in the ouija-main folder</li>
+              <li data-i18n="setupStep4">Replace <code>tu_api_key_aqui</code> with your key</li>
+              <li data-i18n="setupStep5">Run <code>npm start</code> and reload this page</li>
+            </ol>
+            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="btn btn--joven setup-panel__btn" data-i18n="setupBtn">Get API key →</a>
+          </div>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-state__icon">🔮</div>
+            <h3 data-i18n="emptyTitle">Session ready</h3>
+            <p data-i18n="emptyText">Press <strong>Youth's Turn</strong> to start the conversation between the two AIs.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <span data-i18n="footerDev">Built by Felipe Landinez</span>
+      <span class="footer__sep">·</span>
+      <span data-i18n="footerProject">Portfolio project — Generative AI with Gemini</span>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>

@@ -1,28 +1,30 @@
 # Portafolio_2026
 
-Portafolio profesional de **Felipe Landinez** — Desarrollador Web Junior.
+Portfolio de **Felipe Landinez** — proyectos seleccionados 2026.
 
-## Proyectos incluidos
+## Proyectos
 
-- Tienda Electrónica (PHLOX)
-- PawClinic · Gestión Veterinaria
-- Pokédex interactiva
-- Hotel Monte Verde
-- Talonario Vue.js
-- Y más...
+| Proyecto | Tipo | Demo |
+|----------|------|------|
+| **Ouija AI** | Node.js + Gemini API | [Código](./ouija-ai/) |
+| **PawClinic** | Dashboard veterinario | [Live Demo](./pawclinic/vete.html) |
 
-## Ver en vivo
+## Sitio en vivo
 
-Activa **GitHub Pages** en este repo:
-`Settings → Pages → Deploy from branch → main → / (root)`
+https://felipelanidnezz.github.io/Portafolio_2026/
 
-Luego abre: `https://TU-USUARIO.github.io/Portafolio_2026/`
+## Ouija AI — cómo correr localmente
 
-## Desarrollo local
-
-Abre `index.html` con Live Server o cualquier servidor estático.
+```bash
+cd ouija-ai
+npm install
+# Crea .env con GEMINI_API_KEY=tu_key
+npm start
+# Abre http://localhost:3001
+```
 
 ## Contacto
 
 - Email: thomasacosta71@gmail.com
 - LinkedIn: [felipelandinez](https://www.linkedin.com/in/felipelandinez)
+- GitHub: [felipelanidnezz](https://github.com/felipelanidnezz)
