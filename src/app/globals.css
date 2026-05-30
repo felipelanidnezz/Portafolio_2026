@@ -303,3 +303,17 @@ body.keyboard-nav .cursor-glow-trail {
     max-height: 420px;
   }
 }
+
+.connect-browser {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 24px 48px -12px rgba(0, 0, 0, 0.65);
+}
+
+.connect-screenshot {
+  image-rendering: auto;
+}
+
+.connect-thumb img {
+  image-rendering: auto;
+}

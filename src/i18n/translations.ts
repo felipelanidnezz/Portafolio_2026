@@ -29,6 +29,32 @@ type ConnectScreenshot = {
   label: string;
   image: string;
   caption: string;
+  width?: number;
+  height?: number;
+};
+
+export type ConnectShowcaseData = Pick<
+  ConnectProduct,
+  "showcaseTitle" | "privateAccess" | "showcaseNote" | "browserUrl" | "screenshots"
+>;
+
+type ConnectProduct = {
+  title: string;
+  badge: string;
+  type: string;
+  subtitle: string;
+  p1: string;
+  p2: string;
+  showcaseTitle: string;
+  privateAccess: string;
+  showcaseNote: string;
+  modulesTitle: string;
+  contributionsTitle: string;
+  viewLink: string;
+  browserUrl: string;
+  modules: ConnectModule[];
+  screenshots: ConnectScreenshot[];
+  contributions: string[];
 };
 
 export type Translation = {
@@ -43,20 +69,15 @@ export type Translation = {
     scroll: string;
   };
   connect: {
-    badge: string;
-    type: string;
-    subtitle: string;
-    p1: string;
-    p2: string;
-    showcaseTitle: string;
-    privateAccess: string;
-    showcaseNote: string;
-    modulesTitle: string;
-    contributionsTitle: string;
-    viewLink: string;
-    modules: ConnectModule[];
-    screenshots: ConnectScreenshot[];
-    contributions: string[];
+    navIntranet: string;
+    navClientes: string;
+    navPrev: string;
+    navNext: string;
+    expandHint: string;
+    expandLabel: string;
+    closeLabel: string;
+    intranet: ConnectProduct;
+    clientes: ConnectProduct;
   };
   about: {
     label: string;
@@ -235,43 +256,134 @@ export const translations: Record<Locale, Translation> = {
       scroll: "scroll ↓",
     },
     connect: {
-      badge: "Prácticas profesionales",
-      type: "Intranet corporativa",
-      subtitle: "Mi experiencia en la plataforma",
-      p1: "Durante mi experiencia en Connect One participé en la modernización y evolución de la plataforma, enfocándome en el desarrollo frontend y la mejora de la experiencia de usuario. Trabajé en el rediseño de módulos clave, desarrollando interfaces más modernas, responsivas y eficientes.",
-      p2: "Implementé nuevas funcionalidades, optimicé tablas, formularios, filtros y sistemas de búsqueda, además de contribuir en la creación del modo oscuro y la estandarización visual del sistema. También participé en pruebas funcionales, corrección de incidencias, despliegues a producción y validación de calidad, asegurando una experiencia consistente y escalable para los usuarios.",
-      showcaseTitle: "Capturas del producto",
-      privateAccess: "Acceso corporativo privado",
-      showcaseNote:
-        "Sin enlace público — la plataforma requiere credenciales internas. Capturas autorizadas del entorno de trabajo; demo disponible bajo NDA en entrevista.",
-      modulesTitle: "Módulos en los que trabajé",
-      contributionsTitle: "Contribuciones clave",
-      viewLink: "Ver ↗",
-      modules: [
-        { id: "home", label: "Home", desc: "Dashboard principal y punto de entrada de la intranet", url: "" },
-        { id: "roles", label: "Roles", desc: "Gestión y visualización de roles del sistema", url: "" },
-        { id: "permisos", label: "Permisos", desc: "Control de accesos y permisos por módulo", url: "" },
-        { id: "trabajadores", label: "Trabajadores", desc: "Administración de personal y perfiles", url: "" },
-        { id: "pqrs", label: "PQRS", desc: "Peticiones, quejas, reclamos y sugerencias", url: "" },
-        { id: "learndash", label: "LearnDash", desc: "Módulo de formación y capacitación interna", url: "" },
-      ],
-      screenshots: [
-        {
-          id: "home",
-          label: "Home / Turnos",
-          image: `${BASE}/connect-one/home-dashboard.png`,
-          caption:
-            "Dashboard principal con control de turnos en vivo, anuncios y navegación modular — Vue 3 + Quasar.",
-        },
-      ],
-      contributions: [
-        "Modo oscuro",
-        "Estandarización visual",
-        "Tablas y filtros optimizados",
-        "Despliegues a producción",
-        "Pruebas funcionales",
-        "Corrección de incidencias",
-      ],
+      navIntranet: "Connect One",
+      navClientes: "Connect One Clientes",
+      navPrev: "Intranet",
+      navNext: "Clientes",
+      expandHint: "Ampliar",
+      expandLabel: "Ampliar captura de pantalla",
+      closeLabel: "Cerrar ✕",
+      intranet: {
+        title: "Connect One",
+        badge: "Prácticas profesionales",
+        type: "Intranet corporativa",
+        subtitle: "Mi experiencia en la plataforma",
+        p1: "Durante mi experiencia en Connect One participé en la modernización y evolución de la plataforma, enfocándome en el desarrollo frontend y la mejora de la experiencia de usuario. Trabajé en el rediseño de módulos clave, desarrollando interfaces más modernas, responsivas y eficientes.",
+        p2: "Implementé nuevas funcionalidades, optimicé tablas, formularios, filtros y sistemas de búsqueda, además de contribuir en la creación del modo oscuro y la estandarización visual del sistema. También participé en pruebas funcionales, corrección de incidencias, despliegues a producción y validación de calidad, asegurando una experiencia consistente y escalable para los usuarios.",
+        showcaseTitle: "Capturas del producto",
+        privateAccess: "Acceso corporativo privado",
+        showcaseNote:
+          "Sin enlace público — la plataforma requiere credenciales internas. Capturas autorizadas del entorno de trabajo; demo disponible bajo NDA en entrevista.",
+        browserUrl: "connect-one.internal",
+        modulesTitle: "Módulos en los que trabajé",
+        contributionsTitle: "Contribuciones clave",
+        viewLink: "Ver ↗",
+        modules: [
+          { id: "roles", label: "Roles", desc: "CRUD de roles, búsqueda y gestión de permisos del sistema", url: "" },
+          { id: "trabajadores", label: "Trabajadores", desc: "Listado de personal con filtros, exportación y acciones por registro", url: "" },
+          { id: "anuncios", label: "Tablero de anuncios", desc: "Comunicaciones internas con estados, fechas de vigencia y multimedia", url: "" },
+          { id: "jerarquias", label: "Jerarquías", desc: "Estructura organizacional interactiva de campañas, leads y equipos", url: "" },
+          { id: "ausencias", label: "Panel de ausencias", desc: "Control de novedades de personal con filtros por campaña y calendario", url: "" },
+        ],
+        screenshots: [
+          {
+            id: "roles",
+            label: "Roles",
+            image: `${BASE}/connect-one/roles.png`,
+            width: 1024,
+            height: 503,
+            caption:
+              "Administración de roles del sistema — creación, búsqueda, edición y asignación de permisos.",
+          },
+          {
+            id: "trabajadores",
+            label: "Trabajadores",
+            image: `${BASE}/connect-one/trabajadores.png`,
+            width: 1024,
+            height: 500,
+            caption:
+              "Listado de personal con búsqueda avanzada, filtros por estado, exportación y acciones CRUD.",
+          },
+          {
+            id: "anuncios",
+            label: "Anuncios",
+            image: `${BASE}/connect-one/anuncios.png`,
+            width: 1024,
+            height: 500,
+            caption:
+              "Tablero de anuncios internos con control de vigencia, estado activo y gestión multimedia.",
+          },
+          {
+            id: "jerarquias",
+            label: "Jerarquías",
+            image: `${BASE}/connect-one/jerarquias.png`,
+            width: 1024,
+            height: 502,
+            caption:
+              "Organigrama interactivo de campañas y equipos con zoom, métricas y acciones por nodo.",
+          },
+          {
+            id: "ausencias",
+            label: "Ausencias",
+            image: `${BASE}/connect-one/ausencias.png`,
+            width: 1024,
+            height: 495,
+            caption:
+              "Panel de ausencias con resumen de solicitudes, filtros por campaña/fecha y vista calendario.",
+          },
+        ],
+        contributions: [
+          "Modo oscuro",
+          "Estandarización visual",
+          "Tablas y filtros optimizados",
+          "Despliegues a producción",
+          "Pruebas funcionales",
+          "Corrección de incidencias",
+        ],
+      },
+      clientes: {
+        title: "Connect One Clientes",
+        badge: "Trabajo actual",
+        type: "Portal de clientes",
+        subtitle: "Dashboard para clientes y supervisores",
+        p1: "Actualmente desarrollo Connect One Clientes, el portal donde clientes y supervisores monitorean la actividad de sus equipos en tiempo real desde un dashboard unificado.",
+        p2: "Estoy construyendo el home con widgets de métricas, equipos, reuniones, calendario multi-país, analíticas de productividad y facturas pendientes — además del tour guiado de onboarding para nuevos usuarios.",
+        showcaseTitle: "Capturas del producto",
+        privateAccess: "Acceso corporativo privado",
+        showcaseNote:
+          "Proyecto en desarrollo activo. Capturas del entorno de staging; demo disponible bajo NDA en entrevista.",
+        browserUrl: "app.connectone.com",
+        modulesTitle: "Funcionalidades del dashboard",
+        contributionsTitle: "En lo que estoy trabajando",
+        viewLink: "Ver ↗",
+        modules: [
+          { id: "welcome", label: "Panel de bienvenida", desc: "Saludo personalizado y métricas clave: horas trabajadas, trabajadores activos y equipos bajo supervisión.", url: "" },
+          { id: "teams", label: "Equipos y agentes", desc: "Ver quién está en cada equipo, su estado (activo o inactivo) y cambiar de equipo con las flechas cuando hay más de uno.", url: "" },
+          { id: "meetings", label: "Reuniones del día", desc: "Revisar reuniones programadas con hora, participantes y estado. Navegar entre ellas y abrir el calendario completo.", url: "" },
+          { id: "calendar", label: "Mini calendario", desc: "Navegar el mes, identificar festivos de USA y Colombia, y abrir el calendario completo para eventos y ausencias.", url: "" },
+          { id: "analytics", label: "Analíticas del equipo", desc: "Horas trabajadas hoy por miembro del equipo seleccionado y acceso a analíticas detalladas.", url: "" },
+          { id: "invoices", label: "Facturas pendientes", desc: "Visualización de facturas de servicio con estado, monto y acceso rápido al detalle.", url: "" },
+        ],
+        screenshots: [
+          {
+            id: "home",
+            label: "Home",
+            image: `${BASE}/connect-one/clientes/home-dashboard.png`,
+            width: 1024,
+            height: 497,
+            caption:
+              "Dashboard principal — métricas, equipos, reuniones, calendario, analíticas y facturas en una sola vista.",
+          },
+        ],
+        contributions: [
+          "Dashboard home",
+          "Tour guiado",
+          "Widgets de analíticas",
+          "Calendario multi-país",
+          "Gestión de reuniones",
+          "Facturas pendientes",
+        ],
+      },
     },
     about: {
       label: "01 — Sobre mí",
@@ -446,43 +558,134 @@ export const translations: Record<Locale, Translation> = {
       scroll: "scroll ↓",
     },
     connect: {
-      badge: "Professional internship",
-      type: "Corporate intranet",
-      subtitle: "My experience on the platform",
-      p1: "During my time at Connect One, I contributed to modernizing and evolving the platform, focusing on frontend development and user experience improvements. I redesigned key modules, building more modern, responsive and efficient interfaces.",
-      p2: "I implemented new features, optimized tables, forms, filters and search systems, and helped build dark mode and visual standardization across the system. I also participated in functional testing, bug fixes, production deployments and quality validation — ensuring a consistent, scalable experience for users.",
-      showcaseTitle: "Product screenshots",
-      privateAccess: "Private corporate access",
-      showcaseNote:
-        "No public link — the platform requires internal credentials. Authorized work-environment screenshots; live demo available under NDA upon request.",
-      modulesTitle: "Modules I worked on",
-      contributionsTitle: "Key contributions",
-      viewLink: "View ↗",
-      modules: [
-        { id: "home", label: "Home", desc: "Main dashboard and intranet entry point", url: "" },
-        { id: "roles", label: "Roles", desc: "Role management and visualization", url: "" },
-        { id: "permisos", label: "Permissions", desc: "Access control and module permissions", url: "" },
-        { id: "trabajadores", label: "Employees", desc: "Staff administration and profiles", url: "" },
-        { id: "pqrs", label: "PQRS", desc: "Requests, complaints and suggestions", url: "" },
-        { id: "learndash", label: "LearnDash", desc: "Internal training and learning module", url: "" },
-      ],
-      screenshots: [
-        {
-          id: "home",
-          label: "Home / Shifts",
-          image: `${BASE}/connect-one/home-dashboard.png`,
-          caption:
-            "Main dashboard with live shift control, announcements and modular navigation — Vue 3 + Quasar.",
-        },
-      ],
-      contributions: [
-        "Dark mode",
-        "Visual standardization",
-        "Optimized tables & filters",
-        "Production deployments",
-        "Functional testing",
-        "Bug fixes",
-      ],
+      navIntranet: "Connect One",
+      navClientes: "Connect One Clientes",
+      navPrev: "Intranet",
+      navNext: "Clients",
+      expandHint: "Expand",
+      expandLabel: "Expand screenshot",
+      closeLabel: "Close ✕",
+      intranet: {
+        title: "Connect One",
+        badge: "Professional internship",
+        type: "Corporate intranet",
+        subtitle: "My experience on the platform",
+        p1: "During my time at Connect One, I contributed to modernizing and evolving the platform, focusing on frontend development and user experience improvements. I redesigned key modules, building more modern, responsive and efficient interfaces.",
+        p2: "I implemented new features, optimized tables, forms, filters and search systems, and helped build dark mode and visual standardization across the system. I also participated in functional testing, bug fixes, production deployments and quality validation — ensuring a consistent, scalable experience for users.",
+        showcaseTitle: "Product screenshots",
+        privateAccess: "Private corporate access",
+        showcaseNote:
+          "No public link — the platform requires internal credentials. Authorized work-environment screenshots; live demo available under NDA upon request.",
+        browserUrl: "connect-one.internal",
+        modulesTitle: "Modules I worked on",
+        contributionsTitle: "Key contributions",
+        viewLink: "View ↗",
+        modules: [
+          { id: "roles", label: "Roles", desc: "Role CRUD, search and system permission management", url: "" },
+          { id: "trabajadores", label: "Employees", desc: "Staff listing with filters, export and per-record actions", url: "" },
+          { id: "anuncios", label: "Announcements", desc: "Internal communications with status, availability dates and media", url: "" },
+          { id: "jerarquias", label: "Hierarchies", desc: "Interactive org structure for campaigns, leads and teams", url: "" },
+          { id: "ausencias", label: "Absence panel", desc: "Personnel leave tracking with campaign filters and calendar view", url: "" },
+        ],
+        screenshots: [
+          {
+            id: "roles",
+            label: "Roles",
+            image: `${BASE}/connect-one/roles.png`,
+            width: 1024,
+            height: 503,
+            caption:
+              "System role administration — create, search, edit and assign permissions.",
+          },
+          {
+            id: "trabajadores",
+            label: "Employees",
+            image: `${BASE}/connect-one/trabajadores.png`,
+            width: 1024,
+            height: 500,
+            caption:
+              "Staff listing with advanced search, status filters, export and CRUD actions.",
+          },
+          {
+            id: "anuncios",
+            label: "Announcements",
+            image: `${BASE}/connect-one/anuncios.png`,
+            width: 1024,
+            height: 500,
+            caption:
+              "Internal announcements board with availability windows, active status and media management.",
+          },
+          {
+            id: "jerarquias",
+            label: "Hierarchies",
+            image: `${BASE}/connect-one/jerarquias.png`,
+            width: 1024,
+            height: 502,
+            caption:
+              "Interactive campaign and team org chart with zoom, metrics and per-node actions.",
+          },
+          {
+            id: "ausencias",
+            label: "Absences",
+            image: `${BASE}/connect-one/ausencias.png`,
+            width: 1024,
+            height: 495,
+            caption:
+              "Absence panel with request summary, campaign/date filters and calendar view.",
+          },
+        ],
+        contributions: [
+          "Dark mode",
+          "Visual standardization",
+          "Optimized tables & filters",
+          "Production deployments",
+          "Functional testing",
+          "Bug fixes",
+        ],
+      },
+      clientes: {
+        title: "Connect One Clientes",
+        badge: "Current work",
+        type: "Client portal",
+        subtitle: "Dashboard for clients and supervisors",
+        p1: "I'm currently building Connect One Clientes, the portal where clients and supervisors monitor their teams' activity in real time from a unified dashboard.",
+        p2: "I'm developing the home with metrics widgets, teams, meetings, multi-country calendar, productivity analytics and pending invoices — plus a guided onboarding tour for new users.",
+        showcaseTitle: "Product screenshots",
+        privateAccess: "Private corporate access",
+        showcaseNote:
+          "Actively in development. Staging-environment screenshots; live demo available under NDA upon request.",
+        browserUrl: "app.connectone.com",
+        modulesTitle: "Dashboard features",
+        contributionsTitle: "What I'm working on",
+        viewLink: "View ↗",
+        modules: [
+          { id: "welcome", label: "Welcome panel", desc: "Personalized greeting and key metrics: hours worked, active workers and teams you oversee.", url: "" },
+          { id: "teams", label: "Teams & agents", desc: "See who is on each team, their status (active or inactive), and switch teams with the arrows when you have more than one.", url: "" },
+          { id: "meetings", label: "Today's meetings", desc: "Review meetings scheduled for today with time, participants and status. Browse between them and open the full calendar when needed.", url: "" },
+          { id: "calendar", label: "Mini calendar", desc: "Browse the month, spot US and Colombia holidays, and open the full calendar to manage events and absences.", url: "" },
+          { id: "analytics", label: "Team analytics", desc: "View hours worked today per member of the selected team and open detailed analytics when you want to dig deeper.", url: "" },
+          { id: "invoices", label: "Pending invoices", desc: "Service invoice overview with status, amount and quick access to details.", url: "" },
+        ],
+        screenshots: [
+          {
+            id: "home",
+            label: "Home",
+            image: `${BASE}/connect-one/clientes/home-dashboard.png`,
+            width: 1024,
+            height: 497,
+            caption:
+              "Main dashboard — metrics, teams, meetings, calendar, analytics and invoices in one view.",
+          },
+        ],
+        contributions: [
+          "Home dashboard",
+          "Guided tour",
+          "Analytics widgets",
+          "Multi-country calendar",
+          "Meeting management",
+          "Pending invoices",
+        ],
+      },
     },
     about: {
       label: "01 — About me",
