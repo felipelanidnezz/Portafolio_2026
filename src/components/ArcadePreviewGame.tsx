@@ -8,9 +8,11 @@ type GameLabels = {
   pressStart: string;
   score: string;
   lives: string;
+  level: string;
   hi: string;
   gameOver: string;
   youWin: string;
+  levelClear: string;
   controls: string;
 };
 
@@ -19,6 +21,19 @@ type Bullet = { x: number; y: number; vy: number; fromPlayer: boolean };
 
 const W = 280;
 const H = 300;
+const MAX_LEVEL = 10;
+
+function getLevelConfig(level: number) {
+  const lv = Math.min(Math.max(level, 1), MAX_LEVEL);
+  return {
+    rows: Math.min(2 + Math.ceil(lv / 2), 5),
+    cols: Math.min(4 + Math.floor((lv - 1) / 2), 7),
+    alienSpeed: 0.22 + lv * 0.075,
+    shootChance: 0.005 + lv * 0.0045,
+    maxEnemyBullets: Math.min(1 + Math.floor(lv / 2), 5),
+    stepDown: 8 + Math.floor(lv / 3) * 2,
+  };
+}
 
 export default function ArcadePreviewGame({
   ready,
@@ -37,25 +52,40 @@ export default function ArcadePreviewGame({
     bullets: [] as Bullet[],
     alienDir: 1,
     alienSpeed: 0.35,
+    maxEnemyBullets: 2,
+    shootChance: 0.01,
+    stepDown: 10,
     tick: 0,
     score: 0,
     hi: 1240,
     lives: 3,
+    level: 1,
+    levelFlash: 0,
     phase: "boot" as "boot" | "ready" | "playing" | "over" | "win",
     bootTimer: 0,
     blink: true,
     lastShot: 0,
   });
 
-  const [hud, setHud] = useState({ score: 0, lives: 3, hi: 1240, phase: "boot" as string });
+  const [hud, setHud] = useState({
+    score: 0,
+    lives: 3,
+    hi: 1240,
+    level: 1,
+    phase: "boot" as string,
+  });
 
-  const spawnAliens = useCallback(() => {
+  const spawnAliens = useCallback((level: number) => {
+    const cfg = getLevelConfig(level);
     const aliens: Alien[] = [];
-    for (let row = 0; row < 3; row++) {
-      for (let col = 0; col < 5; col++) {
+    const totalW = (cfg.cols - 1) * 40;
+    const startX = (W - totalW) / 2;
+
+    for (let row = 0; row < cfg.rows; row++) {
+      for (let col = 0; col < cfg.cols; col++) {
         aliens.push({
-          x: 36 + col * 44,
-          y: 48 + row * 34,
+          x: startX + col * 40,
+          y: 36 + row * 30,
           alive: true,
           wobble: (row + col) * 0.4,
         });
@@ -64,27 +94,56 @@ export default function ArcadePreviewGame({
     return aliens;
   }, []);
 
-  const resetRound = useCallback(() => {
+  const applyLevelConfig = useCallback((level: number) => {
     const s = stateRef.current;
-    s.playerX = W / 2;
-    s.aliens = spawnAliens();
+    const cfg = getLevelConfig(level);
+    s.level = level;
+    s.alienSpeed = cfg.alienSpeed;
+    s.shootChance = cfg.shootChance;
+    s.maxEnemyBullets = cfg.maxEnemyBullets;
+    s.stepDown = cfg.stepDown;
+    s.aliens = spawnAliens(level);
     s.bullets = [];
     s.alienDir = 1;
-    s.alienSpeed = 0.35 + Math.min(s.score / 500, 0.4);
-    s.phase = "playing";
-    setHud((h) => ({ ...h, phase: "playing" }));
   }, [spawnAliens]);
+
+  const startPlaying = useCallback(
+    (level = 1) => {
+      const s = stateRef.current;
+      s.playerX = W / 2;
+      s.phase = "playing";
+      s.levelFlash = 0;
+      applyLevelConfig(level);
+      setHud((h) => ({ ...h, level, phase: "playing" }));
+    },
+    [applyLevelConfig]
+  );
 
   const fullReset = useCallback(() => {
     const s = stateRef.current;
     s.score = 0;
     s.lives = 3;
+    s.level = 1;
     s.phase = "ready";
     s.playerX = W / 2;
-    s.aliens = spawnAliens();
     s.bullets = [];
-    setHud({ score: 0, lives: 3, hi: s.hi, phase: "ready" });
+    s.levelFlash = 0;
+    s.aliens = spawnAliens(1);
+    setHud({ score: 0, lives: 3, hi: s.hi, level: 1, phase: "ready" });
   }, [spawnAliens]);
+
+  const advanceLevel = useCallback(() => {
+    const s = stateRef.current;
+    if (s.level >= MAX_LEVEL) {
+      s.phase = "win";
+      setHud((h) => ({ ...h, phase: "win", score: s.score }));
+      return;
+    }
+    const next = s.level + 1;
+    applyLevelConfig(next);
+    s.levelFlash = 100;
+    setHud((h) => ({ ...h, level: next, score: s.score }));
+  }, [applyLevelConfig]);
 
   useEffect(() => {
     if (!ready) {
@@ -96,7 +155,7 @@ export default function ArcadePreviewGame({
 
     if (stateRef.current.phase === "boot") {
       stateRef.current.phase = "ready";
-      stateRef.current.aliens = spawnAliens();
+      stateRef.current.aliens = spawnAliens(1);
       setHud((h) => ({ ...h, phase: "ready" }));
     }
   }, [ready, spawnAliens]);
@@ -113,11 +172,10 @@ export default function ArcadePreviewGame({
       if (e.key === "ArrowRight" || e.key === "d") keysRef.current.right = down;
       if (e.key === " " || e.key === "Enter") {
         keysRef.current.shoot = down;
-        if (down && stateRef.current.phase === "ready") resetRound();
+        if (down && stateRef.current.phase === "ready") startPlaying(1);
         if (down && (stateRef.current.phase === "over" || stateRef.current.phase === "win")) {
           fullReset();
         }
-        e.preventDefault();
       }
     };
 
@@ -132,8 +190,8 @@ export default function ArcadePreviewGame({
     const onClick = () => {
       canvas.focus();
       const s = stateRef.current;
-      if (s.phase === "ready") resetRound();
-      if (s.phase === "over" || s.phase === "win") fullReset();
+      if (s.phase === "ready") startPlaying(1);
+      else if (s.phase === "over" || s.phase === "win") fullReset();
       else keysRef.current.shoot = true;
       setTimeout(() => {
         keysRef.current.shoot = false;
@@ -151,7 +209,7 @@ export default function ArcadePreviewGame({
       canvas.removeEventListener("mousemove", onMouseMove);
       canvas.removeEventListener("click", onClick);
     };
-  }, [fullReset, resetRound]);
+  }, [fullReset, startPlaying]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -184,8 +242,7 @@ export default function ArcadePreviewGame({
     const loop = (time: number) => {
       const s = stateRef.current;
       s.tick += 0.016;
-      if (Math.floor(time / 500) % 2 === 0) s.blink = true;
-      else s.blink = false;
+      s.blink = Math.floor(time / 500) % 2 === 0;
 
       ctx.fillStyle = "#030308";
       ctx.fillRect(0, 0, W, H);
@@ -210,7 +267,7 @@ export default function ArcadePreviewGame({
         ctx.fillStyle = "#34d399";
         ctx.font = "bold 11px monospace";
         ctx.textAlign = "center";
-        ctx.fillText("NEON INVADERS", W / 2, H / 2 - 8);
+        ctx.fillText(labels.title, W / 2, H / 2 - 8);
         ctx.fillStyle = "#71717a";
         ctx.font = "9px monospace";
         ctx.fillText(`LOADING${".".repeat((Math.floor(s.bootTimer / 15) % 3) + 1)}`, W / 2, H / 2 + 12);
@@ -219,6 +276,8 @@ export default function ArcadePreviewGame({
       }
 
       if (s.phase === "playing") {
+        if (s.levelFlash > 0) s.levelFlash -= 1;
+
         const speed = 2.8;
         if (keysRef.current.left) s.playerX -= speed;
         if (keysRef.current.right) s.playerX += speed;
@@ -227,81 +286,103 @@ export default function ArcadePreviewGame({
         }
         s.playerX = Math.max(18, Math.min(W - 18, s.playerX));
 
-        if (keysRef.current.shoot && time - s.lastShot > 280) {
+        if (keysRef.current.shoot && time - s.lastShot > 260) {
           s.bullets.push({ x: s.playerX, y: H - 36, vy: -5.5, fromPlayer: true });
           s.lastShot = time;
         }
 
-        const alive = s.aliens.filter((a) => a.alive);
-        if (alive.length > 0) {
-          let edge = false;
-          alive.forEach((a) => {
-            a.x += s.alienDir * s.alienSpeed;
-            if (a.x < 20 || a.x > W - 20) edge = true;
-          });
-          if (edge) {
-            s.alienDir *= -1;
+        if (s.levelFlash <= 0) {
+          const alive = s.aliens.filter((a) => a.alive);
+          if (alive.length > 0) {
+            let edge = false;
             alive.forEach((a) => {
-              a.y += 10;
+              a.x += s.alienDir * s.alienSpeed;
+              if (a.x < 18 || a.x > W - 18) edge = true;
             });
+            if (edge) {
+              s.alienDir *= -1;
+              alive.forEach((a) => {
+                a.y += s.stepDown;
+              });
+            }
+
+            const enemyBullets = s.bullets.filter((b) => !b.fromPlayer).length;
+            if (
+              enemyBullets < s.maxEnemyBullets &&
+              Math.random() < s.shootChance
+            ) {
+              const shooter = alive[Math.floor(Math.random() * alive.length)];
+              s.bullets.push({
+                x: shooter.x,
+                y: shooter.y + 12,
+                vy: 2 + s.level * 0.15,
+                fromPlayer: false,
+              });
+            }
           }
 
-          if (Math.random() < 0.012 && s.bullets.filter((b) => !b.fromPlayer).length < 2) {
-            const shooter = alive[Math.floor(Math.random() * alive.length)];
-            s.bullets.push({ x: shooter.x, y: shooter.y + 12, vy: 2.2, fromPlayer: false });
-          }
-        }
+          s.bullets = s.bullets.filter((b) => b.y > -10 && b.y < H + 10);
+          s.bullets.forEach((b) => {
+            b.y += b.vy;
+          });
 
-        s.bullets = s.bullets.filter((b) => b.y > -10 && b.y < H + 10);
-        s.bullets.forEach((b) => {
-          b.y += b.vy;
-        });
+          s.bullets.forEach((b) => {
+            if (!b.fromPlayer) return;
+            s.aliens.forEach((a) => {
+              if (!a.alive) return;
+              if (Math.abs(b.x - a.x) < 16 && Math.abs(b.y - a.y) < 14) {
+                a.alive = false;
+                b.y = -999;
+                s.score += 10 * s.level;
+                if (s.score > s.hi) {
+                  s.hi = s.score;
+                  setHud((h) => ({ ...h, hi: s.hi }));
+                }
+              }
+            });
+          });
 
-        s.bullets.forEach((b) => {
-          if (!b.fromPlayer) return;
-          s.aliens.forEach((a) => {
-            if (!a.alive) return;
-            if (Math.abs(b.x - a.x) < 16 && Math.abs(b.y - a.y) < 14) {
-              a.alive = false;
-              b.y = -999;
-              s.score += 10;
-              if (s.score > s.hi) {
-                s.hi = s.score;
-                setHud((h) => ({ ...h, hi: s.hi }));
+          s.bullets.forEach((b) => {
+            if (b.fromPlayer) return;
+            if (Math.abs(b.x - s.playerX) < 16 && Math.abs(b.y - (H - 28)) < 12) {
+              b.y = 999;
+              s.lives -= 1;
+              if (s.lives <= 0) {
+                s.phase = "over";
+                setHud({
+                  score: s.score,
+                  lives: 0,
+                  hi: s.hi,
+                  level: s.level,
+                  phase: "over",
+                });
+              } else {
+                setHud((h) => ({ ...h, lives: s.lives }));
               }
             }
           });
-        });
 
-        s.bullets.forEach((b) => {
-          if (b.fromPlayer) return;
-          if (Math.abs(b.x - s.playerX) < 16 && Math.abs(b.y - (H - 28)) < 12) {
-            b.y = 999;
-            s.lives -= 1;
-            if (s.lives <= 0) {
-              s.phase = "over";
-              setHud({ score: s.score, lives: 0, hi: s.hi, phase: "over" });
-            } else {
-              setHud((h) => ({ ...h, lives: s.lives }));
-            }
+          const remaining = s.aliens.filter((a) => a.alive);
+          if (remaining.length === 0) {
+            advanceLevel();
+          } else if (remaining.some((a) => a.y > H - 68)) {
+            s.phase = "over";
+            setHud({
+              score: s.score,
+              lives: s.lives,
+              hi: s.hi,
+              level: s.level,
+              phase: "over",
+            });
           }
-        });
-
-        const remaining = s.aliens.filter((a) => a.alive);
-        if (remaining.length === 0) {
-          s.phase = "win";
-          setHud((h) => ({ ...h, phase: "win", score: s.score }));
-        } else if (remaining.some((a) => a.y > H - 70)) {
-          s.phase = "over";
-          setHud({ score: s.score, lives: s.lives, hi: s.hi, phase: "over" });
         }
 
-        setHud((h) => ({ ...h, score: s.score }));
+        setHud((h) => ({ ...h, score: s.score, level: s.level }));
       }
 
       s.aliens.forEach((a) => {
         if (!a.alive) return;
-        drawInvader(a.x, a.y, s.tick * 4 + a.wobble, 22);
+        drawInvader(a.x, a.y, s.tick * 4 + a.wobble, 20);
       });
 
       if (s.phase === "playing" || s.phase === "ready") {
@@ -325,6 +406,15 @@ export default function ArcadePreviewGame({
         ctx.shadowBlur = 0;
       });
 
+      if (s.levelFlash > 0) {
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = "#fde047";
+        ctx.font = "bold 13px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(`${labels.levelClear} ${s.level}`, W / 2, H / 2);
+      }
+
       if (s.phase === "ready" && s.blink) {
         ctx.fillStyle = "#fde047";
         ctx.font = "bold 9px monospace";
@@ -338,11 +428,12 @@ export default function ArcadePreviewGame({
         ctx.fillStyle = "#f87171";
         ctx.font = "bold 12px monospace";
         ctx.textAlign = "center";
-        ctx.fillText(labels.gameOver, W / 2, H / 2 - 6);
+        ctx.fillText(labels.gameOver, W / 2, H / 2 - 10);
+        ctx.fillStyle = "#a1a1aa";
+        ctx.font = "8px monospace";
+        ctx.fillText(`${labels.level} ${s.level}/10`, W / 2, H / 2 + 6);
         if (s.blink) {
-          ctx.fillStyle = "#a1a1aa";
-          ctx.font = "8px monospace";
-          ctx.fillText(labels.pressStart, W / 2, H / 2 + 12);
+          ctx.fillText(labels.pressStart, W / 2, H / 2 + 20);
         }
       }
 
@@ -367,7 +458,7 @@ export default function ArcadePreviewGame({
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
-  }, [ready, labels, resetRound]);
+  }, [ready, labels, advanceLevel]);
 
   return (
     <div className="arcade-cabinet flex h-full min-h-[360px] flex-col p-3 sm:min-h-[420px]">
@@ -377,15 +468,17 @@ export default function ArcadePreviewGame({
         </p>
       </div>
 
-      <div className="mb-2 flex shrink-0 items-center justify-between font-mono text-[9px] uppercase tracking-wider">
+      <div className="mb-2 grid shrink-0 grid-cols-4 gap-1 font-mono text-[8px] uppercase tracking-wider sm:text-[9px]">
         <span className="text-cyan-400">
           {labels.score} {String(hud.score).padStart(4, "0")}
         </span>
-        <span className="text-rose-400">
-          {labels.lives}{" "}
-          {"♥".repeat(Math.max(0, hud.lives)) || "—"}
+        <span className="text-center text-violet-300">
+          {labels.level} {hud.level}/10
         </span>
-        <span className="text-amber-300">
+        <span className="text-center text-rose-400">
+          {labels.lives} {"♥".repeat(Math.max(0, hud.lives)) || "—"}
+        </span>
+        <span className="text-right text-amber-300">
           {labels.hi} {String(hud.hi).padStart(4, "0")}
         </span>
       </div>

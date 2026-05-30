@@ -54,6 +54,8 @@ function highlightLine(line: string) {
   return parts;
 }
 
+const SCROLL_BOTTOM_THRESHOLD = 48;
+
 export default function LiveCodePlayground() {
   const { t, locale } = useLanguage();
   const p = t.about.playground;
@@ -61,10 +63,13 @@ export default function LiveCodePlayground() {
 
   const [typedCode, setTypedCode] = useState("");
   const [isVisible, setIsVisible] = useState(false);
+  const [typingComplete, setTypingComplete] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
+  const gutterRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
-  const stateRef = useRef({ charIndex: 0, lastTime: 0, waiting: false });
+  const userScrolledUpRef = useRef(false);
+  const stateRef = useRef({ charIndex: 0, lastTime: 0, done: false });
 
   const gameReady = useMemo(() => isGameReady(typedCode), [typedCode]);
   const lines = useMemo(() => fullCode.split("\n"), [fullCode]);
@@ -90,8 +95,33 @@ export default function LiveCodePlayground() {
   }, []);
 
   useEffect(() => {
-    if (preRef.current) {
-      preRef.current.scrollTop = preRef.current.scrollHeight;
+    const pre = preRef.current;
+    if (!pre) return;
+
+    const onScroll = () => {
+      const atBottom =
+        pre.scrollHeight - pre.scrollTop - pre.clientHeight < SCROLL_BOTTOM_THRESHOLD;
+      userScrolledUpRef.current = !atBottom;
+      if (gutterRef.current) {
+        gutterRef.current.scrollTop = pre.scrollTop;
+      }
+    };
+
+    pre.addEventListener("scroll", onScroll, { passive: true });
+    return () => pre.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const pre = preRef.current;
+    if (!pre || userScrolledUpRef.current) return;
+
+    const atBottom =
+      pre.scrollHeight - pre.scrollTop - pre.clientHeight < SCROLL_BOTTOM_THRESHOLD;
+    if (atBottom) {
+      pre.scrollTop = pre.scrollHeight;
+      if (gutterRef.current) {
+        gutterRef.current.scrollTop = pre.scrollTop;
+      }
     }
   }, [typedCode]);
 
@@ -99,34 +129,28 @@ export default function LiveCodePlayground() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
       setTypedCode(fullCode);
+      setTypingComplete(true);
       return;
     }
 
     if (!isVisible) return;
 
-    stateRef.current = { charIndex: 0, lastTime: 0, waiting: false };
+    stateRef.current = { charIndex: 0, lastTime: 0, done: false };
+    userScrolledUpRef.current = false;
     setTypedCode("");
+    setTypingComplete(false);
 
     const tick = (time: number) => {
       const s = stateRef.current;
 
-      if (s.waiting) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
+      if (s.done) return;
 
       if (!s.lastTime) s.lastTime = time;
       const elapsed = time - s.lastTime;
 
       if (s.charIndex >= fullCode.length) {
-        s.waiting = true;
-        setTimeout(() => {
-          s.charIndex = 0;
-          s.waiting = false;
-          s.lastTime = 0;
-          setTypedCode("");
-        }, 5000);
-        rafRef.current = requestAnimationFrame(tick);
+        s.done = true;
+        setTypingComplete(true);
         return;
       }
 
@@ -138,6 +162,12 @@ export default function LiveCodePlayground() {
         s.charIndex = Math.min(s.charIndex + chunk, fullCode.length);
         setTypedCode(fullCode.slice(0, s.charIndex));
         s.lastTime = time;
+
+        if (s.charIndex >= fullCode.length) {
+          s.done = true;
+          setTypingComplete(true);
+          return;
+        }
       }
 
       rafRef.current = requestAnimationFrame(tick);
@@ -166,7 +196,7 @@ export default function LiveCodePlayground() {
         <span className="font-mono text-[11px] text-zinc-500">{p.filename}</span>
         <div className="ml-auto flex items-center gap-3">
           <span className="hidden font-mono text-[10px] text-zinc-600 sm:inline">
-            {progress}%
+            {typingComplete ? "100%" : `${progress}%`}
           </span>
           <span className="flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
@@ -178,7 +208,8 @@ export default function LiveCodePlayground() {
       <div className="grid sm:grid-cols-2">
         <div className="relative border-b border-zinc-800 sm:border-b-0 sm:border-r">
           <div
-            className="pointer-events-none absolute left-0 top-0 z-10 w-8 border-r border-zinc-800/60 bg-zinc-900/40 py-3 text-right font-mono text-[10px] leading-[1.55] text-zinc-700"
+            ref={gutterRef}
+            className="code-editor-gutter pointer-events-none absolute left-0 top-0 z-10 w-8 overflow-hidden border-r border-zinc-800/60 bg-zinc-900/40 py-3 text-right font-mono text-[10px] leading-[1.55] text-zinc-700"
             aria-hidden="true"
           >
             {lines.map((_, i) => (
@@ -193,7 +224,7 @@ export default function LiveCodePlayground() {
 
           <pre
             ref={preRef}
-            className="max-h-[360px] min-h-[360px] overflow-y-auto overflow-x-hidden p-3 pl-10 font-mono text-[10px] leading-[1.55] sm:max-h-[420px] sm:min-h-[420px] sm:text-[11px]"
+            className="code-editor-scroll max-h-[360px] min-h-[360px] overflow-y-auto overflow-x-hidden p-3 pl-10 font-mono text-[10px] leading-[1.55] sm:max-h-[420px] sm:min-h-[420px] sm:text-[11px]"
           >
             <code className="block">
               {typedLines.map((line, lineIdx) => (
@@ -203,7 +234,7 @@ export default function LiveCodePlayground() {
                       {part.text}
                     </span>
                   ))}
-                  {lineIdx === typedLines.length - 1 && (
+                  {!typingComplete && lineIdx === typedLines.length - 1 && (
                     <span className="typewriter-cursor ml-px inline-block h-[1em] w-[2px] align-text-bottom" />
                   )}
                 </div>

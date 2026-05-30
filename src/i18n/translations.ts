@@ -66,9 +66,11 @@ export type Translation = {
         pressStart: string;
         score: string;
         lives: string;
+        level: string;
         hi: string;
         gameOver: string;
         youWin: string;
+        levelClear: string;
         controls: string;
       };
     };
@@ -266,9 +268,11 @@ export const translations: Record<Locale, Translation> = {
           pressStart: "▶ ESPACIO / CLICK PARA JUGAR",
           score: "SCORE",
           lives: "VIDAS",
+          level: "NIV",
           hi: "HI",
           gameOver: "GAME OVER",
-          youWin: "¡NIVEL CLEAR!",
+          youWin: "¡GANASTE! 10 NIVELES",
+          levelClear: "NIVEL",
           controls: "← → mover · espacio disparar · click en pantalla",
         },
       },
@@ -462,9 +466,11 @@ export const translations: Record<Locale, Translation> = {
           pressStart: "▶ SPACE / CLICK TO PLAY",
           score: "SCORE",
           lives: "LIVES",
+          level: "LV",
           hi: "HI",
           gameOver: "GAME OVER",
-          youWin: "STAGE CLEAR!",
+          youWin: "YOU WIN! 10 LEVELS",
+          levelClear: "LEVEL",
           controls: "← → move · space shoot · click screen",
         },
       },
