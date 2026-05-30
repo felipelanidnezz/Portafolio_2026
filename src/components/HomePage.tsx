@@ -13,16 +13,12 @@ export default function HomePage() {
 
   return (
     <div className="relative min-h-screen bg-[#050505] text-zinc-100">
-      <a href="#sobre-mi" className="skip-link">
-        {t.a11y.skipToContent}
-      </a>
-
       <div className="noise-overlay" aria-hidden="true" />
 
-      <nav className="fixed top-0 z-50 w-full border-b border-zinc-800/50 bg-[#050505]/80 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+      <nav className="fixed top-0 z-50 w-full border-b border-zinc-800/50 bg-[#050505]/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <MagneticButton strength="strong">
-            <a href="#" className="interactive-focus rounded-lg font-mono text-sm font-medium tracking-tight">
+            <a href="#" className="font-mono text-sm font-medium tracking-tight">
               {"<FL />"}
             </a>
           </MagneticButton>
@@ -33,7 +29,7 @@ export default function HomePage() {
                 <MagneticButton key={item}>
                   <a
                     href={`#${t.navIds[i]}`}
-                    className="interactive-focus rounded-lg transition-colors hover:text-emerald-400"
+                    className="transition-colors hover:text-emerald-400"
                   >
                     {item}
                   </a>
