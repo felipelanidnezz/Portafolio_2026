@@ -24,6 +24,13 @@ type ConnectModule = {
   url: string;
 };
 
+type ConnectScreenshot = {
+  id: string;
+  label: string;
+  image: string;
+  caption: string;
+};
+
 export type Translation = {
   nav: string[];
   navIds: string[];
@@ -41,10 +48,14 @@ export type Translation = {
     subtitle: string;
     p1: string;
     p2: string;
+    showcaseTitle: string;
+    privateAccess: string;
+    showcaseNote: string;
     modulesTitle: string;
     contributionsTitle: string;
     viewLink: string;
     modules: ConnectModule[];
+    screenshots: ConnectScreenshot[];
     contributions: string[];
   };
   about: {
@@ -229,6 +240,10 @@ export const translations: Record<Locale, Translation> = {
       subtitle: "Mi experiencia en la plataforma",
       p1: "Durante mi experiencia en Connect One participé en la modernización y evolución de la plataforma, enfocándome en el desarrollo frontend y la mejora de la experiencia de usuario. Trabajé en el rediseño de módulos clave, desarrollando interfaces más modernas, responsivas y eficientes.",
       p2: "Implementé nuevas funcionalidades, optimicé tablas, formularios, filtros y sistemas de búsqueda, además de contribuir en la creación del modo oscuro y la estandarización visual del sistema. También participé en pruebas funcionales, corrección de incidencias, despliegues a producción y validación de calidad, asegurando una experiencia consistente y escalable para los usuarios.",
+      showcaseTitle: "Capturas del producto",
+      privateAccess: "Acceso corporativo privado",
+      showcaseNote:
+        "Sin enlace público — la plataforma requiere credenciales internas. Capturas autorizadas del entorno de trabajo; demo disponible bajo NDA en entrevista.",
       modulesTitle: "Módulos en los que trabajé",
       contributionsTitle: "Contribuciones clave",
       viewLink: "Ver ↗",
@@ -239,6 +254,15 @@ export const translations: Record<Locale, Translation> = {
         { id: "trabajadores", label: "Trabajadores", desc: "Administración de personal y perfiles", url: "" },
         { id: "pqrs", label: "PQRS", desc: "Peticiones, quejas, reclamos y sugerencias", url: "" },
         { id: "learndash", label: "LearnDash", desc: "Módulo de formación y capacitación interna", url: "" },
+      ],
+      screenshots: [
+        {
+          id: "home",
+          label: "Home / Turnos",
+          image: `${BASE}/connect-one/home-dashboard.png`,
+          caption:
+            "Dashboard principal con control de turnos en vivo, anuncios y navegación modular — Vue 3 + Quasar.",
+        },
       ],
       contributions: [
         "Modo oscuro",
@@ -264,7 +288,7 @@ export const translations: Record<Locale, Translation> = {
         ariaLabel: "Demostración de juego arcade en vivo",
         game: {
           title: "NEON INVADERS",
-          waiting: "// compilando juego…",
+          waiting: "// preview…",
           pressStart: "▶ ESPACIO / CLICK PARA JUGAR",
           score: "SCORE",
           lives: "VIDAS",
@@ -427,6 +451,10 @@ export const translations: Record<Locale, Translation> = {
       subtitle: "My experience on the platform",
       p1: "During my time at Connect One, I contributed to modernizing and evolving the platform, focusing on frontend development and user experience improvements. I redesigned key modules, building more modern, responsive and efficient interfaces.",
       p2: "I implemented new features, optimized tables, forms, filters and search systems, and helped build dark mode and visual standardization across the system. I also participated in functional testing, bug fixes, production deployments and quality validation — ensuring a consistent, scalable experience for users.",
+      showcaseTitle: "Product screenshots",
+      privateAccess: "Private corporate access",
+      showcaseNote:
+        "No public link — the platform requires internal credentials. Authorized work-environment screenshots; live demo available under NDA upon request.",
       modulesTitle: "Modules I worked on",
       contributionsTitle: "Key contributions",
       viewLink: "View ↗",
@@ -437,6 +465,15 @@ export const translations: Record<Locale, Translation> = {
         { id: "trabajadores", label: "Employees", desc: "Staff administration and profiles", url: "" },
         { id: "pqrs", label: "PQRS", desc: "Requests, complaints and suggestions", url: "" },
         { id: "learndash", label: "LearnDash", desc: "Internal training and learning module", url: "" },
+      ],
+      screenshots: [
+        {
+          id: "home",
+          label: "Home / Shifts",
+          image: `${BASE}/connect-one/home-dashboard.png`,
+          caption:
+            "Main dashboard with live shift control, announcements and modular navigation — Vue 3 + Quasar.",
+        },
       ],
       contributions: [
         "Dark mode",
@@ -462,7 +499,7 @@ export const translations: Record<Locale, Translation> = {
         ariaLabel: "Live arcade game preview",
         game: {
           title: "NEON INVADERS",
-          waiting: "// compiling game…",
+          waiting: "// preview…",
           pressStart: "▶ SPACE / CLICK TO PLAY",
           score: "SCORE",
           lives: "LIVES",

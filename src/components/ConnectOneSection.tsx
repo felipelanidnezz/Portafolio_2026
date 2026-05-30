@@ -1,6 +1,7 @@
 "use client";
 
-import { MagneticButton } from "@/components/MagneticCursor";
+import { useState } from "react";
+import ConnectOneShowcase from "@/components/ConnectOneShowcase";
 import { useLanguage } from "@/i18n/LanguageProvider";
 
 const STACK = ["Vue 3", "Quasar", "Pinia", "Vite", "Axios", "Scrum"];
@@ -8,6 +9,10 @@ const STACK = ["Vue 3", "Quasar", "Pinia", "Vite", "Axios", "Scrum"];
 export default function ConnectOneSection() {
   const { t } = useLanguage();
   const c = t.connect;
+  const screenshotIds = new Set(c.screenshots.map((s) => s.id));
+  const [activeScreenshot, setActiveScreenshot] = useState(
+    c.screenshots[0]?.id ?? "",
+  );
 
   return (
     <section
@@ -21,7 +26,7 @@ export default function ConnectOneSection() {
             aria-hidden="true"
           />
 
-          <div className="relative grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
+          <div className="relative grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-14">
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-emerald-400">
@@ -56,22 +61,51 @@ export default function ConnectOneSection() {
               </div>
             </div>
 
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-500">
-                {c.modulesTitle}
-              </p>
+            <ConnectOneShowcase
+              activeId={activeScreenshot}
+              onSelect={setActiveScreenshot}
+            />
+          </div>
 
-              <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-                {c.modules.map((mod) => {
-                  const inner = (
-                    <li className="group h-full rounded-2xl border border-zinc-700/60 bg-zinc-900/50 p-4 transition-colors hover:border-emerald-400/40 hover:bg-zinc-900/80">
+          <div className="relative mt-12 border-t border-zinc-800/80 pt-10">
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-500">
+              {c.modulesTitle}
+            </p>
+
+            <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {c.modules.map((mod) => {
+                const hasScreenshot = screenshotIds.has(mod.id);
+                const isActive = hasScreenshot && activeScreenshot === mod.id;
+
+                return (
+                  <li key={mod.id}>
+                    <button
+                      type="button"
+                      disabled={!hasScreenshot}
+                      onClick={() =>
+                        hasScreenshot && setActiveScreenshot(mod.id)
+                      }
+                      className={`group h-full w-full rounded-2xl border p-4 text-left transition-colors ${
+                        isActive
+                          ? "border-emerald-400/50 bg-emerald-400/5"
+                          : hasScreenshot
+                            ? "border-zinc-700/60 bg-zinc-900/50 hover:border-emerald-400/40 hover:bg-zinc-900/80"
+                            : "cursor-default border-zinc-800/60 bg-zinc-900/30"
+                      }`}
+                    >
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="font-semibold text-zinc-100">
                           {mod.label}
                         </h3>
-                        {mod.url ? (
-                          <span className="font-mono text-[10px] text-emerald-400 opacity-0 transition-opacity group-hover:opacity-100">
-                            {c.viewLink}
+                        {hasScreenshot ? (
+                          <span
+                            className={`font-mono text-[10px] transition-opacity ${
+                              isActive
+                                ? "text-emerald-400"
+                                : "text-zinc-600 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
+                            }`}
+                          >
+                            {c.viewLink.replace("↗", "→")}
                           </span>
                         ) : (
                           <span className="font-mono text-[10px] text-zinc-600">
@@ -82,40 +116,25 @@ export default function ConnectOneSection() {
                       <p className="mt-2 text-sm leading-relaxed text-zinc-500">
                         {mod.desc}
                       </p>
-                    </li>
-                  );
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
 
-                  return mod.url ? (
-                    <MagneticButton key={mod.id} cursorText="→">
-                      <a
-                        href={mod.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block h-full"
-                      >
-                        {inner}
-                      </a>
-                    </MagneticButton>
-                  ) : (
-                    <div key={mod.id}>{inner}</div>
-                  );
-                })}
-              </ul>
-
-              <div className="mt-6">
-                <p className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-500">
-                  {c.contributionsTitle}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {c.contributions.map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-1 text-xs text-zinc-300"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
+            <div className="mt-8">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-500">
+                {c.contributionsTitle}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {c.contributions.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-1 text-xs text-zinc-300"
+                  >
+                    {item}
+                  </span>
+                ))}
               </div>
             </div>
           </div>

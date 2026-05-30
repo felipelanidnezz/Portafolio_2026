@@ -5,14 +5,6 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { PLAYGROUND_CODE_EN, PLAYGROUND_CODE_ES } from "@/data/playgroundCode";
 import ArcadePreviewGame from "@/components/ArcadePreviewGame";
 
-function isGameReady(code: string): boolean {
-  return (
-    code.includes("spawnAliens") ||
-    code.includes("gameLoop") ||
-    code.includes("<canvas")
-  );
-}
-
 function highlightLine(line: string) {
   const parts: { text: string; className: string }[] = [];
   let remaining = line.length > 0 ? line : "\u00A0";
@@ -70,8 +62,10 @@ export default function LiveCodePlayground() {
   const rafRef = useRef<number | null>(null);
   const userScrolledUpRef = useRef(false);
   const stateRef = useRef({ charIndex: 0, lastTime: 0, done: false });
+  const highlightCacheRef = useRef<Map<number, ReturnType<typeof highlightLine>>>(
+    new Map(),
+  );
 
-  const gameReady = useMemo(() => isGameReady(typedCode), [typedCode]);
   const lines = useMemo(() => fullCode.split("\n"), [fullCode]);
   const typedLines = useMemo(() => {
     if (!typedCode) return [];
@@ -137,6 +131,7 @@ export default function LiveCodePlayground() {
 
     stateRef.current = { charIndex: 0, lastTime: 0, done: false };
     userScrolledUpRef.current = false;
+    highlightCacheRef.current.clear();
     setTypedCode("");
     setTypingComplete(false);
 
@@ -155,10 +150,10 @@ export default function LiveCodePlayground() {
       }
 
       const char = fullCode[s.charIndex];
-      const delay = char === "\n" ? 55 : char === " " ? 14 : 8;
+      const delay = char === "\n" ? 18 : char === " " ? 5 : 3;
+      const chunk = char === "\n" ? 1 : 6;
 
       if (elapsed >= delay) {
-        const chunk = char === "\n" ? 1 : 2;
         s.charIndex = Math.min(s.charIndex + chunk, fullCode.length);
         setTypedCode(fullCode.slice(0, s.charIndex));
         s.lastTime = time;
@@ -227,18 +222,27 @@ export default function LiveCodePlayground() {
             className="code-editor-scroll max-h-[360px] min-h-[360px] overflow-y-auto overflow-x-hidden p-3 pl-10 font-mono text-[10px] leading-[1.55] sm:max-h-[420px] sm:min-h-[420px] sm:text-[11px]"
           >
             <code className="block">
-              {typedLines.map((line, lineIdx) => (
-                <div key={lineIdx} className="min-h-[1.55em] whitespace-pre">
-                  {highlightLine(line).map((part, i) => (
-                    <span key={i} className={part.className}>
-                      {part.text}
-                    </span>
-                  ))}
-                  {!typingComplete && lineIdx === typedLines.length - 1 && (
-                    <span className="typewriter-cursor ml-px inline-block h-[1em] w-[2px] align-text-bottom" />
-                  )}
-                </div>
-              ))}
+              {typedLines.map((line, lineIdx) => {
+                const isLastLine = lineIdx === typedLines.length - 1;
+                let parts = highlightCacheRef.current.get(lineIdx);
+                if (!parts || isLastLine) {
+                  parts = highlightLine(line);
+                  if (!isLastLine) highlightCacheRef.current.set(lineIdx, parts);
+                }
+
+                return (
+                  <div key={lineIdx} className="min-h-[1.55em] whitespace-pre">
+                    {parts.map((part, i) => (
+                      <span key={i} className={part.className}>
+                        {part.text}
+                      </span>
+                    ))}
+                    {!typingComplete && isLastLine && (
+                      <span className="typewriter-cursor ml-px inline-block h-[1em] w-[2px] align-text-bottom" />
+                    )}
+                  </div>
+                );
+              })}
             </code>
           </pre>
         </div>
@@ -247,7 +251,7 @@ export default function LiveCodePlayground() {
           <div className="absolute left-3 top-2 z-10 font-mono text-[9px] uppercase tracking-widest text-zinc-600">
             {p.previewLabel}
           </div>
-          <ArcadePreviewGame ready={gameReady} labels={p.game} />
+          <ArcadePreviewGame ready={isVisible} labels={p.game} />
         </div>
       </div>
     </div>

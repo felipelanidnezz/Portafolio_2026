@@ -62,7 +62,6 @@ export default function ArcadePreviewGame({
     level: 1,
     levelFlash: 0,
     phase: "boot" as "boot" | "ready" | "playing" | "over" | "win",
-    bootTimer: 0,
     blink: true,
     lastShot: 0,
   });
@@ -148,16 +147,13 @@ export default function ArcadePreviewGame({
   useEffect(() => {
     if (!ready) {
       stateRef.current.phase = "boot";
-      stateRef.current.bootTimer = 0;
       setHud((h) => ({ ...h, phase: "boot" }));
       return;
     }
 
-    if (stateRef.current.phase === "boot") {
-      stateRef.current.phase = "ready";
-      stateRef.current.aliens = spawnAliens(1);
-      setHud((h) => ({ ...h, phase: "ready" }));
-    }
+    stateRef.current.phase = "ready";
+    stateRef.current.aliens = spawnAliens(1);
+    setHud((h) => ({ ...h, phase: "ready" }));
   }, [ready, spawnAliens]);
 
   useEffect(() => {
@@ -254,23 +250,13 @@ export default function ArcadePreviewGame({
       });
 
       if (!ready) {
-        ctx.fillStyle = "#52525b";
-        ctx.font = "10px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText(labels.waiting, W / 2, H / 2);
-        frameRef.current = requestAnimationFrame(loop);
-        return;
-      }
-
-      if (s.phase === "boot") {
-        s.bootTimer += 1;
         ctx.fillStyle = "#34d399";
         ctx.font = "bold 11px monospace";
         ctx.textAlign = "center";
-        ctx.fillText(labels.title, W / 2, H / 2 - 8);
-        ctx.fillStyle = "#71717a";
+        ctx.fillText(labels.title, W / 2, H / 2 - 6);
+        ctx.fillStyle = "#52525b";
         ctx.font = "9px monospace";
-        ctx.fillText(`LOADING${".".repeat((Math.floor(s.bootTimer / 15) % 3) + 1)}`, W / 2, H / 2 + 12);
+        ctx.fillText(labels.waiting, W / 2, H / 2 + 12);
         frameRef.current = requestAnimationFrame(loop);
         return;
       }
