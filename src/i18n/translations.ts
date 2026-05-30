@@ -347,7 +347,7 @@ export const translations: Record<Locale, Translation> = {
         type: "Portal de clientes",
         subtitle: "Dashboard para clientes y supervisores",
         p1: "Actualmente desarrollo Connect One Clientes, el portal donde clientes y supervisores monitorean la actividad de sus equipos en tiempo real desde un dashboard unificado.",
-        p2: "Estoy desarrollando módulos completos de Calendario — con integración a Google Calendar para ver y crear eventos — y Productividad/Analytics con KPIs, gráficos ApexCharts y ranking de agentes, además del home y tours guiados de onboarding.",
+        p2: "Estoy desarrollando Calendario con Google Calendar, Productividad/Analytics con ApexCharts, y Mi cuenta — perfil, actividad, seguridad y facturas — además del home y tours guiados de onboarding.",
         showcaseTitle: "Capturas del producto",
         privateAccess: "Acceso corporativo privado",
         showcaseNote:
@@ -361,6 +361,7 @@ export const translations: Record<Locale, Translation> = {
           { id: "calendario", label: "Calendario", desc: "Resumen mensual de eventos, festivos y ausencias. Vistas Mes/Semana/Día/Lista, filtros, creación de reuniones/ausencias/permisos e integración con Google Calendar para sincronizar eventos.", url: "" },
           { id: "empleados", label: "Empleados", desc: "Tabla de horarios y eventos del equipo: estado activo/inactivo, cumplimiento del día, ausencias y próximo evento por empleado.", url: "" },
           { id: "productividad", label: "Productividad / Analytics", desc: "Panel de métricas con selector de equipos, KPIs (horas, meta, productividad), gráfico de tendencia mensual, radar rendimiento vs capacidad y ranking de puntualidad semanal.", url: "" },
+          { id: "perfil", label: "Mi cuenta / Perfil", desc: "Resumen de tareas y proyectos completados, datos personales editables, lista de actividad con progreso y filtros, cambio de contraseña en seguridad y facturas con estado y descarga PDF.", url: "" },
         ],
         screenshots: [
           {
@@ -399,14 +400,23 @@ export const translations: Record<Locale, Translation> = {
             caption:
               "Dashboard de productividad — KPIs, gráfico de horas trabajadas, radar de rendimiento y selector de equipos.",
           },
+          {
+            id: "perfil",
+            label: "Mi cuenta",
+            image: `${BASE}/connect-one/clientes/perfil.png`,
+            width: 1024,
+            height: 498,
+            caption:
+              "Perfil personal — detalles de cuenta, lista de actividad con progreso, pestañas de seguridad y facturación.",
+          },
         ],
         contributions: [
           "Integración Google Calendar",
           "Dashboard de analytics",
-          "Calendario multi-vista",
+          "Mi cuenta / Perfil",
           "Tours guiados",
           "Gráficos ApexCharts",
-          "Ranking de agentes",
+          "Facturas y seguridad",
         ],
       },
     },
@@ -674,7 +684,7 @@ export const translations: Record<Locale, Translation> = {
         type: "Client portal",
         subtitle: "Dashboard for clients and supervisors",
         p1: "I'm currently building Connect One Clientes, the portal where clients and supervisors monitor their teams' activity in real time from a unified dashboard.",
-        p2: "I'm building full Calendar and Productivity/Analytics modules — Calendar integrates with Google Calendar to view and create events; Analytics includes KPIs, ApexCharts visualizations and agent rankings — plus the home dashboard and guided onboarding tours.",
+        p2: "I'm building Calendar with Google Calendar integration, Productivity/Analytics with ApexCharts, and My Account — profile, activity, security and invoices — plus the home dashboard and guided onboarding tours.",
         showcaseTitle: "Product screenshots",
         privateAccess: "Private corporate access",
         showcaseNote:
@@ -688,6 +698,7 @@ export const translations: Record<Locale, Translation> = {
           { id: "calendario", label: "Calendar", desc: "Monthly overview of events, holidays and absences. Month/Week/Day/List views, filters, event creation and Google Calendar integration to sync events.", url: "" },
           { id: "empleados", label: "Employees", desc: "Team schedules table: active/inactive status, on-schedule tracking, absences and next event per employee.", url: "" },
           { id: "productividad", label: "Productivity / Analytics", desc: "Metrics panel with team selector, KPIs (hours, goal, productivity), monthly trend chart, performance vs capacity radar and weekly punctuality ranking.", url: "" },
+          { id: "perfil", label: "My account / Profile", desc: "Completed tasks and projects summary, editable personal details, activity list with progress and filters, password change in security tab, and invoices with status and PDF download.", url: "" },
         ],
         screenshots: [
           {
@@ -726,14 +737,23 @@ export const translations: Record<Locale, Translation> = {
             caption:
               "Productivity dashboard — KPIs, hours worked chart, performance radar and team selector.",
           },
+          {
+            id: "perfil",
+            label: "My account",
+            image: `${BASE}/connect-one/clientes/perfil.png`,
+            width: 1024,
+            height: 498,
+            caption:
+              "Personal profile — account details, activity list with progress, security and billing tabs.",
+          },
         ],
         contributions: [
           "Google Calendar integration",
           "Analytics dashboard",
-          "Multi-view calendar",
+          "My account / Profile",
           "Guided tours",
           "ApexCharts visualizations",
-          "Agent ranking",
+          "Invoices & security",
         ],
       },
     },
