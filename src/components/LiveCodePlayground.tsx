@@ -3,20 +3,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { PLAYGROUND_CODE_EN, PLAYGROUND_CODE_ES } from "@/data/playgroundCode";
+import ArcadePreviewGame from "@/components/ArcadePreviewGame";
 
-type PreviewStep = 0 | 1 | 2 | 3 | 4 | 5 | 6;
-
-function getPreviewStep(code: string): PreviewStep {
-  if (code.includes("card__cta") || code.includes('@click="handleBook"')) return 6;
-  if (code.includes("Mapa GPX") || code.includes("GPX map")) return 5;
-  if (code.includes("'Raíz Viajera'")) return 4;
-  if (code.includes('class="badge"')) return 3;
-  if (code.includes(".card {")) return 2;
-  if (code.includes("<article")) return 1;
-  return 0;
+function isGameReady(code: string): boolean {
+  return (
+    code.includes("spawnAliens") ||
+    code.includes("gameLoop") ||
+    code.includes("<canvas")
+  );
 }
 
-/** Colorea una línea de forma segura (sin tokenizer global) */
 function highlightLine(line: string) {
   const parts: { text: string; className: string }[] = [];
   let remaining = line.length > 0 ? line : "\u00A0";
@@ -25,7 +21,7 @@ function highlightLine(line: string) {
     const tag = remaining.match(/^<\/?[\w.-]+/);
     const str = remaining.match(/^"[^"]*"|^'[^']*'/);
     const kw = remaining.match(
-      /^(import|from|interface|const|let|async|function|return|computed|ref|defineProps|defineEmits|withDefaults|true|false)\b/
+      /^(import|from|interface|const|let|async|function|return|computed|ref|defineProps|defineEmits|withDefaults|true|false|type|onMounted|onUnmounted)\b/
     );
 
     const m = tag ?? str ?? kw;
@@ -41,7 +37,7 @@ function highlightLine(line: string) {
     }
 
     const next = remaining.search(
-      /<\/?[\w.-]+|"[^"]*"|'[^']*'|\b(import|from|interface|const|let|async|function|return|computed|ref|defineProps|defineEmits|withDefaults|true|false)\b/
+      /<\/?[\w.-]+|"[^"]*"|'[^']*'|\b(import|from|interface|const|let|async|function|return|computed|ref|type|onMounted|onUnmounted|true|false)\b/
     );
 
     if (next === -1) {
@@ -58,72 +54,6 @@ function highlightLine(line: string) {
   return parts;
 }
 
-function CardPreview({
-  step,
-  badge,
-  title,
-  subtitle,
-  cta,
-  waiting,
-}: {
-  step: PreviewStep;
-  badge: string;
-  title: string;
-  subtitle: string;
-  cta: string;
-  waiting: string;
-}) {
-  const cardReady = step >= 2;
-
-  return (
-    <div className="flex h-full min-h-[360px] items-center justify-center bg-[#0a0a0a] p-4 sm:min-h-[420px]">
-      {step === 0 ? (
-        <p className="font-mono text-[11px] text-zinc-600">{waiting}</p>
-      ) : (
-        <article
-          className="w-full max-w-[240px] transition-all duration-500 ease-out"
-          style={{
-            opacity: step >= 1 ? 1 : 0,
-            transform: step >= 1 ? "translateY(0)" : "translateY(8px)",
-            background: cardReady
-              ? "linear-gradient(145deg, #18181b 0%, #0c0c0e 100%)"
-              : "transparent",
-            border: cardReady
-              ? "1px solid rgba(52, 211, 153, 0.35)"
-              : "1px dashed rgba(113, 113, 122, 0.4)",
-            borderRadius: cardReady ? "1rem" : "0.5rem",
-            padding: cardReady ? "1.25rem" : "1rem",
-            boxShadow: cardReady
-              ? "0 8px 32px rgba(52, 211, 153, 0.08)"
-              : "none",
-          }}
-        >
-          {step >= 3 && (
-            <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-wider text-emerald-400">
-              {badge}
-            </span>
-          )}
-          {step >= 4 && (
-            <h3 className="text-lg font-semibold text-white">{title}</h3>
-          )}
-          {step >= 5 && (
-            <p className="mt-1 text-sm text-zinc-400">{subtitle}</p>
-          )}
-          {step >= 6 && (
-            <button
-              type="button"
-              tabIndex={-1}
-              className="mt-4 w-full rounded-lg bg-emerald-400 py-2 text-xs font-semibold text-black transition-colors hover:bg-emerald-300"
-            >
-              {cta}
-            </button>
-          )}
-        </article>
-      )}
-    </div>
-  );
-}
-
 export default function LiveCodePlayground() {
   const { t, locale } = useLanguage();
   const p = t.about.playground;
@@ -136,7 +66,7 @@ export default function LiveCodePlayground() {
   const rafRef = useRef<number | null>(null);
   const stateRef = useRef({ charIndex: 0, lastTime: 0, waiting: false });
 
-  const previewStep = useMemo(() => getPreviewStep(typedCode), [typedCode]);
+  const gameReady = useMemo(() => isGameReady(typedCode), [typedCode]);
   const lines = useMemo(() => fullCode.split("\n"), [fullCode]);
   const typedLines = useMemo(() => {
     if (!typedCode) return [];
@@ -195,7 +125,7 @@ export default function LiveCodePlayground() {
           s.waiting = false;
           s.lastTime = 0;
           setTypedCode("");
-        }, 4000);
+        }, 5000);
         rafRef.current = requestAnimationFrame(tick);
         return;
       }
@@ -282,18 +212,11 @@ export default function LiveCodePlayground() {
           </pre>
         </div>
 
-        <div className="relative">
+        <div className="relative bg-[#08080c]">
           <div className="absolute left-3 top-2 z-10 font-mono text-[9px] uppercase tracking-widest text-zinc-600">
             {p.previewLabel}
           </div>
-          <CardPreview
-            step={previewStep}
-            badge={p.preview.badge}
-            title={p.preview.title}
-            subtitle={p.preview.subtitle}
-            cta={p.preview.cta}
-            waiting={p.preview.waiting}
-          />
+          <ArcadePreviewGame ready={gameReady} labels={p.game} />
         </div>
       </div>
     </div>

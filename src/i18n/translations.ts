@@ -60,12 +60,16 @@ export type Translation = {
       livePreview: string;
       previewLabel: string;
       ariaLabel: string;
-      preview: {
-        waiting: string;
-        badge: string;
+      game: {
         title: string;
-        subtitle: string;
-        cta: string;
+        waiting: string;
+        pressStart: string;
+        score: string;
+        lives: string;
+        hi: string;
+        gameOver: string;
+        youWin: string;
+        controls: string;
       };
     };
   };
@@ -252,16 +256,20 @@ export const translations: Record<Locale, Translation> = {
       p3: "Experiencia con bases de datos SQL y NoSQL — MySQL, MariaDB, PostgreSQL y MongoDB — despliegue en Render, y herramientas como Git, GitHub y Postman. Metodologías ágiles con Scrum.",
       tags: ["ES / EN", "Remoto / Presencial", "Junior → Mid", "Scrum"],
       playground: {
-        filename: "PortfolioCard.vue",
+        filename: "ArcadeInvaders.vue",
         livePreview: "Live preview",
         previewLabel: "Preview",
-        ariaLabel: "Demostración de código en vivo con vista previa",
-        preview: {
-          waiting: "// esperando código…",
-          badge: "En producción",
-          title: "Raíz Viajera",
-          subtitle: "Mapa GPX · Barichara",
-          cta: "Reservar →",
+        ariaLabel: "Demostración de juego arcade en vivo",
+        game: {
+          title: "NEON INVADERS",
+          waiting: "// compilando juego…",
+          pressStart: "▶ ESPACIO / CLICK PARA JUGAR",
+          score: "SCORE",
+          lives: "VIDAS",
+          hi: "HI",
+          gameOver: "GAME OVER",
+          youWin: "¡NIVEL CLEAR!",
+          controls: "← → mover · espacio disparar · click en pantalla",
         },
       },
     },
@@ -444,16 +452,20 @@ export const translations: Record<Locale, Translation> = {
       p3: "Experience with SQL and NoSQL databases — MySQL, MariaDB, PostgreSQL and MongoDB — Render deployment, and tools like Git, GitHub and Postman. Agile methodologies with Scrum.",
       tags: ["ES / EN", "Remote / On-site", "Junior → Mid", "Scrum"],
       playground: {
-        filename: "PortfolioCard.vue",
+        filename: "ArcadeInvaders.vue",
         livePreview: "Live preview",
         previewLabel: "Preview",
-        ariaLabel: "Live code demo with preview panel",
-        preview: {
-          waiting: "// waiting for code…",
-          badge: "In production",
-          title: "Raíz Viajera",
-          subtitle: "GPX map · Barichara",
-          cta: "Book now →",
+        ariaLabel: "Live arcade game preview",
+        game: {
+          title: "NEON INVADERS",
+          waiting: "// compiling game…",
+          pressStart: "▶ SPACE / CLICK TO PLAY",
+          score: "SCORE",
+          lives: "LIVES",
+          hi: "HI",
+          gameOver: "GAME OVER",
+          youWin: "STAGE CLEAR!",
+          controls: "← → move · space shoot · click screen",
         },
       },
     },
