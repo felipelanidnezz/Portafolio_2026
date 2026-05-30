@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050505;
+  --foreground: #ededed;
+  --accent: #34d399;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  cursor: none;
+  overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    cursor: auto;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ── Typewriter container — evita saltos al borrar ── */
+.typewriter-wrap {
+  display: inline-block;
+  text-align: left;
+  vertical-align: bottom;
+}
+
+/* ── Typewriter cursor blink ── */
+.typewriter-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--accent);
+  animation: blink 0.7s step-end infinite;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.5);
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ── Sound toggle (subtle, inline) ── */
+.typewriter-sound-toggle {
+  margin-left: 0.75rem;
+  font-size: 0.75rem;
+  opacity: 0.35;
+  transition: opacity 0.2s;
+  vertical-align: middle;
+  cursor: none;
+}
+
+.typewriter-sound-toggle:hover {
+  opacity: 0.8;
+}
+
+/* ── Hero ambient glow ── */
+.hero-glow {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(52, 211, 153, 0.08) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* ── Film grain overlay ── */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+}
+
+/* ── Selection color ── */
+::selection {
+  background: rgba(52, 211, 153, 0.3);
+  color: white;
+}

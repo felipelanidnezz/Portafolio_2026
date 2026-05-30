@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Pokédex interactiva — Explora Pokémon con datos en tiempo real desde PokéAPI." />
+  <title>Pokédex | Explorador Pokémon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://pokeapi.co" />
+  <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin />
+  <link rel="dns-prefetch" href="https://pokeapi.co" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f14;
+      --surface: #1a1a24;
+      --surface-2: #22222f;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f4f4f8;
+      --muted: #9494a8;
+      --accent: #ef4444;
+      --accent-2: #6366f1;
+      --radius: 20px;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      --type-color: #6366f1;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bg-glow__orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.35;
+      transition: background 0.8s ease;
+    }
+
+    .bg-glow__orb--1 {
+      width: 55vw;
+      height: 55vw;
+      top: -15%;
+      left: -10%;
+      background: var(--type-color);
+    }
+
+    .bg-glow__orb--2 {
+      width: 45vw;
+      height: 45vw;
+      bottom: -10%;
+      right: -8%;
+      background: var(--accent-2);
+    }
+
+    .bg-glow__grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: clamp(1.25rem, 4vw, 2.5rem);
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand__icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #fff 50%, #fff 55%, #ef4444 55%);
+      border-radius: 50%;
+      border: 3px solid #1a1a24;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.15), inset 0 -4px 8px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    .brand__text h1 {
+      font-size: clamp(1.35rem, 4vw, 1.75rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .brand__text p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 0.15rem;
+    }
+
+    .search-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .search-bar__input-wrap {
+      flex: 1;
+      min-width: 180px;
+      position: relative;
+    }
+
+    .search-bar__input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-bar__input::placeholder { color: var(--muted); }
+
+    .search-bar__input:focus {
+      border-color: var(--type-color);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--type-color) 25%, transparent);
+    }
+
+    .search-bar__icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.75rem 1.1rem;
+      border: none;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn--primary {
+      background: var(--type-color);
+      color: #fff;
+      box-shadow: 0 4px 20px color-mix(in srgb, var(--type-color) 40%, transparent);
+    }
+
+    .btn--primary:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 6px 28px color-mix(in srgb, var(--type-color) 50%, transparent);
+    }
+
+    .btn--ghost {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn--ghost:hover { background: var(--surface-2); }
+
+    .btn--icon {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 12px;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: cardIn 0.5s ease both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card__inner {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      min-height: 480px;
+    }
+
+    .visual {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--type-color) 35%, #111) 0%, var(--surface-2) 100%);
+      overflow: hidden;
+    }
+
+    .visual__nav {
+      position: absolute;
+      top: 1rem;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 1rem;
+      z-index: 2;
+    }
+
+    .visual__id {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 800;
+      color: rgba(255,255,255,0.07);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .visual__ring {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.06);
+      animation: spin 20s linear infinite;
+    }
+
+    .visual__ring--2 {
+      width: 220px;
+      height: 220px;
+      animation-direction: reverse;
+      animation-duration: 15s;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .visual__sprite-wrap {
+      position: relative;
+      z-index: 1;
+      width: 220px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .visual__sprite {
+      max-width: 100%;
+      max-height: 100%;
+      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4));
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s;
+    }
+
+    .visual__sprite.is-loading {
+      opacity: 0.35;
+      transform: scale(0.92);
+    }
+
+    .visual__sprite.is-hd {
+      image-rendering: auto;
+    }
+
+    .card.is-navigating {
+      pointer-events: none;
+    }
+
+    .card.is-navigating .visual__sprite-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.08);
+      border-top-color: var(--type-color);
+      animation: spin 0.7s linear infinite;
+      width: 36px;
+      height: 36px;
+      margin: auto;
+    }
+
+    .visual__sprite.pop {
+      animation: popIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .visual__name-block {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      margin-top: 1.25rem;
+    }
+
+    .visual__name {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      font-weight: 800;
+      text-transform: capitalize;
+      letter-spacing: -0.02em;
+    }
+
+    .visual__types {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      justify-content: center;
+      margin-top: 0.65rem;
+    }
+
+    .type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    }
+
+    .info {
+      padding: clamp(1.5rem, 4vw, 2.25rem);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .info__metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.65rem;
+    }
+
+    .metric {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.85rem 0.75rem;
+      text-align: center;
+    }
+
+    .metric__label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .metric__value {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .stats-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: 90px 1fr 36px;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .stat-row__name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: capitalize;
+    }
+
+    .stat-row__bar-wrap {
+      height: 8px;
+      background: var(--surface-2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .stat-row__bar {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--type-color), color-mix(in srgb, var(--type-color) 60%, #fff));
+      width: 0;
+      transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .stat-row__val {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .weaknesses {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .weaknesses .type-badge {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.7rem;
+    }
+
+    .weaknesses--empty {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 480px;
+      gap: 1.25rem;
+      padding: 3rem;
+    }
+
+    .loading__spinner {
+      width: 52px;
+      height: 52px;
+      border: 3px solid var(--border);
+      border-top-color: var(--type-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .loading__text {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .error-box {
+      text-align: center;
+      padding: 3rem 2rem;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .error-box__icon { font-size: 3rem; }
+
+    .error-box__msg {
+      color: var(--muted);
+      max-width: 320px;
+      line-height: 1.5;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #ef4444;
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 8px 30px rgba(239,68,68,0.35);
+      z-index: 100;
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--type-color);
+      text-decoration: none;
+    }
+
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .header { flex-direction: column; align-items: stretch; }
+      .search-bar { max-width: 100%; }
+      .card__inner { grid-template-columns: 1fr; }
+      .visual { min-height: 320px; }
+      .stat-row { grid-template-columns: 72px 1fr 32px; gap: 0.5rem; }
+    }
+
+    @media (max-width: 400px) {
+      .search-bar { flex-direction: column; }
+      .btn--icon { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true">
+    <div class="bg-glow__orb bg-glow__orb--1" id="orb1"></div>
+    <div class="bg-glow__orb bg-glow__orb--2" id="orb2"></div>
+    <div class="bg-glow__grid"></div>
+  </div>
+
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="brand__icon" aria-hidden="true"></div>
+        <div class="brand__text">
+          <h1>Pokédex</h1>
+          <p>Explorador interactivo · PokéAPI</p>
+        </div>
+      </div>
+
+      <form class="search-bar" id="searchForm" role="search">
+        <div class="search-bar__input-wrap">
+          <svg class="search-bar__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input
+            class="search-bar__input"
+            id="searchInput"
+            type="search"
+            placeholder="Nombre o #número (ej: pikachu, 25)"
+            autocomplete="off"
+            aria-label="Buscar Pokémon"
+          />
+        </div>
+        <button type="submit" class="btn btn--primary">Buscar</button>
+        <button type="button" class="btn btn--ghost" id="btnRandom" title="Pokémon aleatorio">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
+          </svg>
+          Aleatorio
+        </button>
+      </form>
+    </header>
+
+    <main class="card" id="mainCard">
+      <div class="loading" id="loadingState">
+        <div class="loading__spinner"></div>
+        <p class="loading__text">Cargando Pokémon...</p>
+      </div>
+    </main>
+
+    <footer class="footer">
+      Datos de <a href="https://pokeapi.co/" target="_blank" rel="noopener">PokéAPI</a>
+      · Proyecto por Felipe Landinez
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="alert"></div>
+
+  <script>
+    const TYPE_COLORS = {
+      normal: '#A8A878', fire: '#F08030', water: '#6890F0',
+      electric: '#F8D030', grass: '#78C850', ice: '#98D8D8',
+      fighting: '#C03028', poison: '#A040A0', ground: '#E0C068',
+      flying: '#A890F0', psychic: '#F85888', bug: '#A8B820',
+      rock: '#B8A038', ghost: '#705898', dragon: '#7038F8',
+      dark: '#705848', steel: '#B8B8D0', fairy: '#EE99AC'
+    };
+
+    const TYPE_NAMES_ES = {
+      normal: 'Normal', fire: 'Fuego', water: 'Agua', electric: 'Eléctrico',
+      grass: 'Planta', ice: 'Hielo', fighting: 'Lucha', poison: 'Veneno',
+      ground: 'Tierra', flying: 'Volador', psychic: 'Psíquico', bug: 'Bicho',
+      rock: 'Roca', ghost: 'Fantasma', dragon: 'Dragón', dark: 'Siniestro',
+      steel: 'Acero', fairy: 'Hada'
+    };
+
+    const STAT_NAMES_ES = {
+      hp: 'PS',
+      attack: 'Ataque',
+      defense: 'Defensa',
+      'special-attack': 'At. Esp.',
+      'special-defense': 'Def. Esp.',
+      speed: 'Velocidad'
+    };
+
+    const TYPE_WEAKNESSES = {
+      normal: ['fighting'],
+      fire: ['water', 'ground', 'rock'],
+      water: ['electric', 'grass'],
+      electric: ['ground'],
+      grass: ['fire', 'ice', 'poison', 'flying', 'bug'],
+      ice: ['fire', 'fighting', 'rock', 'steel'],
+      fighting: ['flying', 'psychic', 'fairy'],
+      poison: ['ground', 'psychic'],
+      ground: ['water', 'grass', 'ice'],
+      flying: ['electric', 'ice', 'rock'],
+      psychic: ['bug', 'ghost', 'dark'],
+      bug: ['fire', 'flying', 'rock'],
+      rock: ['water', 'grass', 'fighting', 'ground', 'steel'],
+      ghost: ['ghost', 'dark'],
+      dragon: ['ice', 'dragon', 'fairy'],
+      dark: ['fighting', 'bug', 'fairy'],
+      steel: ['fire', 'fighting', 'ground'],
+      fairy: ['poison', 'steel']
+    };
+
+    const STAT_MAX = 255;
+    const MAX_ID = 1025;
+    const SPRITE_CDN = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+
+    const pokemonCache = new Map();
+    const speciesCache = new Map();
+    const imageCache = new Map();
+
+    let currentId = null;
+    let loadToken = 0;
+
+    const mainCard = document.getElementById('mainCard');
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const btnRandom = document.getElementById('btnRandom');
+    const toast = document.getElementById('toast');
+
+    function setAccent(color) {
+      document.documentElement.style.setProperty('--type-color', color);
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    async function fetchJSON(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    function getFastSprite(id) {
+      return `${SPRITE_CDN}/${id}.png`;
+    }
+
+    function getHdSprite(data) {
+      return data.sprites.other?.home?.front_default
+        || data.sprites.other?.['official-artwork']?.front_default
+        || data.sprites.front_default
+        || getFastSprite(data.id);
+    }
+
+    function preloadImage(url) {
+      if (!url || imageCache.has(url)) return imageCache.get(url);
+      const promise = new Promise((resolve, reject) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => resolve(url);
+        img.onerror = reject;
+        img.src = url;
+      });
+      imageCache.set(url, promise);
+      return promise;
+    }
+
+    async function fetchPokemon(query) {
+      const key = String(query).toLowerCase().trim();
+      if (pokemonCache.has(key)) return pokemonCache.get(key);
+
+      const data = await fetchJSON(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(key)}`);
+      pokemonCache.set(key, data);
+      pokemonCache.set(String(data.id), data);
+      pokemonCache.set(data.name, data);
+      return data;
+    }
+
+    async function fetchSpecies(id) {
+      const key = String(id);
+      if (speciesCache.has(key)) return speciesCache.get(key);
+      const data = await fetchJSON(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
+      speciesCache.set(key, data);
+      return data;
+    }
+
+    function prefetchAdjacent(id) {
+      [id - 1, id + 1].forEach((nextId) => {
+        if (nextId < 1 || nextId > MAX_ID) return;
+        void fetchPokemon(nextId).then((data) => {
+          preloadImage(getFastSprite(data.id));
+          void fetchSpecies(data.id);
+        }).catch(() => {});
+      });
+    }
+
+    function statBarColor(value) {
+      if (value >= 150) return '#22c55e';
+      if (value >= 90) return 'var(--type-color)';
+      if (value >= 60) return '#eab308';
+      return '#ef4444';
+    }
+
+    function renderLoading() {
+      mainCard.classList.remove('is-navigating');
+      mainCard.innerHTML = `
+        <div class="loading">
+          <div class="loading__spinner"></div>
+          <p class="loading__text">Cargando Pokémon...</p>
+        </div>`;
+    }
+
+    function renderError(msg) {
+      mainCard.classList.remove('is-navigating');
+      mainCard.innerHTML = `
+        <div class="error-box">
+          <div class="error-box__icon">⚠️</div>
+          <p class="error-box__msg">${msg}</p>
+          <button class="btn btn--primary" onclick="loadRandom()">Intentar de nuevo</button>
+        </div>`;
+    }
+
+    function upgradeSprite(hdUrl, token) {
+      if (!hdUrl || token !== loadToken) return;
+      preloadImage(hdUrl)
+        .then(() => {
+          if (token !== loadToken) return;
+          const sprite = document.getElementById('sprite');
+          if (!sprite || sprite.dataset.hd === hdUrl) return;
+          sprite.dataset.hd = hdUrl;
+          sprite.classList.add('is-hd');
+          sprite.src = hdUrl;
+          sprite.classList.remove('is-loading');
+        })
+        .catch(() => {
+          const sprite = document.getElementById('sprite');
+          if (sprite && token === loadToken) sprite.classList.remove('is-loading');
+        });
+    }
+
+    function renderPokemon(data, species, token) {
+      if (token !== loadToken) return;
+
+      const nameEs = species.names.find(n => n.language.name === 'es')?.name || data.name;
+      const primaryType = data.types[0].type.name;
+      const primaryColor = TYPE_COLORS[primaryType] || '#6366f1';
+      setAccent(primaryColor);
+
+      const fastImg = getFastSprite(data.id);
+      const hdImg = getHdSprite(data);
+      const totalStats = data.stats.reduce((s, st) => s + st.base_stat, 0);
+
+      const statRows = data.stats.map((st) => {
+        const name = STAT_NAMES_ES[st.stat.name] || st.stat.name;
+        const pct = Math.min((st.base_stat / STAT_MAX) * 100, 100);
+        const color = statBarColor(st.base_stat);
+        return `
+          <div class="stat-row">
+            <span class="stat-row__name">${name}</span>
+            <div class="stat-row__bar-wrap">
+              <div class="stat-row__bar" style="width:${pct}%; background:${color};"></div>
+            </div>
+            <span class="stat-row__val">${st.base_stat}</span>
+          </div>`;
+      }).join('');
+
+      const typeBadges = data.types.map((t) =>
+        `<span class="type-badge" style="background:${TYPE_COLORS[t.type.name] || '#777'}">${TYPE_NAMES_ES[t.type.name] || t.type.name}</span>`
+      ).join('');
+
+      const weaknesses = TYPE_WEAKNESSES[primaryType] || [];
+      let weaknessHTML = '';
+      if (weaknesses.length === 0) {
+        weaknessHTML = '<p class="weaknesses--empty">Sin debilidades directas</p>';
+      } else {
+        weaknessHTML = weaknesses.map((type) =>
+          `<span class="type-badge" style="background:${TYPE_COLORS[type] || '#888'}">${TYPE_NAMES_ES[type] || type}</span>`
+        ).join('');
+      }
+
+      const numStr = `#${String(data.id).padStart(4, '0')}`;
+
+      mainCard.classList.remove('is-navigating');
+      mainCard.innerHTML = `
+        <div class="card__inner">
+          <section class="visual" aria-label="Información visual">
+            <div class="visual__nav">
+              <button class="btn btn--ghost btn--icon" id="btnPrev" aria-label="Pokémon anterior" ${data.id <= 1 ? 'disabled' : ''}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <button class="btn btn--ghost btn--icon" id="btnNext" aria-label="Pokémon siguiente" ${data.id >= MAX_ID ? 'disabled' : ''}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+            <span class="visual__id" aria-hidden="true">${numStr}</span>
+            <div class="visual__ring"></div>
+            <div class="visual__ring visual__ring--2"></div>
+            <div class="visual__sprite-wrap">
+              <img
+                class="visual__sprite pop${hdImg !== fastImg ? ' is-loading' : ''}"
+                id="sprite"
+                src="${fastImg}"
+                alt="${nameEs}"
+                width="220"
+                height="220"
+                decoding="async"
+                fetchpriority="high"
+              />
+            </div>
+            <div class="visual__name-block">
+              <h2 class="visual__name">${nameEs}</h2>
+              <div class="visual__types">${typeBadges}</div>
+            </div>
+          </section>
+
+          <section class="info" aria-label="Estadísticas y detalles">
+            <div class="info__metrics">
+              <div class="metric">
+                <div class="metric__label">Altura</div>
+                <div class="metric__value">${(data.height / 10).toFixed(1)} m</div>
+              </div>
+              <div class="metric">
+                <div class="metric__label">Peso</div>
+                <div class="metric__value">${(data.weight / 10).toFixed(1)} kg</div>
+              </div>
+              <div class="metric">
+                <div class="metric__label">Total stats</div>
+                <div class="metric__value">${totalStats}</div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="section-title">Estadísticas base</h3>
+              <div class="stats-list">${statRows}</div>
+            </div>
+
+            <div>
+              <h3 class="section-title">Debilidades</h3>
+              <div class="weaknesses">${weaknessHTML}</div>
+            </div>
+          </section>
+        </div>`;
+
+      document.getElementById('btnPrev')?.addEventListener('click', () => loadPokemon(currentId - 1));
+      document.getElementById('btnNext')?.addEventListener('click', () => loadPokemon(currentId + 1));
+      searchInput.value = data.id;
+
+      if (hdImg !== fastImg) upgradeSprite(hdImg, token);
+      prefetchAdjacent(data.id);
+    }
+
+    async function loadPokemon(query, initial = false) {
+      const token = ++loadToken;
+      if (initial || !currentId) renderLoading();
+      else mainCard.classList.add('is-navigating');
+
+      btnRandom.disabled = true;
+
+      try {
+        const normalized = String(query).toLowerCase().trim();
+        const isNumeric = /^\d+$/.test(normalized);
+
+        let data;
+        let species;
+
+        if (isNumeric) {
+          preloadImage(getFastSprite(Number(normalized)));
+          [data, species] = await Promise.all([
+            fetchPokemon(normalized),
+            fetchSpecies(normalized),
+          ]);
+        } else {
+          data = await fetchPokemon(normalized);
+          if (token !== loadToken) return;
+          preloadImage(getFastSprite(data.id));
+          species = await fetchSpecies(data.id);
+        }
+
+        if (token !== loadToken) return;
+
+        currentId = data.id;
+        renderPokemon(data, species, token);
+      } catch {
+        if (token !== loadToken) return;
+        renderError('No encontramos ese Pokémon. Prueba con un nombre en inglés o un número del 1 al 1025.');
+        showToast('Pokémon no encontrado');
+      } finally {
+        if (token === loadToken) btnRandom.disabled = false;
+      }
+    }
+
+    function loadRandom() {
+      const id = Math.floor(Math.random() * 898) + 1;
+      loadPokemon(id);
+    }
+
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const q = searchInput.value.trim();
+      if (!q) { showToast('Escribe un nombre o número'); return; }
+      loadPokemon(q.replace(/^#/, ''));
+    });
+
+    btnRandom.addEventListener('click', loadRandom);
+
+    document.addEventListener('keydown', (e) => {
+      if (document.activeElement === searchInput) return;
+      if (e.key === 'ArrowLeft' && currentId > 1) loadPokemon(currentId - 1);
+      if (e.key === 'ArrowRight' && currentId < MAX_ID) loadPokemon(currentId + 1);
+    });
+
+    loadPokemon(25, true);
+  </script>
+</body>
+</html>

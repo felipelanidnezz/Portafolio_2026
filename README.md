@@ -1,27 +1,59 @@
-# Portafolio_2026
+# Portafolio 2026 — Felipe Landinez
 
-Portfolio de **Felipe Landinez** — proyectos seleccionados 2026.
+Portfolio profesional con cursor magnético, bilingüe ES/EN y proyectos reales.
 
-## Proyectos
+**Live:** https://felipelanidnezz.github.io/Portafolio_2026/
 
-| Proyecto | Tipo | Demo |
-|----------|------|------|
-| **Ouija AI** | Node.js + Gemini API | [Código](./ouija-ai/) |
-| **PawClinic** | Dashboard veterinario | [Live Demo](./pawclinic/vete.html) |
+## Stack
 
-## Sitio en vivo
+- Next.js 16 (App Router, static export)
+- React 19 · TypeScript · Tailwind CSS 4
+- GSAP (cursor magnético)
 
-https://felipelanidnezz.github.io/Portafolio_2026/
+## Desarrollo local
 
-## Ouija AI — cómo correr localmente
+```bash
+npm install
+npm run dev
+```
+
+Abre [http://localhost:3000](http://localhost:3000)
+
+## Build para GitHub Pages
+
+```bash
+# Windows PowerShell
+$env:GITHUB_PAGES="true"; npm run build
+
+# Linux / macOS
+GITHUB_PAGES=true npm run build
+```
+
+El export estático queda en `out/`.
+
+## Proyectos incluidos
+
+| Proyecto | Ubicación |
+|----------|-----------|
+| **Portafolio** | Raíz (Next.js) |
+| **PawClinic** | `public/pawclinic/` |
+| **Pokédex** | `public/pokedex.html` |
+| **Ouija AI** | `ouija-ai/` (Node.js + Gemini API) |
+
+### Ouija AI — correr localmente
 
 ```bash
 cd ouija-ai
 npm install
 # Crea .env con GEMINI_API_KEY=tu_key
 npm start
-# Abre http://localhost:3001
 ```
+
+## Deploy
+
+El workflow `.github/workflows/deploy.yml` construye y publica automáticamente en cada push a `main`.
+
+> En GitHub → Settings → Pages, el source debe ser **GitHub Actions**.
 
 ## Contacto
 
