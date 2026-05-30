@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
+import { PLAYGROUND_CODE_EN, PLAYGROUND_CODE_ES } from "@/data/playgroundCode";
 
 type PreviewStep = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 function getPreviewStep(code: string): PreviewStep {
-  if (code.includes("card__cta") || code.includes("@click=\"handleBook\"")) return 6;
+  if (code.includes("card__cta") || code.includes('@click="handleBook"')) return 6;
   if (code.includes("Mapa GPX") || code.includes("GPX map")) return 5;
   if (code.includes("'Raíz Viajera'")) return 4;
   if (code.includes('class="badge"')) return 3;
@@ -15,41 +16,46 @@ function getPreviewStep(code: string): PreviewStep {
   return 0;
 }
 
-function highlightCode(code: string) {
-  const result: { text: string; className: string }[] = [];
-  let i = 0;
+/** Colorea una línea de forma segura (sin tokenizer global) */
+function highlightLine(line: string) {
+  const parts: { text: string; className: string }[] = [];
+  let remaining = line.length > 0 ? line : "\u00A0";
 
-  const keywords =
-    /^(script|setup|lang|import|from|interface|const|let|async|function|return|computed|ref|defineProps|defineEmits|withDefaults|template|style|scoped|article|header|footer|span|h3|p|ul|li|button|type|disabled|true|false|null|void|string|boolean|number)\b/;
+  while (remaining.length > 0) {
+    const tag = remaining.match(/^<\/?[\w.-]+/);
+    const str = remaining.match(/^"[^"]*"|^'[^']*'/);
+    const kw = remaining.match(
+      /^(import|from|interface|const|let|async|function|return|computed|ref|defineProps|defineEmits|withDefaults|true|false)\b/
+    );
 
-  while (i < code.length) {
-    const rest = code.slice(i);
+    const m = tag ?? str ?? kw;
+    if (m && m.index === 0) {
+      const cls = tag
+        ? "text-emerald-400"
+        : str
+          ? "text-amber-300/90"
+          : "text-sky-400";
+      parts.push({ text: m[0], className: cls });
+      remaining = remaining.slice(m[0].length);
+      continue;
+    }
 
-    let match: RegExpMatchArray | null = null;
-    let className = "text-zinc-300";
+    const next = remaining.search(
+      /<\/?[\w.-]+|"[^"]*"|'[^']*'|\b(import|from|interface|const|let|async|function|return|computed|ref|defineProps|defineEmits|withDefaults|true|false)\b/
+    );
 
-    if ((match = rest.match(/^\/\/[^\n]*/))) className = "text-zinc-600";
-    else if ((match = rest.match(/^<!--[\s\S]*?-->/))) className = "text-zinc-600";
-    else if ((match = rest.match(/^"[^"]*"/))) className = "text-amber-300/90";
-    else if ((match = rest.match(/^'[^']*'/))) className = "text-amber-300/90";
-    else if ((match = rest.match(/^`[^`]*`/))) className = "text-amber-300/90";
-    else if ((match = rest.match(/^#[0-9a-fA-F]{3,8}/))) className = "text-violet-400";
-    else if ((match = rest.match(/^rgba?\([^)]+\)/))) className = "text-violet-400";
-    else if ((match = rest.match(/^[0-9.]+(?:rem|px|s|ms|%)/))) className = "text-violet-400";
-    else if ((match = rest.match(keywords))) className = "text-sky-400";
-    else if ((match = rest.match(/^@\w+/))) className = "text-rose-400";
-    else if ((match = rest.match(/^:\w+/))) className = "text-amber-200/80";
-    else if ((match = rest.match(/^<\/?[\w.-]+/))) className = "text-emerald-400";
-    else if ((match = rest.match(/^[>/{}();:,=+\-*/|&?!.[\]]/))) className = "text-zinc-500";
-    else match = rest.match(/^./);
+    if (next === -1) {
+      parts.push({ text: remaining, className: "text-zinc-300" });
+      break;
+    }
 
-    if (!match) break;
-
-    result.push({ text: match[0], className });
-    i += match[0].length;
+    if (next > 0) {
+      parts.push({ text: remaining.slice(0, next), className: "text-zinc-300" });
+    }
+    remaining = remaining.slice(next);
   }
 
-  return result;
+  return parts;
 }
 
 function CardPreview({
@@ -121,18 +127,22 @@ function CardPreview({
 export default function LiveCodePlayground() {
   const { t, locale } = useLanguage();
   const p = t.about.playground;
-  const fullCode = p.code;
+  const fullCode = locale === "en" ? PLAYGROUND_CODE_EN : PLAYGROUND_CODE_ES;
 
   const [typedCode, setTypedCode] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
-  const pausedRef = useRef(false);
-  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const rafRef = useRef<number | null>(null);
+  const stateRef = useRef({ charIndex: 0, lastTime: 0, waiting: false });
 
   const previewStep = useMemo(() => getPreviewStep(typedCode), [typedCode]);
-  const tokens = useMemo(() => highlightCode(typedCode), [typedCode]);
-  const totalLines = fullCode.split("\n").length;
+  const lines = useMemo(() => fullCode.split("\n"), [fullCode]);
+  const typedLines = useMemo(() => {
+    if (!typedCode) return [];
+    return typedCode.split("\n");
+  }, [typedCode]);
+
   const progress = fullCode.length
     ? Math.round((typedCode.length / fullCode.length) * 100)
     : 0;
@@ -143,84 +153,77 @@ export default function LiveCodePlayground() {
 
     const observer = new IntersectionObserver(
       ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    const pre = preRef.current;
-    if (pre) {
-      pre.scrollTop = pre.scrollHeight;
+    if (preRef.current) {
+      preRef.current.scrollTop = preRef.current.scrollHeight;
     }
   }, [typedCode]);
 
   useEffect(() => {
-    const clearTimers = () => {
-      timersRef.current.forEach(clearTimeout);
-      timersRef.current = [];
-    };
-
-    const schedule = (fn: () => void, ms: number) => {
-      const id = setTimeout(fn, ms);
-      timersRef.current.push(id);
-    };
-
-    clearTimers();
-    setTypedCode("");
-
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
       setTypedCode(fullCode);
-      return clearTimers;
+      return;
     }
 
-    if (!isVisible) return clearTimers;
+    if (!isVisible) return;
 
-    let charIndex = 0;
+    stateRef.current = { charIndex: 0, lastTime: 0, waiting: false };
+    setTypedCode("");
 
-    const tick = () => {
-      if (pausedRef.current) {
-        schedule(tick, 150);
+    const tick = (time: number) => {
+      const s = stateRef.current;
+
+      if (s.waiting) {
+        rafRef.current = requestAnimationFrame(tick);
         return;
       }
 
-      if (charIndex >= fullCode.length) {
-        schedule(() => {
-          charIndex = 0;
+      if (!s.lastTime) s.lastTime = time;
+      const elapsed = time - s.lastTime;
+
+      if (s.charIndex >= fullCode.length) {
+        s.waiting = true;
+        setTimeout(() => {
+          s.charIndex = 0;
+          s.waiting = false;
+          s.lastTime = 0;
           setTypedCode("");
-          schedule(tick, 500);
         }, 4000);
+        rafRef.current = requestAnimationFrame(tick);
         return;
       }
 
-      const chunk = fullCode[charIndex] === "\n" ? 1 : 2;
-      charIndex = Math.min(charIndex + chunk, fullCode.length);
-      setTypedCode(fullCode.slice(0, charIndex));
+      const char = fullCode[s.charIndex];
+      const delay = char === "\n" ? 55 : char === " " ? 14 : 8;
 
-      const char = fullCode[charIndex - 1];
-      const delay =
-        char === "\n" ? 90 : char === " " ? 18 : 10 + Math.floor(Math.random() * 8);
+      if (elapsed >= delay) {
+        const chunk = char === "\n" ? 1 : 2;
+        s.charIndex = Math.min(s.charIndex + chunk, fullCode.length);
+        setTypedCode(fullCode.slice(0, s.charIndex));
+        s.lastTime = time;
+      }
 
-      schedule(tick, delay);
+      rafRef.current = requestAnimationFrame(tick);
     };
 
-    schedule(tick, 500);
+    rafRef.current = requestAnimationFrame(tick);
 
-    return clearTimers;
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [fullCode, isVisible, locale]);
 
   return (
     <div
       ref={containerRef}
       className="mt-8 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl shadow-black/40"
-      onMouseEnter={() => {
-        pausedRef.current = true;
-      }}
-      onMouseLeave={() => {
-        pausedRef.current = false;
-      }}
       aria-label={p.ariaLabel}
       role="img"
     >
@@ -245,33 +248,36 @@ export default function LiveCodePlayground() {
       <div className="grid sm:grid-cols-2">
         <div className="relative border-b border-zinc-800 sm:border-b-0 sm:border-r">
           <div
-            className="absolute left-0 top-0 z-10 flex min-h-full select-none flex-col border-r border-zinc-800/60 bg-zinc-900/40 px-2 py-3 text-right font-mono text-[10px] leading-[1.55] text-zinc-700"
+            className="pointer-events-none absolute left-0 top-0 z-10 w-8 border-r border-zinc-800/60 bg-zinc-900/40 py-3 text-right font-mono text-[10px] leading-[1.55] text-zinc-700"
             aria-hidden="true"
           >
-            {Array.from({ length: totalLines }).map((_, i) => {
-              const typedLines = typedCode.split("\n").length;
-              const isActive = i < typedLines;
-              return (
-                <span
-                  key={i}
-                  className={isActive ? "text-zinc-500" : "text-zinc-800"}
-                >
-                  {i + 1}
-                </span>
-              );
-            })}
+            {lines.map((_, i) => (
+              <div
+                key={i}
+                className={i < typedLines.length ? "text-zinc-500" : "text-zinc-800"}
+              >
+                {i + 1}
+              </div>
+            ))}
           </div>
+
           <pre
             ref={preRef}
-            className="max-h-[360px] min-h-[360px] overflow-auto p-3 pl-9 font-mono text-[10px] leading-[1.55] sm:max-h-[420px] sm:min-h-[420px] sm:text-[11px]"
+            className="max-h-[360px] min-h-[360px] overflow-y-auto overflow-x-hidden p-3 pl-10 font-mono text-[10px] leading-[1.55] sm:max-h-[420px] sm:min-h-[420px] sm:text-[11px]"
           >
-            <code>
-              {tokens.map((tok, i) => (
-                <span key={i} className={tok.className}>
-                  {tok.text}
-                </span>
+            <code className="block">
+              {typedLines.map((line, lineIdx) => (
+                <div key={lineIdx} className="min-h-[1.55em] whitespace-pre">
+                  {highlightLine(line).map((part, i) => (
+                    <span key={i} className={part.className}>
+                      {part.text}
+                    </span>
+                  ))}
+                  {lineIdx === typedLines.length - 1 && (
+                    <span className="typewriter-cursor ml-px inline-block h-[1em] w-[2px] align-text-bottom" />
+                  )}
+                </div>
               ))}
-              <span className="typewriter-cursor ml-px inline-block h-[1em] w-[2px] align-text-bottom" />
             </code>
           </pre>
         </div>
