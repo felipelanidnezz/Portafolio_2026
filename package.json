@@ -1,0 +1,17 @@
+{
+  "name": "ouija",
+  "version": "1.0.0",
+  "description": "Conversación entre dos IAs (Joven vs Demonio) vía Gemini API",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.3"
+  }
+}

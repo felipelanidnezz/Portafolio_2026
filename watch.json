@@ -1,0 +1,8 @@
+{
+  "install": {
+    "include": ["^package\\.json$", "^\\.env$"]
+  },
+  "start": {
+    "GLITCH_DEBUG_NODE_PAUSE_ON_START": "0"
+  }
+}
