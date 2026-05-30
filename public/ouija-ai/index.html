@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <base href="/ouija-ai/" />
+  <script>
+    if (location.pathname.startsWith("/Portafolio_2026/")) {
+      document.querySelector("base").href = "/Portafolio_2026/ouija-ai/";
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Ouija AI — Real-time conversation between two AI personalities powered by Gemini API." />
   <meta name="ouija-api" content="https://ouija-ai-felipe.vercel.app" />
