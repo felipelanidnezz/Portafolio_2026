@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, type ReactNode } from "react";
+import gsap from "gsap";
 import { MagneticButton } from "@/components/MagneticCursor";
 
 const GH_PAGES_PREFIX = "/Portafolio_2026";
@@ -59,7 +61,7 @@ function ProjectCard({
 
   return (
     <article
-      className={`group relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br ${project.color} p-8 transition-all hover:border-zinc-600`}
+      className={`group relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br ${project.color} p-8 shadow-lg shadow-black/20 transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/40 hover:shadow-emerald-500/10`}
     >
       <div className="flex items-center justify-between gap-3">
         <span className="font-mono text-xs text-zinc-500">{project.id}</span>
@@ -108,6 +110,71 @@ function ProjectCard({
   );
 }
 
+function ProjectCardHover({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const onMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      const strength = 0.045;
+      const max = 8;
+      gsap.to(el, {
+        x: Math.max(-max, Math.min(max, x * strength)),
+        y: Math.max(-max, Math.min(max, y * strength)),
+        duration: 0.35,
+        ease: "power2.out",
+      });
+    };
+
+    const onEnter = () => {
+      gsap.to(el, {
+        scale: 1.045,
+        duration: 0.45,
+        ease: "power2.out",
+      });
+      el.style.zIndex = "20";
+    };
+
+    const onLeave = () => {
+      gsap.to(el, {
+        x: 0,
+        y: 0,
+        scale: 1,
+        duration: 0.55,
+        ease: "power3.out",
+      });
+      el.style.zIndex = "1";
+    };
+
+    el.addEventListener("mousemove", onMove);
+    el.addEventListener("mouseenter", onEnter);
+    el.addEventListener("mouseleave", onLeave);
+
+    return () => {
+      el.removeEventListener("mousemove", onMove);
+      el.removeEventListener("mouseenter", onEnter);
+      el.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className="relative will-change-transform"
+      style={{ transformOrigin: "center center" }}
+    >
+      {children}
+    </div>
+  );
+}
+
 function ProjectItem({
   project,
   labels,
@@ -121,20 +188,26 @@ function ProjectItem({
 
   if (href) {
     return (
-      <MagneticButton cursorText={labels.visit}>
-        <a
-          href={href}
-          target={isExternal ? "_blank" : undefined}
-          rel={isExternal ? "noopener noreferrer" : undefined}
-          className="block w-full"
-        >
-          {card}
-        </a>
-      </MagneticButton>
+      <ProjectCardHover>
+        <MagneticButton cursorText={labels.visit} className="block w-full">
+          <a
+            href={href}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+            className="block w-full"
+          >
+            {card}
+          </a>
+        </MagneticButton>
+      </ProjectCardHover>
     );
   }
 
-  return <MagneticButton cursorText={labels.view}>{card}</MagneticButton>;
+  return (
+    <ProjectCardHover>
+      <MagneticButton cursorText={labels.view}>{card}</MagneticButton>
+    </ProjectCardHover>
+  );
 }
 
 export default function ProjectsGrid({
@@ -151,15 +224,15 @@ export default function ProjectsGrid({
   return (
     <div className="mt-16 space-y-6">
       {featuredTop.map((project) => (
-        <div key={project.id}>
+        <div key={project.id} className="relative px-1 py-2">
           <ProjectItem project={project} labels={labels} />
         </div>
       ))}
 
       {regular.length > 0 && (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-8 md:grid-cols-2">
           {regular.map((project) => (
-            <div key={project.id}>
+            <div key={project.id} className="relative px-1 py-2">
               <ProjectItem project={project} labels={labels} />
             </div>
           ))}
@@ -167,7 +240,7 @@ export default function ProjectsGrid({
       )}
 
       {featuredBottom.map((project) => (
-        <div key={project.id}>
+        <div key={project.id} className="relative px-1 py-2">
           <ProjectItem project={project} labels={labels} />
         </div>
       ))}
