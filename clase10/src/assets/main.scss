@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #faf6f0;
+  --cream-dark: #f0e8dc;
+  --forest: #2d4a2a;
+  --forest-light: #3d6b38;
+  --wood: #6b4226;
+  --terracotta: #c4724a;
+  --gold: #b8956a;
+  --dark: #1e1510;
+  --text: #2c2218;
+  --muted: #6b5d50;
+  --white: #ffffff;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --fs-h1: clamp(2.2rem, 7vw, 4.5rem);
+  --fs-h2: clamp(1.6rem, 4.5vw, 2.6rem);
+  --fs-h3: clamp(1.1rem, 3vw, 1.4rem);
+  --fs-body: clamp(0.95rem, 2.2vw, 1.05rem);
+}
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+input, select, textarea { font-size: 16px; font-family: inherit; }
+
+[id] { scroll-margin-top: 90px; }
+
+.section-tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: var(--fs-h2);
+  color: var(--dark);
+  margin-bottom: 1rem;
+}
+
+.divider {
+  width: 56px;
+  height: 2px;
+  background: linear-gradient(to right, var(--gold), transparent);
+  margin-bottom: 1.75rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+  min-height: 48px;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn--primary {
+  background: var(--forest);
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(45, 74, 42, 0.3);
+}
+
+.btn--primary:hover {
+  background: var(--forest-light);
+  box-shadow: 0 6px 28px rgba(45, 74, 42, 0.4);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--white);
+  border: 2px solid rgba(255,255,255,0.7);
+}
+
+.btn--outline:hover { background: rgba(255,255,255,0.12); }
+
+.btn--whatsapp {
+  background: #25D366;
+  color: white;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

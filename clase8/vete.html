@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sistema de gestión de citas veterinarias — Administra mascotas, propietarios y estados de consulta." />
+  <title>PawClinic · Gestión de Citas Veterinarias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #0ea5e9;
+      --primary-dark: #0284c7;
+      --primary-light: #e0f2fe;
+      --accent: #8b5cf6;
+      --success: #10b981;
+      --success-bg: #d1fae5;
+      --warning: #f59e0b;
+      --warning-bg: #fef3c7;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --dark: #0f172a;
+      --surface: #ffffff;
+      --bg: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --radius: 16px;
+      --shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.1);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    .app-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0ea5e9 100%);
+      color: white;
+      padding: 1.25rem 1.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand__icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .brand__text h1 {
+      font-size: clamp(1.15rem, 3vw, 1.45rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand__text p {
+      font-size: 0.78rem;
+      opacity: 0.75;
+      font-weight: 500;
+      margin-top: 0.15rem;
+    }
+
+    .header-badge {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ── MAIN ── */
+    .app-main {
+      max-width: 1280px;
+      margin: -1.25rem auto 0;
+      padding: 0 1.25rem 3rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── STATS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.25rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-card__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .stat-card__icon--total { background: var(--primary-light); }
+    .stat-card__icon--open { background: #dbeafe; }
+    .stat-card__icon--done { background: var(--success-bg); }
+    .stat-card__icon--cancel { background: var(--danger-bg); }
+
+    .stat-card__value {
+      font-size: 1.65rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--dark);
+    }
+
+    .stat-card__label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 0.2rem;
+    }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .toolbar__grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field select:focus,
+    .field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+      background: white;
+    }
+
+    .btn-agendar {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35);
+      transition: transform 0.15s, box-shadow 0.2s;
+      white-space: nowrap;
+      min-height: 46px;
+    }
+
+    .btn-agendar:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(14, 165, 233, 0.45);
+    }
+
+    .btn-agendar:active { transform: scale(0.98); }
+
+    /* ── APPOINTMENTS GRID ── */
+    #registros {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+      justify-content: center;
+    }
+
+    .cita-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+      animation: cardIn 0.35s ease both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .cita-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .cita-card__head {
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cita-card__num {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .cita-card__name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -0.01em;
+    }
+
+    .cita-card__pet-type {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--bg);
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .cita-card__pet-type span:first-child { font-size: 1.3rem; }
+
+    .cita-card__status-row {
+      padding: 0.75rem 1.25rem;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .cita-card__status-row label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .cita-card__status-row select {
+      flex: 1;
+      padding: 0.45rem 0.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: white;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .cita-card__status-row select.estado-abierta { border-color: #93c5fd; color: #1d4ed8; background: #eff6ff; }
+    .cita-card__status-row select.estado-terminada { border-color: #6ee7b7; color: #047857; background: #ecfdf5; }
+    .cita-card__status-row select.estado-anulada { border-color: #fca5a5; color: #b91c1c; background: #fef2f2; }
+
+    .cita-card__body {
+      padding: 1.1rem 1.25rem;
+    }
+
+    .cita-card__info {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .cita-card__info li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
+    .cita-card__info .ico {
+      width: 28px;
+      height: 28px;
+      background: var(--bg);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .cita-card__info strong {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: block;
+      margin-bottom: 0.1rem;
+    }
+
+    .cita-card__symptoms {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.82rem;
+      color: #92400e;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .cita-card__actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-edit, .btn-delete {
+      flex: 1;
+      padding: 0.6rem;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s;
+    }
+
+    .btn-edit {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+    .btn-edit:hover { background: #bae6fd; }
+
+    .btn-delete {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+    .btn-delete:hover { background: #fecaca; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 2px dashed var(--border);
+    }
+
+    .empty-state__icon { font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.6; }
+    .empty-state h3 { font-size: 1.2rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem; }
+    .empty-state p { color: var(--muted); font-size: 0.9rem; max-width: 360px; margin: 0 auto; }
+
+    /* ── MODALS (Bootstrap override) ── */
+    .modal-content {
+      border: none;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #0f172a, #1e3a5f);
+      color: white;
+      border: none;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .modal-header .btn-close { filter: invert(1); opacity: 0.8; }
+
+    .modal-title { font-weight: 800; font-size: 1.1rem; }
+
+    .modal-body { padding: 1.5rem; }
+
+    .modal-body .form-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .modal-body .form-control,
+    .modal-body .form-select {
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+    }
+
+    .modal-body .form-control:focus,
+    .modal-body .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    }
+
+    .modal-footer {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      gap: 0.5rem;
+    }
+
+    .modal-footer .btn {
+      border-radius: 10px;
+      font-weight: 700;
+      padding: 0.6rem 1.25rem;
+      font-family: inherit;
+    }
+
+    #confirmDeleteModal .modal-header { background: linear-gradient(135deg, #991b1b, #ef4444); }
+
+    .app-footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .toolbar__grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      #registros { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand__icon">🐾</div>
+        <div class="brand__text">
+          <h1>PawClinic Admin</h1>
+          <p>Sistema de gestión de citas veterinarias</p>
+        </div>
+      </div>
+      <span class="header-badge">v2.0 · Felipe Landinez</span>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--total">📋</div>
+        <div>
+          <div class="stat-card__value" id="statTotal">0</div>
+          <div class="stat-card__label">Total citas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--open">🔵</div>
+        <div>
+          <div class="stat-card__value" id="statAbiertas">0</div>
+          <div class="stat-card__label">Abiertas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--done">✅</div>
+        <div>
+          <div class="stat-card__value" id="statTerminadas">0</div>
+          <div class="stat-card__label">Terminadas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--cancel">❌</div>
+        <div>
+          <div class="stat-card__value" id="statAnuladas">0</div>
+          <div class="stat-card__label">Anuladas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar hijo_2">
+      <div class="toolbar__grid">
+        <div class="field">
+          <label for="filtroEstado">Filtrar por estado</label>
+          <select id="filtroEstado">
+            <option value="Todos">Todos</option>
+            <option value="Abierta">Abierta</option>
+            <option value="Terminada">Terminada</option>
+            <option value="Anulada">Anulada</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="buscador">Buscar mascota o propietario</label>
+          <input type="text" id="buscador" placeholder="Ej. Lluvia o Felipe Landinez" />
+        </div>
+        <button type="button" class="btn-agendar" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          ➕ Agendar cita
+        </button>
+      </div>
+    </div>
+
+    <!-- Cards grid -->
+    <div id="registros"></div>
+  </main>
+
+  <footer class="app-footer">
+    PawClinic Admin · Datos guardados en localStorage · Desarrollado por Felipe Landinez
+  </footer>
+
+  <!-- Modal crear/editar -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">🐾 Nueva cita veterinaria</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formCita">
+            <div class="mb-3">
+              <label for="nombreMascota" class="form-label">Nombre de la mascota</label>
+              <input type="text" class="form-control" id="nombreMascota" required placeholder="Ej. Max, Luna, Rocky..." />
+            </div>
+            <div class="mb-3">
+              <label for="propietario" class="form-label">Propietario</label>
+              <input type="text" class="form-control" id="propietario" required placeholder="Nombre completo del dueño" />
+            </div>
+            <div class="mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="number" class="form-control" id="telefono" required placeholder="10 dígitos" />
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="fechaCita" class="form-label">Fecha de cita</label>
+                <input type="date" class="form-control" id="fechaCita" required />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="horaCita" class="form-label">Hora de la cita</label>
+                <input type="time" class="form-control" id="horaCita" required />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="tipoMascota" class="form-label">Tipo de mascota</label>
+              <select class="form-select" id="tipoMascota" required>
+                <option selected disabled value="">Selecciona tipo de mascota</option>
+                <option value="🐶 Perro">Perro</option>
+                <option value="🐱 Gato">Gato</option>
+                <option value="🐰 Conejo">Conejo</option>
+                <option value="🐹 Hámster">Hámster</option>
+                <option value="🐦 Pájaro">Pájaro</option>
+                <option value="🐢 Tortuga">Tortuga</option>
+                <option value="🐮 Vaca">Vaca</option>
+                <option value="🐍 Serpiente">Serpiente</option>
+                <option value="🐴 Caballo">Caballo</option>
+                <option value="🐷 Cerdo">Cerdo</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="sintomas" class="form-label">Síntomas <small class="text-muted">(máx. 400 caracteres)</small></label>
+              <textarea class="form-control" id="sintomas" rows="3" required placeholder="Describe los síntomas observados..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-success" id="save" onclick="guardar()">Guardar cita</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmar eliminación -->
+  <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeleteLabel">⚠️ Confirmar eliminación</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          ¿Estás seguro de que deseas eliminar esta cita? Esta acción no se puede deshacer.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Sí, eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    let dataArray = [];
+    let validacion = false;
+    let op = 0;
+    let pos = null;
+    let indiceAEliminar = null;
+
+    window.onload = function () {
+      const datosGuardados = localStorage.getItem('citasVet');
+      if (datosGuardados) {
+        dataArray = JSON.parse(datosGuardados);
+        pintar();
+      } else {
+        actualizarStats();
+      }
+    };
+
+    function actualizarStats() {
+      document.getElementById('statTotal').textContent = dataArray.length;
+      document.getElementById('statAbiertas').textContent = dataArray.filter(c => c.estado === 'Abierta').length;
+      document.getElementById('statTerminadas').textContent = dataArray.filter(c => c.estado === 'Terminada').length;
+      document.getElementById('statAnuladas').textContent = dataArray.filter(c => c.estado === 'Anulada').length;
+    }
+
+    function guardar() {
+      validaciones();
+      if (!validacion) return;
+
+      const datos = {
+        nombre: document.getElementById("nombreMascota").value,
+        propietario: document.getElementById("propietario").value,
+        telefono: document.getElementById("telefono").value,
+        fecha: document.getElementById("fechaCita").value,
+        hora: document.getElementById("horaCita").value,
+        tipo: document.getElementById("tipoMascota").value,
+        sintomas: document.getElementById("sintomas").value,
+      };
+
+      if (op === 0) {
+        datos.estado = "Abierta";
+        dataArray.push(datos);
+        Swal.fire({ icon: 'success', title: '¡Cita agendada!', text: `Cita para ${datos.nombre} registrada correctamente.`, timer: 2200, showConfirmButton: false });
+      } else if (op === 1) {
+        datos.estado = dataArray[pos].estado;
+        dataArray[pos] = datos;
+        op = 0;
+        document.getElementById("save").textContent = "Guardar cita";
+        Swal.fire({ icon: 'success', title: '¡Actualizada!', text: 'Los datos de la cita fueron modificados.', timer: 2200, showConfirmButton: false });
+      }
+
+      localStorage.setItem('citasVet', JSON.stringify(dataArray));
+      pintar(document.getElementById("filtroEstado").value);
+      limpiar();
+
+      const modal = bootstrap.Modal.getInstance(document.getElementById("exampleModal"));
+      if (modal) modal.hide();
+    }
+
+    function asignarNumerosCita() {
+      dataArray.sort((a, b) => {
+        const fechaHoraA = new Date(`${a.fecha}T${a.hora}`);
+        const fechaHoraB = new Date(`${b.fecha}T${b.hora}`);
+        return fechaHoraA - fechaHoraB;
+      });
+      dataArray.forEach((item, index) => { item.numeroCita = index + 1; });
+    }
+
+    function estadoClass(estado) {
+      if (estado === 'Abierta') return 'estado-abierta';
+      if (estado === 'Terminada') return 'estado-terminada';
+      return 'estado-anulada';
+    }
+
+    function formatearFecha(fecha) {
+      const [y, m, d] = fecha.split('-');
+      const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      return `${parseInt(d)} ${meses[parseInt(m)-1]} ${y}`;
+    }
+
+    function pintar(filtroEstado = "Todos", textoBusqueda = "") {
+      asignarNumerosCita();
+      actualizarStats();
+
+      const contenedor = document.getElementById("registros");
+      contenedor.innerHTML = "";
+
+      const datosFiltrados = dataArray.filter(item => {
+        const coincideEstado = filtroEstado === "Todos" || item.estado === filtroEstado;
+        const coincideBusqueda = item.nombre.toLowerCase().includes(textoBusqueda) ||
+          item.propietario.toLowerCase().includes(textoBusqueda);
+        return coincideEstado && coincideBusqueda;
+      });
+
+      if (datosFiltrados.length === 0) {
+        contenedor.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">🐾</div>
+            <h3>No hay citas ${filtroEstado !== 'Todos' ? 'con este filtro' : 'registradas'}</h3>
+            <p>${textoBusqueda ? 'No se encontraron resultados para tu búsqueda.' : 'Agenda la primera cita haciendo clic en "Agendar cita".'}</p>
+          </div>`;
+        return;
+      }
+
+      datosFiltrados.forEach((item) => {
+        const realIndex = dataArray.indexOf(item);
+        const emoji = item.tipo.split(" ")[0];
+        const tipoNombre = item.tipo.split(" ").slice(1).join(" ");
+        const eClass = estadoClass(item.estado);
+
+        const card = document.createElement("div");
+        card.className = "cita-card";
+        card.style.animationDelay = `${realIndex * 0.05}s`;
+
+        card.innerHTML = `
+          <div class="cita-card__head">
+            <div>
+              <div class="cita-card__num">Cita #${item.numeroCita}</div>
+              <div class="cita-card__name">${item.nombre}</div>
+            </div>
+            <div class="cita-card__pet-type">
+              <span>${emoji}</span>
+              <span>${tipoNombre}</span>
+            </div>
+          </div>
+          <div class="cita-card__status-row">
+            <label for="estadoSelect_${realIndex}">Estado</label>
+            <select id="estadoSelect_${realIndex}" onchange="cambiarEstado(${realIndex}, this.value)"
+              class="${eClass}">
+              <option value="Abierta" ${item.estado === 'Abierta' ? 'selected' : ''}>🔵 Abierta</option>
+              <option value="Terminada" ${item.estado === 'Terminada' ? 'selected' : ''}>✅ Terminada</option>
+              <option value="Anulada" ${item.estado === 'Anulada' ? 'selected' : ''}>❌ Anulada</option>
+            </select>
+          </div>
+          <div class="cita-card__body">
+            <ul class="cita-card__info">
+              <li>
+                <span class="ico">👤</span>
+                <div><strong>Propietario</strong>${item.propietario}</div>
+              </li>
+              <li>
+                <span class="ico">📞</span>
+                <div><strong>Teléfono</strong>${item.telefono}</div>
+              </li>
+              <li>
+                <span class="ico">📅</span>
+                <div><strong>Fecha</strong>${formatearFecha(item.fecha)}</div>
+              </li>
+              <li>
+                <span class="ico">⏰</span>
+                <div><strong>Hora</strong>${item.hora}</div>
+              </li>
+            </ul>
+            <div class="cita-card__symptoms">🩺 ${item.sintomas}</div>
+            <div class="cita-card__actions">
+              <button onclick="editar(${realIndex})" class="btn-edit">✏️ Editar</button>
+              <button onclick="confirmarEliminacion(${realIndex})" class="btn-delete">🗑️ Eliminar</button>
+            </div>
+          </div>`;
+
+        contenedor.appendChild(card);
+      });
+    }
+
+    function cambiarEstado(i, nuevoEstado) {
+      dataArray[i].estado = nuevoEstado;
+      localStorage.setItem('citasVet', JSON.stringify(dataArray));
+      pintar(document.getElementById("filtroEstado").value, document.getElementById("buscador").value.toLowerCase());
+    }
+
+    function editar(i) {
+      op = 1;
+      pos = i;
+      const cita = dataArray[i];
+      document.getElementById("nombreMascota").value = cita.nombre;
+      document.getElementById("propietario").value = cita.propietario;
+      document.getElementById("telefono").value = cita.telefono;
+      document.getElementById("fechaCita").value = cita.fecha;
+      document.getElementById("horaCita").value = cita.hora;
+      document.getElementById("tipoMascota").value = cita.tipo;
+      document.getElementById("sintomas").value = cita.sintomas;
+      document.getElementById("save").textContent = "Actualizar cita";
+      document.getElementById("exampleModalLabel").textContent = "✏️ Editar cita veterinaria";
+      const modal = new bootstrap.Modal(document.getElementById("exampleModal"));
+      modal.show();
+    }
+
+    function confirmarEliminacion(i) {
+      indiceAEliminar = i;
+      const modal = new bootstrap.Modal(document.getElementById("confirmDeleteModal"));
+      modal.show();
+    }
+
+    document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+      if (indiceAEliminar !== null) {
+        const nombre = dataArray[indiceAEliminar]?.nombre || '';
+        dataArray.splice(indiceAEliminar, 1);
+        localStorage.setItem('citasVet', JSON.stringify(dataArray));
+        pintar(document.getElementById("filtroEstado").value, document.getElementById("buscador").value.toLowerCase());
+        indiceAEliminar = null;
+        const modal = bootstrap.Modal.getInstance(document.getElementById("confirmDeleteModal"));
+        if (modal) modal.hide();
+        Swal.fire({ icon: 'info', title: 'Eliminada', text: `Cita de ${nombre} eliminada.`, timer: 1800, showConfirmButton: false });
+      }
+    });
+
+    document.querySelector('[data-bs-target="#exampleModal"]').addEventListener("click", () => {
+      limpiar();
+      op = 0;
+      document.getElementById("save").textContent = "Guardar cita";
+      document.getElementById("exampleModalLabel").textContent = "🐾 Nueva cita veterinaria";
+    });
+
+    function limpiar() {
+      document.getElementById("formCita").reset();
+      validacion = false;
+    }
+
+    function validaciones() {
+      const nombreMascota = document.getElementById("nombreMascota").value.trim();
+      const propietario = document.getElementById("propietario").value.trim();
+      const telefono = document.getElementById("telefono").value.trim();
+      const fechaCita = document.getElementById("fechaCita").value.trim();
+      const horaCita = document.getElementById("horaCita").value.trim();
+      const tipoMascota = document.getElementById("tipoMascota").value.trim();
+      const sintomas = document.getElementById("sintomas").value.trim();
+
+      if (nombreMascota === "") {
+        Swal.fire({ icon: "error", title: "Campo requerido", text: "Por favor, digita el nombre de la mascota" });
+        validacion = false; return;
+      }
+      if (propietario === "") {
+        Swal.fire({ icon: "error", title: "Campo requerido", text: "Por favor, digita el nombre del propietario" });
+        validacion = false; return;
+      }
+      if (telefono === "") {
+        Swal.fire({ icon: "error", title: "Campo requerido", text: "Por favor, digita el teléfono" });
+        validacion = false; return;
+      }
+      const soloNumeros = /^\d{10}$/;
+      if (!soloNumeros.test(telefono)) {
+        Swal.fire({ icon: "error", title: "Teléfono inválido", text: "El teléfono debe contener exactamente 10 números" });
+        validacion = false; return;
+      }
+      if (fechaCita === "") {
+        Swal.fire({ icon: "error", title: "Campo requerido", text: "Por favor, selecciona la fecha de la cita" });
+        validacion = false; return;
+      }
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const mañana = new Date(hoy);
+      mañana.setDate(hoy.getDate() + 1);
+      const fechaSeleccionada = new Date(fechaCita + "T00:00");
+      if (fechaSeleccionada < mañana) {
+        Swal.fire({ icon: "error", title: "Fecha inválida", text: "La cita debe ser a partir de mañana." });
+        validacion = false; return;
+      }
+      if (horaCita === "") {
+        Swal.fire({ icon: "error", title: "Campo requerido", text: "Por favor, selecciona la hora de la cita" });
+        validacion = false; return;
+      }
+      const [hora, minuto] = horaCita.split(":").map(Number);
+      if (hora < 8 || hora > 20 || (hora === 20 && minuto > 0)) {
+        Swal.fire({ icon: "error", title: "Horario inválido", text: "La cita debe ser entre las 08:00 y las 20:00" });
+        validacion = false; return;
+      }
+      if (tipoMascota === "") {
+        Swal.fire({ icon: "error", title: "Campo requerido", text: "Por favor, selecciona el tipo de mascota" });
+        validacion = false; return;
+      }
+      if (sintomas === "") {
+        Swal.fire({ icon: "error", title: "Campo requerido", text: "Por favor, describe los síntomas" });
+        validacion = false; return;
+      }
+      if (sintomas.length > 400) {
+        Swal.fire({ icon: "error", title: "Texto muy largo", text: "Los síntomas no pueden superar los 400 caracteres" });
+        validacion = false; return;
+      }
+      validacion = true;
+    }
+
+    document.getElementById("filtroEstado").addEventListener("change", () => {
+      pintar(document.getElementById("filtroEstado").value, document.getElementById("buscador").value.toLowerCase());
+    });
+    document.getElementById("buscador").addEventListener("input", () => {
+      pintar(document.getElementById("filtroEstado").value, document.getElementById("buscador").value.toLowerCase());
+    });
+  </script>
+</body>
+</html>
