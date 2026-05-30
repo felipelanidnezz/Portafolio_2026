@@ -20,6 +20,12 @@ export const metadata: Metadata = {
     "Portfolio de Thomas Felipe Acosta Landinez. Desarrollador frontend junior especializado en Vue 3, Quasar, Pinia, Node.js y experiencias web modernas.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

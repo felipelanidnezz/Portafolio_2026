@@ -372,8 +372,8 @@ function startAuto() {
   updateAutoButton();
 
   const run = async () => {
-    const url = turn === "JOVEN" ? apiUrl("/server/main") : apiUrl("/server/main2");
-    const ok = await callIA(url, turn);
+    const path = turn === "JOVEN" ? "/server/main" : "/server/main2";
+    const ok = await callIA(path, turn);
     if (!ok) { stopAuto(); return; }
     turn = turn === "JOVEN" ? "DEMONIO" : "JOVEN";
   };

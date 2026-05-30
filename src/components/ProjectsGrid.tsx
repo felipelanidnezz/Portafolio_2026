@@ -64,7 +64,7 @@ function ProjectCard({
       className={`group relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br ${project.color} p-8 shadow-lg shadow-black/20 transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/40 hover:shadow-emerald-500/10`}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="font-mono text-xs text-zinc-500">{project.id}</span>
+        <span className="font-mono text-xs text-zinc-400">{project.id}</span>
         {project.live && (
           <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-400">
             {labels.live}
@@ -73,7 +73,7 @@ function ProjectCard({
       </div>
       <h3 className="mt-4 text-2xl font-semibold">{project.title}</h3>
       {project.subtitle && (
-        <p className="mt-1 font-mono text-xs text-emerald-400/80">
+        <p className="mt-1 font-mono text-xs text-emerald-400">
           {project.subtitle}
         </p>
       )}
@@ -85,9 +85,9 @@ function ProjectCard({
           {project.highlight}
         </p>
       )}
-      <p className="mt-3 text-sm leading-relaxed text-zinc-400">{project.desc}</p>
+      <p className="mt-3 text-sm leading-relaxed text-zinc-300">{project.desc}</p>
       {project.role && (
-        <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+        <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-zinc-400">
           {project.role}
         </p>
       )}
@@ -95,14 +95,14 @@ function ProjectCard({
         {project.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-full bg-zinc-800/80 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-zinc-400"
+            className="rounded-full bg-zinc-800 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-zinc-300"
           >
             {tag}
           </span>
         ))}
       </div>
       {project.url && linkText && (
-        <p className="mt-5 font-mono text-xs text-emerald-400/70 transition-colors group-hover:text-emerald-400">
+        <p className="mt-5 font-mono text-xs text-emerald-400 transition-colors group-hover:text-emerald-300">
           {linkText} ↗
         </p>
       )}
@@ -139,7 +139,7 @@ function ProjectCardHover({ children }: { children: ReactNode }) {
         duration: 0.45,
         ease: "power2.out",
       });
-      el.style.zIndex = "20";
+      el.style.zIndex = "10";
     };
 
     const onLeave = () => {
@@ -194,7 +194,7 @@ function ProjectItem({
             href={href}
             target={isExternal ? "_blank" : undefined}
             rel={isExternal ? "noopener noreferrer" : undefined}
-            className="block w-full"
+            className="interactive-focus block w-full rounded-3xl"
           >
             {card}
           </a>

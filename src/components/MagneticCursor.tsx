@@ -237,8 +237,36 @@ export default function MagneticCursor() {
       root.style.removeProperty("--mouse-y");
     }
 
+    const isFocusable = (el: Element | null) =>
+      el instanceof HTMLElement &&
+      el.matches(
+        'a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+      );
+
+    const onFocusIn = (e: FocusEvent) => {
+      if (isFocusable(e.target as Element)) {
+        document.body.classList.add("keyboard-nav");
+        setCursorState("hidden");
+      }
+    };
+
+    const onFocusOut = () => {
+      requestAnimationFrame(() => {
+        if (!isFocusable(document.activeElement)) {
+          document.body.classList.remove("keyboard-nav");
+          if (!reducedMotion.matches) setCursorState("default");
+        }
+      });
+    };
+
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+
     return () => {
       document.body.style.cursor = "auto";
+      document.body.classList.remove("keyboard-nav");
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
       root.style.removeProperty("--mouse-x");
       root.style.removeProperty("--mouse-y");
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -267,6 +295,7 @@ export default function MagneticCursor() {
       <div
         ref={cursorRef}
         aria-hidden="true"
+        className="cursor-ring"
         style={{
           position: "fixed",
           top: 0,
@@ -277,7 +306,6 @@ export default function MagneticCursor() {
           border: "1.5px solid rgba(255,255,255,0.7)",
           backgroundColor: "transparent",
           pointerEvents: "none",
-          zIndex: 99999,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -304,6 +332,7 @@ export default function MagneticCursor() {
       <div
         ref={dotRef}
         aria-hidden="true"
+        className="cursor-dot"
         style={{
           position: "fixed",
           top: 0,
@@ -313,7 +342,6 @@ export default function MagneticCursor() {
           borderRadius: "50%",
           backgroundColor: "white",
           pointerEvents: "none",
-          zIndex: 99999,
           mixBlendMode: "difference",
           willChange: "transform",
         }}

@@ -28,9 +28,11 @@ export type Translation = {
   nav: string[];
   navIds: string[];
   hero: {
+    availability: string;
+    name: string;
+    role: string;
+    valueProp: string;
     taglines: string[];
-    roles: string[];
-    descriptions: string[];
     ctaProjects: string;
     ctaContact: string;
     scroll: string;
@@ -55,6 +57,20 @@ export type Translation = {
     p2: string;
     p3: string;
     tags: string[];
+    playground: {
+      filename: string;
+      livePreview: string;
+      previewLabel: string;
+      ariaLabel: string;
+      code: string;
+      preview: {
+        waiting: string;
+        badge: string;
+        title: string;
+        subtitle: string;
+        cta: string;
+      };
+    };
   };
   skills: {
     label: string;
@@ -83,6 +99,9 @@ export type Translation = {
     title1: string;
     title2: string;
     subtitle: string;
+  };
+  a11y: {
+    skipToContent: string;
   };
   footer: string;
   cursor: {
@@ -178,24 +197,18 @@ const SHARED_PROJECT_META = {
 
 export const translations: Record<Locale, Translation> = {
   es: {
-    nav: ["Connect One", "Sobre mí", "Skills", "Proyectos", "Contacto"],
-    navIds: ["connect-one", "sobre-mi", "skills", "proyectos", "contacto"],
+    nav: ["Sobre mí", "Proyectos", "Skills", "Experiencia", "Contacto"],
+    navIds: ["sobre-mi", "proyectos", "skills", "experiencia", "contacto"],
     hero: {
+      availability: "Disponible para nuevos proyectos",
+      name: "Felipe Landinez",
+      role: "Frontend Developer",
+      valueProp:
+        "Construyo productos reales para clientes — interfaces modernas con Vue 3, Quasar y experiencias web que convierten.",
       taglines: [
-        "Disponible para nuevos proyectos",
-        "Abierto a oportunidades",
-        "Listo para crear contigo",
-      ],
-      roles: [
-        "Desarrollador Frontend Junior",
-        "Vue 3 & Quasar Specialist",
-        "UI/UX Enthusiast",
-        "Full Stack en formación",
-      ],
-      descriptions: [
-        "Interfaces modernas con Vue 3, Quasar y Vite.",
-        "Experiencia real en APIs, Pinia y despliegue en Render.",
-        "Diseño responsive que convierte y deja huella.",
+        "Vue 3 · Quasar · TypeScript",
+        "Proyectos en producción para clientes reales",
+        "Prácticas en Connect One · Full stack en formación",
       ],
       ctaProjects: "Ver proyectos",
       ctaContact: "Contáctame",
@@ -235,9 +248,43 @@ export const translations: Record<Locale, Translation> = {
       p2: "He desarrollado productos para clientes reales — como Raíz Viajera y Las Piedras Minca, ambos en producción — y PawClinic Admin, sistema interno veterinario vendido a una clínica real. También Ouija AI, demo multi-agente con Gemini API. Manejo Vue 3, Quasar, Astro, Supabase, React Native y TypeScript, además de backend con Node.js y Express.",
       p3: "Experiencia con bases de datos SQL y NoSQL — MySQL, MariaDB, PostgreSQL y MongoDB — despliegue en Render, y herramientas como Git, GitHub y Postman. Metodologías ágiles con Scrum.",
       tags: ["ES / EN", "Remoto / Presencial", "Junior → Mid", "Scrum"],
+      playground: {
+        filename: "PortfolioCard.vue",
+        livePreview: "Live preview",
+        previewLabel: "Preview",
+        ariaLabel: "Demostración de código en vivo con vista previa",
+        code: `<template>
+  <article class="card">
+    <span class="badge">En producción</span>
+    <h3>Raíz Viajera</h3>
+    <p>Mapa GPX · Barichara</p>
+    <button @click="book">Reservar →</button>
+  </article>
+</template>
+
+<style scoped>
+.card {
+  background: #18181b;
+  border: 1px solid #34d39944;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+.badge {
+  color: #34d399;
+  font-size: 0.65rem;
+}
+</style>`,
+        preview: {
+          waiting: "// esperando código…",
+          badge: "En producción",
+          title: "Raíz Viajera",
+          subtitle: "Mapa GPX · Barichara",
+          cta: "Reservar →",
+        },
+      },
     },
     skills: {
-      label: "02 — Habilidades",
+      label: "03 — Habilidades",
       title: "Stack técnico",
       subtitle:
         "Herramientas del ecosistema que uso en proyectos reales — no solo frameworks, sino arquitectura frontend de verdad.",
@@ -251,10 +298,10 @@ export const translations: Record<Locale, Translation> = {
       ],
     },
     projects: {
-      label: "03 — Proyectos",
+      label: "02 — Proyectos",
       title: "Trabajo seleccionado",
       subtitle:
-        "Proyectos vendidos a clientes reales y desarrollo profesional. Hover para explorar — los enlaces abren el sitio en vivo.",
+        "Experiencia profesional y proyectos vendidos a clientes reales. Connect One + productos en producción.",
       featureLabel: "Feature destacada",
       liveLabel: "En producción",
       demoLabel: "Demo en vivo",
@@ -351,27 +398,24 @@ export const translations: Record<Locale, Translation> = {
         "Gracias por revisar mi trabajo en Connect One y en proyectos adicionales. Estoy listo para seguir aportando al equipo — escríbeme cuando quieras conversar.",
     },
     footer: "Felipe Landinez — Vue 3 · Quasar · GSAP",
+    a11y: {
+      skipToContent: "Saltar al contenido",
+    },
     cursor: { visit: "Visitar →", view: "Ver →", send: "Enviar →" },
   },
   en: {
-    nav: ["Connect One", "About", "Skills", "Projects", "Contact"],
-    navIds: ["connect-one", "sobre-mi", "skills", "proyectos", "contacto"],
+    nav: ["About", "Projects", "Skills", "Experience", "Contact"],
+    navIds: ["sobre-mi", "proyectos", "skills", "experiencia", "contacto"],
     hero: {
+      availability: "Available for new projects",
+      name: "Felipe Landinez",
+      role: "Frontend Developer",
+      valueProp:
+        "I build real products for real clients — modern interfaces with Vue 3, Quasar and web experiences that convert.",
       taglines: [
-        "Available for new projects",
-        "Open to opportunities",
-        "Ready to build with you",
-      ],
-      roles: [
-        "Junior Frontend Developer",
-        "Vue 3 & Quasar Specialist",
-        "UI/UX Enthusiast",
-        "Full Stack in progress",
-      ],
-      descriptions: [
-        "Modern interfaces with Vue 3, Quasar and Vite.",
-        "Hands-on experience with APIs, Pinia and Render deployment.",
-        "Responsive design that converts and makes an impact.",
+        "Vue 3 · Quasar · TypeScript",
+        "Client projects live in production",
+        "Connect One internship · Full stack in progress",
       ],
       ctaProjects: "View projects",
       ctaContact: "Contact me",
@@ -411,9 +455,43 @@ export const translations: Record<Locale, Translation> = {
       p2: "I've shipped products for real clients — including Raíz Viajera and Las Piedras Minca, both in production — and PawClinic Admin, a veterinary internal system sold to a real clinic. Also Ouija AI, a multi-agent Gemini API demo. I work with Vue 3, Quasar, Astro, Supabase, React Native and TypeScript, plus Node.js and Express on the backend.",
       p3: "Experience with SQL and NoSQL databases — MySQL, MariaDB, PostgreSQL and MongoDB — Render deployment, and tools like Git, GitHub and Postman. Agile methodologies with Scrum.",
       tags: ["ES / EN", "Remote / On-site", "Junior → Mid", "Scrum"],
+      playground: {
+        filename: "PortfolioCard.vue",
+        livePreview: "Live preview",
+        previewLabel: "Preview",
+        ariaLabel: "Live code demo with preview panel",
+        code: `<template>
+  <article class="card">
+    <span class="badge">In production</span>
+    <h3>Raíz Viajera</h3>
+    <p>GPX map · Barichara</p>
+    <button @click="book">Book now →</button>
+  </article>
+</template>
+
+<style scoped>
+.card {
+  background: #18181b;
+  border: 1px solid #34d39944;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+.badge {
+  color: #34d399;
+  font-size: 0.65rem;
+}
+</style>`,
+        preview: {
+          waiting: "// waiting for code…",
+          badge: "In production",
+          title: "Raíz Viajera",
+          subtitle: "GPX map · Barichara",
+          cta: "Book now →",
+        },
+      },
     },
     skills: {
-      label: "02 — Skills",
+      label: "03 — Skills",
       title: "Technical stack",
       subtitle:
         "Tools from the ecosystem I use on real projects — not just frameworks, but real frontend architecture.",
@@ -427,10 +505,10 @@ export const translations: Record<Locale, Translation> = {
       ],
     },
     projects: {
-      label: "03 — Projects",
+      label: "02 — Projects",
       title: "Selected work",
       subtitle:
-        "Client projects and professional development. Hover to explore — links open the live site.",
+        "Professional experience and client projects in production. Connect One + shipped products.",
       featureLabel: "Featured",
       liveLabel: "In production",
       demoLabel: "Live demo",
@@ -527,6 +605,9 @@ export const translations: Record<Locale, Translation> = {
         "Thanks for reviewing my work at Connect One and on additional projects. I'm ready to keep contributing to the team — reach out whenever you'd like to talk.",
     },
     footer: "Felipe Landinez — Vue 3 · Quasar · GSAP",
+    a11y: {
+      skipToContent: "Skip to content",
+    },
     cursor: { visit: "Visit →", view: "View →", send: "Send →" },
   },
 };

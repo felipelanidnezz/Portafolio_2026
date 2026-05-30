@@ -4,6 +4,12 @@
   --background: #050505;
   --foreground: #ededed;
   --accent: #34d399;
+  /* Z-index scale: nav 50 → cursor 60 → overlay 70 */
+  --z-spotlight: 30;
+  --z-cursor-glow: 31;
+  --z-nav: 50;
+  --z-cursor: 60;
+  --z-overlay: 70;
 }
 
 @theme inline {
@@ -95,12 +101,75 @@ body {
   pointer-events: none;
 }
 
-/* ── Cursor light & glow trail ── */
+.hero-glow--pulse {
+  animation: hero-glow-pulse 8s ease-in-out infinite;
+}
+
+@keyframes hero-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow--pulse {
+    animation: none;
+  }
+}
+
+/* ── Keyboard focus & skip link ── */
+.interactive-focus:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: calc(1rem + env(safe-area-inset-top));
+  z-index: calc(var(--z-nav) + 1);
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: #050505;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+body.keyboard-nav {
+  cursor: auto;
+}
+
+body.keyboard-nav .cursor-ring,
+body.keyboard-nav .cursor-dot,
+body.keyboard-nav .cursor-glow-trail {
+  opacity: 0 !important;
+  visibility: hidden;
+}
+
+.cursor-ring,
+.cursor-dot {
+  z-index: var(--z-cursor);
+}
 .cursor-spotlight {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 30;
+  z-index: var(--z-spotlight);
   background: radial-gradient(
     560px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
     rgba(52, 211, 153, 0.14) 0%,
@@ -117,7 +186,7 @@ body {
   height: 440px;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 31;
+  z-index: var(--z-cursor-glow);
   opacity: 0;
   background: radial-gradient(
     circle,
@@ -140,7 +209,7 @@ body {
 .noise-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: var(--z-overlay);
   pointer-events: none;
   opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

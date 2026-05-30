@@ -17,10 +17,10 @@ export default function LanguageToggle() {
           key={lang}
           type="button"
           onClick={() => setLocale(lang)}
-          className={`rounded-full px-3 py-1.5 transition-colors ${
+          className={`interactive-focus rounded-full px-3 py-1.5 transition-colors ${
             locale === lang
               ? "bg-emerald-400 text-black"
-              : "text-zinc-400 hover:text-zinc-200"
+              : "text-zinc-300 hover:text-zinc-100"
           }`}
           aria-pressed={locale === lang}
         >
