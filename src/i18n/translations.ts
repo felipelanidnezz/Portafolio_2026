@@ -120,6 +120,7 @@ export type Translation = {
     featureLabel: string;
     liveLabel: string;
     demoLabel: string;
+    privateLabel: string;
     expandHint: string;
     expandLabel: string;
     closeLabel: string;
@@ -156,7 +157,6 @@ const SHARED_PROJECT_META = {
     url: "https://raizviajera.com",
     browserUrl: "raizviajera.com",
     live: true,
-    featured: true,
     galleryAccent: "emerald",
     screenshots: [
       {
@@ -207,7 +207,6 @@ const SHARED_PROJECT_META = {
     displayUrl: "cabañalaspiedrasminca.com",
     browserUrl: "cabañalaspiedrasminca.com",
     live: true,
-    featured: true,
     galleryAccent: "amber",
     screenshots: [
       {
@@ -351,7 +350,6 @@ const SHARED_PROJECT_META = {
     url: `${BASE}/pawclinic/`,
     browserUrl: "Demo · PawClinic Admin",
     live: true,
-    featuredBottom: true,
     galleryAccent: "cyan",
     galleryPreviewBg: "#eef2f7",
     screenshots: [
@@ -393,6 +391,12 @@ const SHARED_PROJECT_META = {
       "localStorage",
       "CRUD",
     ],
+  },
+  "06": {
+    id: "06",
+    color: "from-emerald-500/20 to-violet-900/10",
+    connectOne: true,
+    tags: ["Vue 3", "Quasar", "Pinia", "Vite", "Axios", "ApexCharts", "Scrum"],
   },
 } as const;
 
@@ -636,10 +640,20 @@ export const translations: Record<Locale, Translation> = {
       featureLabel: "Feature destacada",
       liveLabel: "En producción",
       demoLabel: "Demo en vivo",
+      privateLabel: "Acceso privado",
       expandHint: "Ampliar",
       expandLabel: "Ampliar captura del proyecto",
       closeLabel: "Cerrar ✕",
       items: [
+        {
+          ...SHARED_PROJECT_META["06"],
+          title: "Connect One",
+          subtitle: "Intranet corporativa + portal Clientes · Vue 3 & Quasar",
+          highlight:
+            "Intranet: rediseño de Roles, Trabajadores, Anuncios, Jerarquías y Ausencias con modo oscuro, tablas optimizadas y despliegues a producción. Clientes: dashboard en tiempo real, calendario con Google Calendar, analytics con ApexCharts y módulo Mi cuenta.",
+          desc: "Práctica profesional y desarrollo activo en Connect One. Modernicé la intranet corporativa y actualmente construyo el portal para clientes y supervisores con métricas, calendario integrado y visualizaciones de productividad.",
+          role: "Frontend · prácticas + portal Clientes en desarrollo",
+        },
         {
           ...SHARED_PROJECT_META["01"],
           title: "Raíz Viajera",
@@ -976,10 +990,20 @@ export const translations: Record<Locale, Translation> = {
       featureLabel: "Featured",
       liveLabel: "In production",
       demoLabel: "Live demo",
+      privateLabel: "Private access",
       expandHint: "Expand",
       expandLabel: "Expand project screenshot",
       closeLabel: "Close ✕",
       items: [
+        {
+          ...SHARED_PROJECT_META["06"],
+          title: "Connect One",
+          subtitle: "Corporate intranet + Client portal · Vue 3 & Quasar",
+          highlight:
+            "Intranet: redesigned Roles, Employees, Announcements, Hierarchies and Absences with dark mode, optimized tables and production deployments. Clientes: real-time dashboard, Google Calendar integration, ApexCharts analytics and My Account module.",
+          desc: "Professional internship and active development at Connect One. I modernized the corporate intranet and I'm currently building the client and supervisor portal with metrics, integrated calendar and productivity visualizations.",
+          role: "Frontend · internship + Client portal in progress",
+        },
         {
           ...SHARED_PROJECT_META["01"],
           title: "Raíz Viajera",

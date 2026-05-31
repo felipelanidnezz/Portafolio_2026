@@ -1,7 +1,6 @@
 "use client";
 
 import HeroSection from "@/components/HeroSection";
-import ConnectOneSection from "@/components/ConnectOneSection";
 import ProjectsGrid from "@/components/ProjectsGrid";
 import LanguageToggle from "@/components/LanguageToggle";
 import LiveCodePlayground from "@/components/LiveCodePlayground";
@@ -43,7 +42,6 @@ export default function HomePage() {
       </nav>
 
       <HeroSection />
-      <ConnectOneSection />
 
       <section id="sobre-mi" className="relative scroll-mt-24 px-6 py-32">
         <div className="mx-auto grid max-w-6xl items-start gap-16 lg:grid-cols-2">
@@ -142,6 +140,7 @@ export default function HomePage() {
               expandHint: t.projects.expandHint,
               expandLabel: t.projects.expandLabel,
               closeLabel: t.projects.closeLabel,
+              privateLabel: t.projects.privateLabel,
             }}
           />
         </div>

@@ -9,6 +9,7 @@ type ProjectGalleryProps = {
   browserUrl?: string;
   accent?: "emerald" | "amber" | "violet" | "cyan" | "red";
   previewBg?: string;
+  compact?: boolean;
   labels: {
     expandHint: string;
     expandLabel: string;
@@ -29,6 +30,7 @@ export default function ProjectGallery({
   browserUrl,
   accent = "emerald",
   previewBg = "#f5f0e8",
+  compact = false,
   labels,
 }: ProjectGalleryProps) {
   const [activeId, setActiveId] = useState(screenshots[0]?.id ?? "");
@@ -68,7 +70,7 @@ export default function ProjectGallery({
   return (
     <>
       <div
-        className="mb-6"
+        className={compact ? "mb-4" : "mb-6"}
         onClick={stopNav}
         onKeyDown={(e) => e.stopPropagation()}
         role="presentation"
@@ -109,19 +111,23 @@ export default function ProjectGallery({
               stopNav(e);
               setLightbox(true);
             }}
-            className="group relative block w-full cursor-zoom-in p-1 sm:p-1.5"
+            className="group relative block w-full cursor-zoom-in overflow-hidden p-1 sm:p-1.5"
             style={{ backgroundColor: previewBg }}
             aria-label={labels.expandLabel}
           >
-            <Image
-              key={active.id}
-              src={active.image}
-              alt={active.label}
-              width={imgW}
-              height={imgH}
-              className="connect-screenshot block w-full rounded-[4px] border border-black/5 shadow-sm transition duration-300 group-hover:brightness-[1.02]"
-              sizes="(max-width: 768px) 100vw, 900px"
-            />
+            <div className={compact ? "aspect-[16/10] w-full" : "w-full"}>
+              <Image
+                key={active.id}
+                src={active.image}
+                alt={active.label}
+                width={imgW}
+                height={imgH}
+                className={`connect-screenshot block w-full rounded-[4px] border border-black/5 shadow-sm transition duration-300 group-hover:brightness-[1.02] ${
+                  compact ? "h-full object-cover object-top" : ""
+                }`}
+                sizes="(max-width: 768px) 100vw, 600px"
+              />
+            </div>
             <span className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-zinc-700/80 bg-zinc-950/80 px-2 py-0.5 font-mono text-[8px] uppercase tracking-wider text-zinc-400 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 sm:bottom-4 sm:right-4 sm:px-2.5 sm:py-1 sm:text-[9px]">
               {labels.expandHint}
             </span>
