@@ -146,7 +146,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-zinc-200 px-6 py-32 text-zinc-900">
+      <section className="bg-zinc-300 px-6 py-32 text-zinc-900">
         <div className="mx-auto max-w-6xl">
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-600">
             {t.experience.label}
@@ -158,7 +158,7 @@ export default function HomePage() {
           <div className="mt-16 space-y-0">
             {t.experience.items.map((exp) => (
               <MagneticButton key={exp.year} cursorText="→">
-                <div className="group flex flex-col gap-4 border-t border-zinc-400/60 py-8 transition-colors hover:bg-zinc-300/40 md:flex-row md:items-start md:gap-12">
+                <div className="group flex flex-col gap-4 border-t border-zinc-500/50 py-8 transition-colors hover:bg-zinc-400/35 md:flex-row md:items-start md:gap-12">
                   <span className="shrink-0 font-mono text-xs text-zinc-500">
                     {exp.year}
                   </span>
@@ -174,14 +174,14 @@ export default function HomePage() {
             ))}
           </div>
 
-          <div className="mt-12 border-t border-zinc-400/60 pt-12">
+          <div className="mt-12 border-t border-zinc-500/50 pt-12">
             <h3 className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-600">
               {t.experience.coursesTitle}
             </h3>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {t.experience.courses.map((course) => (
                 <MagneticButton key={course} cursorText="✓">
-                  <li className="flex items-center gap-3 rounded-xl border border-zinc-400/50 bg-zinc-300/35 px-5 py-4 text-sm text-zinc-700 transition-colors hover:border-emerald-500/40 hover:bg-zinc-300/55">
+                  <li className="flex items-center gap-3 rounded-xl border border-zinc-500/45 bg-zinc-400/40 px-5 py-4 text-sm text-zinc-800 transition-colors hover:border-emerald-600/40 hover:bg-zinc-400/60">
                     <span className="font-mono text-emerald-600">→</span>
                     {course}
                   </li>
