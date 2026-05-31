@@ -314,6 +314,124 @@ body.keyboard-nav .cursor-glow-trail {
   image-rendering: auto;
 }
 
+/* Skills icon carousel */
+.skill-carousel {
+  position: relative;
+  margin-top: 1rem;
+  height: 7.5rem;
+  overflow: hidden;
+}
+
+.skill-carousel-mask {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
+
+.skill-carousel-row {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+  animation: skill-marquee-left 28s linear infinite;
+}
+
+.skill-carousel-row--right {
+  animation-name: skill-marquee-right;
+}
+
+@keyframes skill-marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes skill-marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.skill-icon-chip {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(63, 63, 70, 0.65);
+  background: rgba(24, 24, 27, 0.85);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 8px 20px -8px rgba(0, 0, 0, 0.55);
+  animation: skill-icon-float 4.5s ease-in-out infinite;
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.group:hover .skill-icon-chip {
+  border-color: rgba(52, 211, 153, 0.25);
+}
+
+.skill-icon-chip img {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+}
+
+.skill-icon-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.375rem;
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fafafa;
+}
+
+@keyframes skill-icon-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-carousel-row,
+  .skill-icon-chip {
+    animation: none;
+  }
+}
+
 .connect-thumb img {
   image-rendering: auto;
 }

@@ -7,6 +7,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import LiveCodePlayground from "@/components/LiveCodePlayground";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { MagneticButton } from "@/components/MagneticCursor";
+import SkillIconCarousel from "@/components/SkillIconCarousel";
 
 export default function HomePage() {
   const { t } = useLanguage();
@@ -112,16 +113,7 @@ export default function HomePage() {
                     </span>
                     <h3 className="font-semibold text-zinc-200">{cat.title}</h3>
                   </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {cat.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="rounded-full border border-zinc-700/80 bg-zinc-800/50 px-3 py-1 font-mono text-[11px] text-zinc-400 transition-colors group-hover:border-zinc-600 group-hover:text-zinc-300"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+                  <SkillIconCarousel skills={cat.skills} />
                 </article>
               </MagneticButton>
             ))}
