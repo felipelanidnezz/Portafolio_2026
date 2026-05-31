@@ -120,6 +120,9 @@ export type Translation = {
     featureLabel: string;
     liveLabel: string;
     demoLabel: string;
+    expandHint: string;
+    expandLabel: string;
+    closeLabel: string;
     items: Project[];
   };
   experience: {
@@ -151,8 +154,40 @@ const SHARED_PROJECT_META = {
     id: "01",
     color: "from-emerald-500/20 to-emerald-900/10",
     url: "https://raizviajera.com",
+    browserUrl: "raizviajera.com",
     live: true,
     featured: true,
+    galleryAccent: "emerald",
+    screenshots: [
+      {
+        id: "hero",
+        label: "Home",
+        image: `${BASE}/projects/raiz-viajera/hero.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "tours",
+        label: "Tours",
+        image: `${BASE}/projects/raiz-viajera/tours.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "mapa-rutas",
+        label: "MapaRutas",
+        image: `${BASE}/projects/raiz-viajera/mapa-rutas.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "galeria",
+        label: "Galería",
+        image: `${BASE}/projects/raiz-viajera/galeria.png`,
+        width: 1440,
+        height: 900,
+      },
+    ],
     tags: [
       "Astro 5",
       "Tailwind CSS",
@@ -170,8 +205,40 @@ const SHARED_PROJECT_META = {
     color: "from-amber-500/20 to-amber-900/10",
     url: "https://xn--cabaalaspiedrasminca-66b.com",
     displayUrl: "cabañalaspiedrasminca.com",
+    browserUrl: "cabañalaspiedrasminca.com",
     live: true,
     featured: true,
+    galleryAccent: "amber",
+    screenshots: [
+      {
+        id: "hero",
+        label: "Home",
+        image: `${BASE}/projects/las-piedras-minca/hero.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "historia",
+        label: "Historia",
+        image: `${BASE}/projects/las-piedras-minca/historia.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "espacios",
+        label: "Espacios",
+        image: `${BASE}/projects/las-piedras-minca/espacios.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "galeria",
+        label: "Galería",
+        image: `${BASE}/projects/las-piedras-minca/galeria.png`,
+        width: 1440,
+        height: 900,
+      },
+    ],
     tags: [
       "Vue 3",
       "Vite",
@@ -187,6 +254,39 @@ const SHARED_PROJECT_META = {
     id: "03",
     color: "from-red-500/20 to-indigo-900/10",
     url: `${BASE}/pokedex.html`,
+    browserUrl: "Demo · Pokédex",
+    galleryAccent: "red",
+    galleryPreviewBg: "#121218",
+    screenshots: [
+      {
+        id: "pikachu",
+        label: "Pikachu",
+        image: `${BASE}/projects/pokedex/pikachu.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "nidoran",
+        label: "Nidoran♀",
+        image: `${BASE}/projects/pokedex/nidoran.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "charizard",
+        label: "Charizard",
+        image: `${BASE}/projects/pokedex/charizard.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "gengar",
+        label: "Gengar",
+        image: `${BASE}/projects/pokedex/gengar.png`,
+        width: 1440,
+        height: 900,
+      },
+    ],
     tags: [
       "HTML5",
       "CSS3",
@@ -201,7 +301,40 @@ const SHARED_PROJECT_META = {
     id: "04",
     color: "from-violet-500/20 to-violet-900/10",
     url: `${BASE}/ouija-ai/`,
+    browserUrl: "Demo · Ouija AI",
     live: true,
+    galleryAccent: "violet",
+    galleryPreviewBg: "#0a0612",
+    screenshots: [
+      {
+        id: "home-es",
+        label: "Home ES",
+        image: `${BASE}/projects/ouija-ai/home-es.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "controles-es",
+        label: "Controles",
+        image: `${BASE}/projects/ouija-ai/controles-es.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "chat-en",
+        label: "Chat EN",
+        image: `${BASE}/projects/ouija-ai/chat-en.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "sesion-en",
+        label: "Sesión EN",
+        image: `${BASE}/projects/ouija-ai/sesion-en.png`,
+        width: 1440,
+        height: 900,
+      },
+    ],
     tags: [
       "Node.js",
       "Express",
@@ -216,8 +349,41 @@ const SHARED_PROJECT_META = {
     id: "05",
     color: "from-cyan-500/20 to-cyan-900/10",
     url: `${BASE}/pawclinic/`,
+    browserUrl: "Demo · PawClinic Admin",
     live: true,
     featuredBottom: true,
+    galleryAccent: "cyan",
+    galleryPreviewBg: "#eef2f7",
+    screenshots: [
+      {
+        id: "dashboard",
+        label: "Dashboard",
+        image: `${BASE}/projects/pawclinic/dashboard-vacio.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "citas",
+        label: "Citas",
+        image: `${BASE}/projects/pawclinic/citas.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "eliminar",
+        label: "Eliminar",
+        image: `${BASE}/projects/pawclinic/eliminar-modal.png`,
+        width: 1440,
+        height: 900,
+      },
+      {
+        id: "detalle",
+        label: "Detalle",
+        image: `${BASE}/projects/pawclinic/cita-detalle.png`,
+        width: 1440,
+        height: 900,
+      },
+    ],
     tags: [
       "HTML5",
       "CSS3",
@@ -470,6 +636,9 @@ export const translations: Record<Locale, Translation> = {
       featureLabel: "Feature destacada",
       liveLabel: "En producción",
       demoLabel: "Demo en vivo",
+      expandHint: "Ampliar",
+      expandLabel: "Ampliar captura del proyecto",
+      closeLabel: "Cerrar ✕",
       items: [
         {
           ...SHARED_PROJECT_META["01"],
@@ -560,7 +729,7 @@ export const translations: Record<Locale, Translation> = {
       title1: "¿Hacemos algo",
       title2: "increíble juntos?",
       subtitle:
-        "Gracias por revisar mi trabajo en Connect One y en proyectos adicionales. Estoy listo para seguir aportando al equipo. Escríbeme cuando quieras conversar.",
+        "Escríbeme cuando quieras conversar.",
     },
     footer: "Felipe Landinez · Vue 3 · Quasar · GSAP",
     a11y: {
@@ -807,6 +976,9 @@ export const translations: Record<Locale, Translation> = {
       featureLabel: "Featured",
       liveLabel: "In production",
       demoLabel: "Live demo",
+      expandHint: "Expand",
+      expandLabel: "Expand project screenshot",
+      closeLabel: "Close ✕",
       items: [
         {
           ...SHARED_PROJECT_META["01"],
@@ -897,7 +1069,7 @@ export const translations: Record<Locale, Translation> = {
       title1: "Let's build something",
       title2: "amazing together?",
       subtitle:
-        "Thanks for reviewing my work at Connect One and on additional projects. I'm ready to keep contributing to the team. Reach out whenever you'd like to talk.",
+        "Reach out whenever you'd like to talk.",
     },
     footer: "Felipe Landinez · Vue 3 · Quasar · GSAP",
     a11y: {

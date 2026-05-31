@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { MagneticButton } from "@/components/MagneticCursor";
+import ProjectGallery from "@/components/ProjectGallery";
 
 const GH_PAGES_PREFIX = "/Portafolio_2026";
 
@@ -24,6 +25,14 @@ export function resolveProjectUrl(url?: string): string | undefined {
   return url;
 }
 
+export type ProjectScreenshot = {
+  id: string;
+  label: string;
+  image: string;
+  width?: number;
+  height?: number;
+};
+
 export type Project = {
   id: string;
   title: string;
@@ -38,6 +47,10 @@ export type Project = {
   live?: boolean;
   featured?: boolean;
   featuredBottom?: boolean;
+  screenshots?: readonly ProjectScreenshot[];
+  browserUrl?: string;
+  galleryAccent?: "emerald" | "amber" | "violet" | "cyan" | "red";
+  galleryPreviewBg?: string;
 };
 
 type ProjectLabels = {
@@ -46,6 +59,9 @@ type ProjectLabels = {
   demo: string;
   visit: string;
   view: string;
+  expandHint: string;
+  expandLabel: string;
+  closeLabel: string;
 };
 
 function ProjectCard({
@@ -63,6 +79,19 @@ function ProjectCard({
     <article
       className={`group relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br ${project.color} p-8 shadow-lg shadow-black/20 transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/40 hover:shadow-emerald-500/10`}
     >
+      {project.screenshots && project.screenshots.length > 0 && (
+        <ProjectGallery
+          screenshots={project.screenshots}
+          browserUrl={project.browserUrl ?? project.displayUrl ?? project.url?.replace("https://", "")}
+          accent={project.galleryAccent ?? "emerald"}
+          previewBg={project.galleryPreviewBg}
+          labels={{
+            expandHint: labels.expandHint,
+            expandLabel: labels.expandLabel,
+            closeLabel: labels.closeLabel,
+          }}
+        />
+      )}
       <div className="flex items-center justify-between gap-3">
         <span className="font-mono text-xs text-zinc-400">{project.id}</span>
         {project.live && (
