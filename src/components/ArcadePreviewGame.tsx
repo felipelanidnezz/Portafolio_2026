@@ -43,8 +43,10 @@ export default function ArcadePreviewGame({
   labels: GameLabels;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const keysRef = useRef({ left: false, right: false, shoot: false });
+  const activeRef = useRef(false);
   const mouseXRef = useRef<number | null>(null);
   const stateRef = useRef({
     playerX: W / 2,
@@ -109,6 +111,8 @@ export default function ArcadePreviewGame({
   const startPlaying = useCallback(
     (level = 1) => {
       const s = stateRef.current;
+      activeRef.current = true;
+      canvasRef.current?.focus({ preventScroll: true });
       s.playerX = W / 2;
       s.phase = "playing";
       s.levelFlash = 0;
@@ -158,18 +162,44 @@ export default function ArcadePreviewGame({
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    const panel = panelRef.current;
     if (!canvas) return;
 
+    const focusCanvas = () => {
+      activeRef.current = true;
+      canvas.focus({ preventScroll: true });
+    };
+
     const onKey = (e: KeyboardEvent, down: boolean) => {
-      if (["ArrowLeft", "ArrowRight", " ", "Enter"].includes(e.key)) {
-        e.preventDefault();
-      }
-      if (e.key === "ArrowLeft" || e.key === "a") keysRef.current.left = down;
-      if (e.key === "ArrowRight" || e.key === "d") keysRef.current.right = down;
-      if (e.key === " " || e.key === "Enter") {
+      const gameKey =
+        e.code === "ArrowLeft" ||
+        e.code === "ArrowRight" ||
+        e.code === "KeyA" ||
+        e.code === "KeyD" ||
+        e.code === "Space" ||
+        e.code === "Enter";
+
+      if (!gameKey) return;
+
+      const engaged =
+        activeRef.current ||
+        document.activeElement === canvas ||
+        Boolean(panel?.matches(":hover"));
+
+      if (!engaged) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.code === "ArrowLeft" || e.code === "KeyA") keysRef.current.left = down;
+      if (e.code === "ArrowRight" || e.code === "KeyD") keysRef.current.right = down;
+      if (e.code === "Space" || e.code === "Enter") {
         keysRef.current.shoot = down;
         if (down && stateRef.current.phase === "ready") startPlaying(1);
-        if (down && (stateRef.current.phase === "over" || stateRef.current.phase === "win")) {
+        if (
+          down &&
+          (stateRef.current.phase === "over" || stateRef.current.phase === "win")
+        ) {
           fullReset();
         }
       }
@@ -184,7 +214,7 @@ export default function ArcadePreviewGame({
     };
 
     const onClick = () => {
-      canvas.focus();
+      focusCanvas();
       const s = stateRef.current;
       if (s.phase === "ready") startPlaying(1);
       else if (s.phase === "over" || s.phase === "win") fullReset();
@@ -194,16 +224,48 @@ export default function ArcadePreviewGame({
       }, 80);
     };
 
-    window.addEventListener("keydown", down);
-    window.addEventListener("keyup", up);
+    const onPanelEnter = () => {
+      activeRef.current = true;
+    };
+
+    const onPanelLeave = () => {
+      activeRef.current = false;
+      keysRef.current.left = false;
+      keysRef.current.right = false;
+      keysRef.current.shoot = false;
+      mouseXRef.current = null;
+    };
+
+    const onBlur = () => {
+      if (!panel?.matches(":hover")) {
+        activeRef.current = false;
+        keysRef.current.left = false;
+        keysRef.current.right = false;
+        keysRef.current.shoot = false;
+      }
+    };
+
+    document.addEventListener("keydown", down, true);
+    document.addEventListener("keyup", up, true);
     canvas.addEventListener("mousemove", onMouseMove);
     canvas.addEventListener("click", onClick);
+    canvas.addEventListener("focus", () => {
+      activeRef.current = true;
+    });
+    canvas.addEventListener("blur", onBlur);
+    panel?.addEventListener("mouseenter", onPanelEnter);
+    panel?.addEventListener("mouseleave", onPanelLeave);
+    panel?.addEventListener("pointerdown", focusCanvas);
 
     return () => {
-      window.removeEventListener("keydown", down);
-      window.removeEventListener("keyup", up);
+      document.removeEventListener("keydown", down, true);
+      document.removeEventListener("keyup", up, true);
       canvas.removeEventListener("mousemove", onMouseMove);
       canvas.removeEventListener("click", onClick);
+      canvas.removeEventListener("blur", onBlur);
+      panel?.removeEventListener("mouseenter", onPanelEnter);
+      panel?.removeEventListener("mouseleave", onPanelLeave);
+      panel?.removeEventListener("pointerdown", focusCanvas);
     };
   }, [fullReset, startPlaying]);
 
@@ -264,10 +326,10 @@ export default function ArcadePreviewGame({
       if (s.phase === "playing") {
         if (s.levelFlash > 0) s.levelFlash -= 1;
 
-        const speed = 2.8;
+        const speed = 3.6;
         if (keysRef.current.left) s.playerX -= speed;
         if (keysRef.current.right) s.playerX += speed;
-        if (mouseXRef.current !== null) {
+        if (mouseXRef.current !== null && activeRef.current) {
           s.playerX += (mouseXRef.current - s.playerX) * 0.18;
         }
         s.playerX = Math.max(18, Math.min(W - 18, s.playerX));
@@ -447,7 +509,10 @@ export default function ArcadePreviewGame({
   }, [ready, labels, advanceLevel]);
 
   return (
-    <div className="arcade-cabinet flex h-full min-h-[360px] flex-col p-3 sm:min-h-[420px]">
+    <div
+      ref={panelRef}
+      className="arcade-cabinet flex h-full min-h-[360px] flex-col p-3 sm:min-h-[420px]"
+    >
       <div className="arcade-marquee mb-2 shrink-0 rounded-md px-3 py-1.5 text-center">
         <p className="font-mono text-[11px] font-bold tracking-[0.35em] text-fuchsia-200 sm:text-xs">
           ★ {labels.title} ★
@@ -475,7 +540,7 @@ export default function ArcadePreviewGame({
           width={W}
           height={H}
           tabIndex={0}
-          className="arcade-canvas h-auto w-full rounded-sm outline-none"
+          className="arcade-canvas h-auto w-full cursor-crosshair rounded-sm outline-none focus:ring-2 focus:ring-cyan-400/40"
           aria-label={labels.title}
         />
         <div className="arcade-scanlines pointer-events-none absolute inset-0 rounded-sm" aria-hidden="true" />
