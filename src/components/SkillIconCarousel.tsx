@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { getSkillIcon, skillIconUrl } from "@/data/skillIcons";
+import { getSkillIcon, getSkillLabel, skillIconUrl } from "@/data/skillIcons";
 
 type SkillIconCarouselProps = {
   skills: string[];
@@ -9,36 +9,39 @@ type SkillIconCarouselProps = {
 
 function SkillIcon({ skill, index }: { skill: string; index: number }) {
   const def = getSkillIcon(skill);
+  const label = getSkillLabel(skill);
   const url = skillIconUrl(def);
   const [imgFailed, setImgFailed] = useState(false);
   const showImage = url && !imgFailed;
 
   return (
     <div
-      className="skill-icon-chip"
+      className="skill-icon-item"
       style={{ animationDelay: `${(index % 6) * 0.35}s` }}
-      title={skill}
     >
-      {showImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={url}
-          alt=""
-          width={24}
-          height={24}
-          loading="lazy"
-          decoding="async"
-          onError={() => setImgFailed(true)}
-        />
-      ) : (
-        <span
-          className="skill-icon-fallback"
-          style={{ backgroundColor: def.bg ?? "#52525B" }}
-          aria-hidden="true"
-        >
-          {def.initials}
-        </span>
-      )}
+      <div className="skill-icon-chip">
+        {showImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt=""
+            width={24}
+            height={24}
+            loading="lazy"
+            decoding="async"
+            onError={() => setImgFailed(true)}
+          />
+        ) : (
+          <span
+            className="skill-icon-fallback"
+            style={{ backgroundColor: def.bg ?? "#52525B" }}
+            aria-hidden="true"
+          >
+            {def.initials}
+          </span>
+        )}
+      </div>
+      <span className="skill-icon-label">{label}</span>
     </div>
   );
 }
