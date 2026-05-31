@@ -425,7 +425,7 @@ export const translations: Record<Locale, Translation> = {
       title1: "Código con alma,",
       title2: "diseño con propósito",
       p1: "Desarrollador de software enfocado en frontend, con experiencia en la intranet Connect One, desarrollo web full stack y construcción de interfaces modernas, dinámicas y responsivas.",
-      p2: "He desarrollado productos para clientes reales, como Raíz Viajera y Las Piedras Minca, ambos en producción, y PawClinic Admin, un sistema interno veterinario vendido a una clínica real. Manejo Vue 3, Quasar, Astro, Supabase, React Native y TypeScript, además de backend con Node.js y Express.",
+      p2: "He desarrollado productos para clientes reales, como Raíz Viajera y Las Piedras Minca, ambos en producción, y PawClinic Admin, un sistema interno veterinario vendido a una clínica real. Tengo conocimiento en herramientas como Vue 3, Quasar, Astro, Supabase, React Native y TypeScript, además de backend con Node.js y Express.",
       p3: "Experiencia con bases de datos SQL y NoSQL (MySQL, MariaDB, PostgreSQL y MongoDB), despliegue en Render, y herramientas como Git, GitHub y Postman. Metodologías ágiles con Scrum.",
       tags: ["ES / EN", "Remoto / Presencial", "Junior → Mid", "Scrum"],
       playground: {
@@ -762,7 +762,7 @@ export const translations: Record<Locale, Translation> = {
       title1: "Code with soul,",
       title2: "design with purpose",
       p1: "Software developer focused on frontend, with experience on the Connect One intranet, full stack web development and building modern, dynamic and responsive interfaces.",
-      p2: "I've shipped products for real clients, including Raíz Viajera and Las Piedras Minca, both in production, and PawClinic Admin, a veterinary internal system sold to a real clinic. I work with Vue 3, Quasar, Astro, Supabase, React Native and TypeScript, plus Node.js and Express on the backend.",
+      p2: "I've shipped products for real clients, including Raíz Viajera and Las Piedras Minca, both in production, and PawClinic Admin, a veterinary internal system sold to a real clinic. I have knowledge of tools such as Vue 3, Quasar, Astro, Supabase, React Native and TypeScript, plus Node.js and Express on the backend.",
       p3: "Experience with SQL and NoSQL databases (MySQL, MariaDB, PostgreSQL and MongoDB), Render deployment, and tools like Git, GitHub and Postman. Agile methodologies with Scrum.",
       tags: ["ES / EN", "Remote / On-site", "Junior → Mid", "Scrum"],
       playground: {
