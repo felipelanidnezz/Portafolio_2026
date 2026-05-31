@@ -716,7 +716,7 @@ export const translations: Record<Locale, Translation> = {
             "Modernización de la plataforma: rediseño de Home, Roles, Permisos, Trabajadores, PQRS y LearnDash. Modo oscuro, estandarización visual, optimización de tablas/filtros/búsqueda, pruebas funcionales, corrección de incidencias y despliegues a producción con Vue 3 y Quasar.",
         },
         {
-          year: "2024 / Presente",
+          year: "2025 - 2026",
           role: "Desarrollador Full-Stack · Proyectos para clientes",
           company: "Freelance & proyectos reales",
           detail:
@@ -1066,7 +1066,7 @@ export const translations: Record<Locale, Translation> = {
             "Platform modernization: redesign of Home, Roles, Permissions, Employees, PQRS and LearnDash. Dark mode, visual standardization, table/filter/search optimization, functional testing, bug fixes and production deployments with Vue 3 and Quasar.",
         },
         {
-          year: "2024 / Present",
+          year: "2025 - 2026",
           role: "Full-Stack Developer · Client projects",
           company: "Freelance & real-world work",
           detail:
