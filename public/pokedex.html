@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -566,8 +566,78 @@
 
     .footer a:hover { text-decoration: underline; }
 
+    .header__actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 520px;
+      justify-content: flex-end;
+    }
+
+    .lang-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .lang-toggle__btn {
+      padding: 0.5rem 0.75rem;
+      border: none;
+      background: var(--surface);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .lang-toggle__btn.is-active {
+      background: var(--type-color);
+      color: #fff;
+    }
+
+    .visual__mega-actions {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1rem;
+      max-width: 280px;
+    }
+
+    .btn--mega {
+      background: linear-gradient(135deg, #c084fc 0%, #6366f1 55%, #8b5cf6 100%);
+      color: #fff;
+      box-shadow: 0 4px 22px rgba(139, 92, 246, 0.45);
+      font-size: 0.8rem;
+      padding: 0.6rem 1rem;
+    }
+
+    .btn--mega:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 6px 28px rgba(139, 92, 246, 0.55);
+    }
+
+    .btn--mega-outline {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(196, 132, 252, 0.45);
+      color: #e9d5ff;
+    }
+
+    .btn--mega-outline:hover {
+      background: rgba(139, 92, 246, 0.2);
+    }
+
     @media (max-width: 768px) {
       .header { flex-direction: column; align-items: stretch; }
+      .header__actions { max-width: 100%; justify-content: stretch; flex-direction: column; }
       .search-bar { max-width: 100%; }
       .card__inner { grid-template-columns: 1fr; }
       .visual { min-height: 320px; }
@@ -600,32 +670,39 @@
         <div class="brand__icon" aria-hidden="true"></div>
         <div class="brand__text">
           <h1>Pokédex</h1>
-          <p>Explorador interactivo · PokéAPI</p>
+          <p id="brandSubtitle">Explorador interactivo · PokéAPI</p>
         </div>
       </div>
 
-      <form class="search-bar" id="searchForm" role="search">
-        <div class="search-bar__input-wrap">
-          <svg class="search-bar__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input
-            class="search-bar__input"
-            id="searchInput"
-            type="search"
-            placeholder="Nombre o #número (ej: pikachu, 25)"
-            autocomplete="off"
-            aria-label="Buscar Pokémon"
-          />
+      <div class="header__actions">
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lang-toggle__btn" id="langEs" data-lang="es">ES</button>
+          <button type="button" class="lang-toggle__btn is-active" id="langEn" data-lang="en">EN</button>
         </div>
-        <button type="submit" class="btn btn--primary">Buscar</button>
-        <button type="button" class="btn btn--ghost" id="btnRandom" title="Pokémon aleatorio">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
-          </svg>
-          Aleatorio
-        </button>
-      </form>
+
+        <form class="search-bar" id="searchForm" role="search">
+          <div class="search-bar__input-wrap">
+            <svg class="search-bar__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              class="search-bar__input"
+              id="searchInput"
+              type="search"
+              placeholder="Nombre o #número (ej: pikachu, 25)"
+              autocomplete="off"
+              aria-label="Buscar Pokémon"
+            />
+          </div>
+          <button type="submit" class="btn btn--primary" id="btnSearch">Buscar</button>
+          <button type="button" class="btn btn--ghost" id="btnRandom" title="Pokémon aleatorio">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
+            </svg>
+            <span id="btnRandomLabel">Aleatorio</span>
+          </button>
+        </form>
+      </div>
     </header>
 
     <main class="card" id="mainCard">
@@ -635,7 +712,7 @@
       </div>
     </main>
 
-    <footer class="footer">
+    <footer class="footer" id="footerText">
       Datos de <a href="https://pokeapi.co/" target="_blank" rel="noopener">PokéAPI</a>
       · Proyecto por Felipe Landinez
     </footer>
@@ -653,21 +730,97 @@
       dark: '#705848', steel: '#B8B8D0', fairy: '#EE99AC'
     };
 
-    const TYPE_NAMES_ES = {
-      normal: 'Normal', fire: 'Fuego', water: 'Agua', electric: 'Eléctrico',
-      grass: 'Planta', ice: 'Hielo', fighting: 'Lucha', poison: 'Veneno',
-      ground: 'Tierra', flying: 'Volador', psychic: 'Psíquico', bug: 'Bicho',
-      rock: 'Roca', ghost: 'Fantasma', dragon: 'Dragón', dark: 'Siniestro',
-      steel: 'Acero', fairy: 'Hada'
+    const TYPE_NAMES = {
+      es: {
+        normal: 'Normal', fire: 'Fuego', water: 'Agua', electric: 'Eléctrico',
+        grass: 'Planta', ice: 'Hielo', fighting: 'Lucha', poison: 'Veneno',
+        ground: 'Tierra', flying: 'Volador', psychic: 'Psíquico', bug: 'Bicho',
+        rock: 'Roca', ghost: 'Fantasma', dragon: 'Dragón', dark: 'Siniestro',
+        steel: 'Acero', fairy: 'Hada'
+      },
+      en: {
+        normal: 'Normal', fire: 'Fire', water: 'Water', electric: 'Electric',
+        grass: 'Grass', ice: 'Ice', fighting: 'Fighting', poison: 'Poison',
+        ground: 'Ground', flying: 'Flying', psychic: 'Psychic', bug: 'Bug',
+        rock: 'Rock', ghost: 'Ghost', dragon: 'Dragon', dark: 'Dark',
+        steel: 'Steel', fairy: 'Fairy'
+      }
     };
 
-    const STAT_NAMES_ES = {
-      hp: 'PS',
-      attack: 'Ataque',
-      defense: 'Defensa',
-      'special-attack': 'At. Esp.',
-      'special-defense': 'Def. Esp.',
-      speed: 'Velocidad'
+    const STAT_NAMES = {
+      es: {
+        hp: 'PS',
+        attack: 'Ataque',
+        defense: 'Defensa',
+        'special-attack': 'At. Esp.',
+        'special-defense': 'Def. Esp.',
+        speed: 'Velocidad'
+      },
+      en: {
+        hp: 'HP',
+        attack: 'Attack',
+        defense: 'Defense',
+        'special-attack': 'Sp. Atk',
+        'special-defense': 'Sp. Def',
+        speed: 'Speed'
+      }
+    };
+
+    const I18N = {
+      es: {
+        subtitle: 'Explorador interactivo · PokéAPI',
+        searchPlaceholder: 'Nombre o #número (ej: pikachu, 25)',
+        searchAria: 'Buscar Pokémon',
+        search: 'Buscar',
+        random: 'Aleatorio',
+        randomTitle: 'Pokémon aleatorio',
+        loading: 'Cargando Pokémon...',
+        height: 'Altura',
+        weight: 'Peso',
+        totalStats: 'Total stats',
+        baseStats: 'Estadísticas base',
+        weaknesses: 'Debilidades',
+        noWeaknesses: 'Sin debilidades directas',
+        prev: 'Pokémon anterior',
+        next: 'Pokémon siguiente',
+        megaEvolve: 'Megaevolucionar',
+        normalForm: 'Forma normal',
+        megaForm: 'Mega',
+        megaX: 'Mega X',
+        megaY: 'Mega Y',
+        retry: 'Intentar de nuevo',
+        errorMsg: 'No encontramos ese Pokémon. Prueba con un nombre en inglés o un número del 1 al 1025.',
+        notFound: 'Pokémon no encontrado',
+        emptySearch: 'Escribe un nombre o número',
+        footer: 'Datos de <a href="https://pokeapi.co/" target="_blank" rel="noopener">PokéAPI</a> · Proyecto por Felipe Landinez'
+      },
+      en: {
+        subtitle: 'Interactive explorer · PokéAPI',
+        searchPlaceholder: 'Name or #number (e.g. pikachu, 25)',
+        searchAria: 'Search Pokémon',
+        search: 'Search',
+        random: 'Random',
+        randomTitle: 'Random Pokémon',
+        loading: 'Loading Pokémon...',
+        height: 'Height',
+        weight: 'Weight',
+        totalStats: 'Total stats',
+        baseStats: 'Base stats',
+        weaknesses: 'Weaknesses',
+        noWeaknesses: 'No direct weaknesses',
+        prev: 'Previous Pokémon',
+        next: 'Next Pokémon',
+        megaEvolve: 'Mega Evolve',
+        normalForm: 'Normal form',
+        megaForm: 'Mega',
+        megaX: 'Mega X',
+        megaY: 'Mega Y',
+        retry: 'Try again',
+        errorMsg: 'Pokémon not found. Try an English name or a number from 1 to 1025.',
+        notFound: 'Pokémon not found',
+        emptySearch: 'Enter a name or number',
+        footer: 'Data from <a href="https://pokeapi.co/" target="_blank" rel="noopener">PokéAPI</a> · Project by Felipe Landinez'
+      }
     };
 
     const TYPE_WEAKNESSES = {
@@ -701,12 +854,94 @@
 
     let currentId = null;
     let loadToken = 0;
+    let locale = localStorage.getItem('pokedex-lang') || 'en';
+    let lastView = null;
 
     const mainCard = document.getElementById('mainCard');
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
     const btnRandom = document.getElementById('btnRandom');
+    const btnSearch = document.getElementById('btnSearch');
+    const btnRandomLabel = document.getElementById('btnRandomLabel');
     const toast = document.getElementById('toast');
+    const langEs = document.getElementById('langEs');
+    const langEn = document.getElementById('langEn');
+    const brandSubtitle = document.getElementById('brandSubtitle');
+    const footerText = document.getElementById('footerText');
+
+    function t(key) {
+      return I18N[locale][key] ?? I18N.es[key] ?? key;
+    }
+
+    function typeName(type) {
+      return TYPE_NAMES[locale][type] || type;
+    }
+
+    function statName(stat) {
+      return STAT_NAMES[locale][stat] || stat;
+    }
+
+    function getLocalizedName(species, fallback) {
+      const entry = species.names.find((n) => n.language.name === locale);
+      if (entry?.name) return entry.name;
+      const en = species.names.find((n) => n.language.name === 'en');
+      return en?.name || fallback;
+    }
+
+    function getDisplayName(species, pokemonName) {
+      const base = getLocalizedName(species, pokemonName);
+      if (!pokemonName.includes('-mega')) return base;
+      if (pokemonName.endsWith('-mega-x')) return `${base} ${t('megaX')}`;
+      if (pokemonName.endsWith('-mega-y')) return `${base} ${t('megaY')}`;
+      return `${base} ${t('megaForm')}`;
+    }
+
+    async function fetchSpeciesForPokemon(pokemon) {
+      const speciesId = pokemon.species.url.replace(/\/$/, '').split('/').pop();
+      return fetchSpecies(speciesId);
+    }
+
+    function getMegaVarieties(species) {
+      return species.varieties
+        .filter((v) => {
+          const n = v.pokemon.name;
+          return n.includes('-mega') && !n.includes('gmax');
+        })
+        .map((v) => v.pokemon.name);
+    }
+
+    function getDefaultVarietyName(species) {
+      return species.varieties.find((v) => v.is_default)?.pokemon.name;
+    }
+
+    function megaButtonLabel(megaName) {
+      if (megaName.endsWith('-mega-x')) return t('megaX');
+      if (megaName.endsWith('-mega-y')) return t('megaY');
+      return t('megaForm');
+    }
+
+    function applyLocaleUI() {
+      document.documentElement.lang = locale;
+      brandSubtitle.textContent = t('subtitle');
+      searchInput.placeholder = t('searchPlaceholder');
+      searchInput.setAttribute('aria-label', t('searchAria'));
+      btnSearch.textContent = t('search');
+      btnRandomLabel.textContent = t('random');
+      btnRandom.title = t('randomTitle');
+      footerText.innerHTML = t('footer');
+      langEs.classList.toggle('is-active', locale === 'es');
+      langEn.classList.toggle('is-active', locale === 'en');
+      if (lastView) {
+        renderPokemon(lastView.data, lastView.species, loadToken, lastView.megaNames, lastView.defaultName);
+      }
+    }
+
+    function setLocale(next) {
+      if (next !== 'es' && next !== 'en') return;
+      locale = next;
+      localStorage.setItem('pokedex-lang', locale);
+      applyLocaleUI();
+    }
 
     function setAccent(color) {
       document.documentElement.style.setProperty('--type-color', color);
@@ -770,9 +1005,9 @@
     function prefetchAdjacent(id) {
       [id - 1, id + 1].forEach((nextId) => {
         if (nextId < 1 || nextId > MAX_ID) return;
-        void fetchPokemon(nextId).then((data) => {
-          preloadImage(getFastSprite(data.id));
-          void fetchSpecies(data.id);
+        void fetchPokemon(nextId).then((pokemon) => {
+          preloadImage(getFastSprite(pokemon.id));
+          void fetchSpeciesForPokemon(pokemon);
         }).catch(() => {});
       });
     }
@@ -789,18 +1024,57 @@
       mainCard.innerHTML = `
         <div class="loading">
           <div class="loading__spinner"></div>
-          <p class="loading__text">Cargando Pokémon...</p>
+          <p class="loading__text">${t('loading')}</p>
         </div>`;
     }
 
     function renderError(msg) {
+      lastView = null;
       mainCard.classList.remove('is-navigating');
       mainCard.innerHTML = `
         <div class="error-box">
           <div class="error-box__icon">⚠️</div>
           <p class="error-box__msg">${msg}</p>
-          <button class="btn btn--primary" onclick="loadRandom()">Intentar de nuevo</button>
+          <button class="btn btn--primary" onclick="loadRandom()">${t('retry')}</button>
         </div>`;
+    }
+
+    function buildMegaButtonsHTML(megaNames, activeName, defaultName) {
+      if (!megaNames.length) return '';
+
+      const isMega = activeName !== defaultName;
+
+      if (isMega) {
+        return `
+          <div class="visual__mega-actions">
+            <button type="button" class="btn btn--mega-outline" id="btnNormalForm">${t('normalForm')}</button>
+          </div>`;
+      }
+
+      if (megaNames.length === 1) {
+        return `
+          <div class="visual__mega-actions">
+            <button type="button" class="btn btn--mega" id="btnMega0" data-mega="${megaNames[0]}">${t('megaEvolve')}</button>
+          </div>`;
+      }
+
+      return `
+        <div class="visual__mega-actions">
+          ${megaNames.map((name, i) =>
+            `<button type="button" class="btn btn--mega" id="btnMega${i}" data-mega="${name}">${megaButtonLabel(name)}</button>`
+          ).join('')}
+        </div>`;
+    }
+
+    function bindMegaButtons(megaNames, defaultName) {
+      document.getElementById('btnNormalForm')?.addEventListener('click', () => {
+        loadPokemon(defaultName);
+      });
+      megaNames.forEach((name, i) => {
+        document.getElementById(`btnMega${i}`)?.addEventListener('click', () => {
+          loadPokemon(name);
+        });
+      });
     }
 
     function upgradeSprite(hdUrl, token) {
@@ -821,10 +1095,10 @@
         });
     }
 
-    function renderPokemon(data, species, token) {
+    function renderPokemon(data, species, token, megaNames, defaultName) {
       if (token !== loadToken) return;
 
-      const nameEs = species.names.find(n => n.language.name === 'es')?.name || data.name;
+      const displayName = getDisplayName(species, data.name);
       const primaryType = data.types[0].type.name;
       const primaryColor = TYPE_COLORS[primaryType] || '#6366f1';
       setAccent(primaryColor);
@@ -832,9 +1106,10 @@
       const fastImg = getFastSprite(data.id);
       const hdImg = getHdSprite(data);
       const totalStats = data.stats.reduce((s, st) => s + st.base_stat, 0);
+      const navId = currentId ?? data.id;
 
       const statRows = data.stats.map((st) => {
-        const name = STAT_NAMES_ES[st.stat.name] || st.stat.name;
+        const name = statName(st.stat.name);
         const pct = Math.min((st.base_stat / STAT_MAX) * 100, 100);
         const color = statBarColor(st.base_stat);
         return `
@@ -847,31 +1122,34 @@
           </div>`;
       }).join('');
 
-      const typeBadges = data.types.map((t) =>
-        `<span class="type-badge" style="background:${TYPE_COLORS[t.type.name] || '#777'}">${TYPE_NAMES_ES[t.type.name] || t.type.name}</span>`
+      const typeBadges = data.types.map((ty) =>
+        `<span class="type-badge" style="background:${TYPE_COLORS[ty.type.name] || '#777'}">${typeName(ty.type.name)}</span>`
       ).join('');
 
       const weaknesses = TYPE_WEAKNESSES[primaryType] || [];
       let weaknessHTML = '';
       if (weaknesses.length === 0) {
-        weaknessHTML = '<p class="weaknesses--empty">Sin debilidades directas</p>';
+        weaknessHTML = `<p class="weaknesses--empty">${t('noWeaknesses')}</p>`;
       } else {
         weaknessHTML = weaknesses.map((type) =>
-          `<span class="type-badge" style="background:${TYPE_COLORS[type] || '#888'}">${TYPE_NAMES_ES[type] || type}</span>`
+          `<span class="type-badge" style="background:${TYPE_COLORS[type] || '#888'}">${typeName(type)}</span>`
         ).join('');
       }
 
       const numStr = `#${String(data.id).padStart(4, '0')}`;
+      const megaHTML = buildMegaButtonsHTML(megaNames, data.name, defaultName);
+
+      lastView = { data, species, token, megaNames, defaultName };
 
       mainCard.classList.remove('is-navigating');
       mainCard.innerHTML = `
         <div class="card__inner">
-          <section class="visual" aria-label="Información visual">
+          <section class="visual" aria-label="${locale === 'en' ? 'Visual info' : 'Información visual'}">
             <div class="visual__nav">
-              <button class="btn btn--ghost btn--icon" id="btnPrev" aria-label="Pokémon anterior" ${data.id <= 1 ? 'disabled' : ''}>
+              <button class="btn btn--ghost btn--icon" id="btnPrev" aria-label="${t('prev')}" ${navId <= 1 ? 'disabled' : ''}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
               </button>
-              <button class="btn btn--ghost btn--icon" id="btnNext" aria-label="Pokémon siguiente" ${data.id >= MAX_ID ? 'disabled' : ''}>
+              <button class="btn btn--ghost btn--icon" id="btnNext" aria-label="${t('next')}" ${navId >= MAX_ID ? 'disabled' : ''}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
               </button>
             </div>
@@ -883,7 +1161,7 @@
                 class="visual__sprite pop${hdImg !== fastImg ? ' is-loading' : ''}"
                 id="sprite"
                 src="${fastImg}"
-                alt="${nameEs}"
+                alt="${displayName}"
                 width="220"
                 height="220"
                 decoding="async"
@@ -891,45 +1169,47 @@
               />
             </div>
             <div class="visual__name-block">
-              <h2 class="visual__name">${nameEs}</h2>
+              <h2 class="visual__name">${displayName}</h2>
               <div class="visual__types">${typeBadges}</div>
             </div>
+            ${megaHTML}
           </section>
 
-          <section class="info" aria-label="Estadísticas y detalles">
+          <section class="info" aria-label="${locale === 'en' ? 'Stats and details' : 'Estadísticas y detalles'}">
             <div class="info__metrics">
               <div class="metric">
-                <div class="metric__label">Altura</div>
+                <div class="metric__label">${t('height')}</div>
                 <div class="metric__value">${(data.height / 10).toFixed(1)} m</div>
               </div>
               <div class="metric">
-                <div class="metric__label">Peso</div>
+                <div class="metric__label">${t('weight')}</div>
                 <div class="metric__value">${(data.weight / 10).toFixed(1)} kg</div>
               </div>
               <div class="metric">
-                <div class="metric__label">Total stats</div>
+                <div class="metric__label">${t('totalStats')}</div>
                 <div class="metric__value">${totalStats}</div>
               </div>
             </div>
 
             <div>
-              <h3 class="section-title">Estadísticas base</h3>
+              <h3 class="section-title">${t('baseStats')}</h3>
               <div class="stats-list">${statRows}</div>
             </div>
 
             <div>
-              <h3 class="section-title">Debilidades</h3>
+              <h3 class="section-title">${t('weaknesses')}</h3>
               <div class="weaknesses">${weaknessHTML}</div>
             </div>
           </section>
         </div>`;
 
-      document.getElementById('btnPrev')?.addEventListener('click', () => loadPokemon(currentId - 1));
-      document.getElementById('btnNext')?.addEventListener('click', () => loadPokemon(currentId + 1));
-      searchInput.value = data.id;
+      document.getElementById('btnPrev')?.addEventListener('click', () => loadPokemon(navId - 1));
+      document.getElementById('btnNext')?.addEventListener('click', () => loadPokemon(navId + 1));
+      bindMegaButtons(megaNames, defaultName);
+      searchInput.value = navId;
 
       if (hdImg !== fastImg) upgradeSprite(hdImg, token);
-      prefetchAdjacent(data.id);
+      prefetchAdjacent(navId);
     }
 
     async function loadPokemon(query, initial = false) {
@@ -948,25 +1228,35 @@
 
         if (isNumeric) {
           preloadImage(getFastSprite(Number(normalized)));
-          [data, species] = await Promise.all([
-            fetchPokemon(normalized),
-            fetchSpecies(normalized),
-          ]);
+          data = await fetchPokemon(normalized);
+          if (token !== loadToken) return;
+          preloadImage(getFastSprite(data.id));
+          species = await fetchSpeciesForPokemon(data);
         } else {
           data = await fetchPokemon(normalized);
           if (token !== loadToken) return;
           preloadImage(getFastSprite(data.id));
-          species = await fetchSpecies(data.id);
+          species = await fetchSpeciesForPokemon(data);
         }
 
         if (token !== loadToken) return;
 
-        currentId = data.id;
-        renderPokemon(data, species, token);
+        const defaultName = getDefaultVarietyName(species);
+        const megaNames = getMegaVarieties(species);
+
+        if (defaultName !== data.name) {
+          const baseData = await fetchPokemon(defaultName);
+          if (token !== loadToken) return;
+          currentId = baseData.id;
+        } else {
+          currentId = data.id;
+        }
+
+        renderPokemon(data, species, token, megaNames, defaultName);
       } catch {
         if (token !== loadToken) return;
-        renderError('No encontramos ese Pokémon. Prueba con un nombre en inglés o un número del 1 al 1025.');
-        showToast('Pokémon no encontrado');
+        renderError(t('errorMsg'));
+        showToast(t('notFound'));
       } finally {
         if (token === loadToken) btnRandom.disabled = false;
       }
@@ -980,11 +1270,13 @@
     searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const q = searchInput.value.trim();
-      if (!q) { showToast('Escribe un nombre o número'); return; }
+      if (!q) { showToast(t('emptySearch')); return; }
       loadPokemon(q.replace(/^#/, ''));
     });
 
     btnRandom.addEventListener('click', loadRandom);
+    langEs.addEventListener('click', () => setLocale('es'));
+    langEn.addEventListener('click', () => setLocale('en'));
 
     document.addEventListener('keydown', (e) => {
       if (document.activeElement === searchInput) return;
@@ -992,6 +1284,7 @@
       if (e.key === 'ArrowRight' && currentId < MAX_ID) loadPokemon(currentId + 1);
     });
 
+    applyLocaleUI();
     loadPokemon(25, true);
   </script>
 </body>
