@@ -635,6 +635,131 @@
       background: rgba(139, 92, 246, 0.2);
     }
 
+    .btn--music.is-muted {
+      opacity: 0.55;
+    }
+
+    .visual__sprite-wrap.is-evolving {
+      z-index: 5;
+    }
+
+    .visual__sprite.evo-sprite {
+      animation: evoShake 0.12s ease-in-out infinite, evoGlow 2.4s ease-in-out forwards;
+      will-change: transform, filter;
+    }
+
+    @keyframes evoShake {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      20% { transform: translate(-6px, 3px) scale(1.03); }
+      40% { transform: translate(5px, -4px) scale(1.05); }
+      60% { transform: translate(-4px, -2px) scale(1.04); }
+      80% { transform: translate(6px, 2px) scale(1.06); }
+    }
+
+    @keyframes evoGlow {
+      0% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+      35% { filter: brightness(1.4) drop-shadow(0 0 18px rgba(255, 255, 255, 0.5)); }
+      55% { filter: brightness(0) contrast(0) drop-shadow(0 0 40px #fff); }
+      72% { filter: brightness(8) contrast(0.15) drop-shadow(0 0 60px #fff); }
+      88% { filter: brightness(2.5) drop-shadow(0 0 30px rgba(196, 132, 252, 0.9)); }
+      100% { filter: brightness(1) drop-shadow(0 0 12px rgba(139, 92, 246, 0.45)); }
+    }
+
+    .evo-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, visibility 0.35s;
+    }
+
+    .evo-overlay.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .evo-overlay__flash {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      mix-blend-mode: screen;
+    }
+
+    .evo-overlay__flash.pulse {
+      animation: evoFlashPulse 0.28s ease-out forwards;
+    }
+
+    @keyframes evoFlashPulse {
+      0% { opacity: 0; }
+      15% { opacity: 0.95; }
+      100% { opacity: 0; }
+    }
+
+    .evo-overlay__rays {
+      position: absolute;
+      width: min(140vmax, 900px);
+      height: min(140vmax, 900px);
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        rgba(255, 255, 255, 0.07) 20deg,
+        transparent 40deg,
+        rgba(255, 255, 255, 0.12) 60deg,
+        transparent 80deg,
+        rgba(255, 255, 255, 0.07) 100deg,
+        transparent 120deg,
+        rgba(255, 255, 255, 0.1) 140deg,
+        transparent 160deg
+      );
+      animation: evoRaysSpin 3s linear infinite;
+      opacity: 0;
+    }
+
+    .evo-overlay.is-active .evo-overlay__rays {
+      opacity: 1;
+      animation: evoRaysSpin 2.4s linear infinite, evoRaysIn 0.5s ease-out forwards;
+    }
+
+    @keyframes evoRaysSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes evoRaysIn {
+      from { transform: scale(0.3); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .evo-overlay__caption {
+      position: relative;
+      z-index: 2;
+      max-width: 90%;
+      padding: 0.85rem 1.5rem;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: clamp(0.95rem, 3vw, 1.15rem);
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+      animation: evoCaptionPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+    }
+
+    @keyframes evoCaptionPop {
+      from { opacity: 0; transform: scale(0.85) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .card.is-evolving {
+      pointer-events: none;
+    }
+
     @media (max-width: 768px) {
       .header { flex-direction: column; align-items: stretch; }
       .header__actions { max-width: 100%; justify-content: stretch; flex-direction: column; }
@@ -679,6 +804,15 @@
           <button type="button" class="lang-toggle__btn" id="langEs" data-lang="es">ES</button>
           <button type="button" class="lang-toggle__btn is-active" id="langEn" data-lang="en">EN</button>
         </div>
+        <button
+          type="button"
+          class="btn btn--ghost btn--icon btn--music"
+          id="btnMusic"
+          aria-pressed="true"
+          title="Music on"
+        >
+          <span id="btnMusicIcon" aria-hidden="true">🔊</span>
+        </button>
 
         <form class="search-bar" id="searchForm" role="search">
           <div class="search-bar__input-wrap">
@@ -719,6 +853,12 @@
   </div>
 
   <div class="toast" id="toast" role="alert"></div>
+
+  <div id="evoOverlay" class="evo-overlay" hidden aria-hidden="true">
+    <div class="evo-overlay__rays" aria-hidden="true"></div>
+    <div class="evo-overlay__flash" id="evoFlash" aria-hidden="true"></div>
+    <p class="evo-overlay__caption" id="evoCaption"></p>
+  </div>
 
   <script>
     const TYPE_COLORS = {
@@ -788,6 +928,11 @@
         megaForm: 'Mega',
         megaX: 'Mega X',
         megaY: 'Mega Y',
+        evolving: '¿Qué? ¡{name} está mega evolucionando!',
+        musicOn: 'Música activada',
+        musicOff: 'Música desactivada',
+        musicTitleOn: 'Desactivar música',
+        musicTitleOff: 'Activar música',
         retry: 'Intentar de nuevo',
         errorMsg: 'No encontramos ese Pokémon. Prueba con un nombre en inglés o un número del 1 al 1025.',
         notFound: 'Pokémon no encontrado',
@@ -815,6 +960,11 @@
         megaForm: 'Mega',
         megaX: 'Mega X',
         megaY: 'Mega Y',
+        evolving: 'What? {name} is mega evolving!',
+        musicOn: 'Music on',
+        musicOff: 'Music off',
+        musicTitleOn: 'Turn music off',
+        musicTitleOff: 'Turn music on',
         retry: 'Try again',
         errorMsg: 'Pokémon not found. Try an English name or a number from 1 to 1025.',
         notFound: 'Pokémon not found',
@@ -856,6 +1006,7 @@
     let loadToken = 0;
     let locale = localStorage.getItem('pokedex-lang') || 'en';
     let lastView = null;
+    let isEvolving = false;
 
     const mainCard = document.getElementById('mainCard');
     const searchForm = document.getElementById('searchForm');
@@ -868,6 +1019,205 @@
     const langEn = document.getElementById('langEn');
     const brandSubtitle = document.getElementById('brandSubtitle');
     const footerText = document.getElementById('footerText');
+    const btnMusic = document.getElementById('btnMusic');
+    const btnMusicIcon = document.getElementById('btnMusicIcon');
+    const evoOverlay = document.getElementById('evoOverlay');
+    const evoFlash = document.getElementById('evoFlash');
+    const evoCaption = document.getElementById('evoCaption');
+
+    const PokeAudio = {
+      ctx: null,
+      master: null,
+      bgmGain: null,
+      sfxGain: null,
+      bgmTimer: null,
+      bgmStep: 0,
+      enabled: localStorage.getItem('pokedex-music') !== 'false',
+      started: false,
+
+      init() {
+        if (this.ctx) return;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        this.ctx = new Ctx();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = 0.35;
+        this.master.connect(this.ctx.destination);
+        this.bgmGain = this.ctx.createGain();
+        this.bgmGain.gain.value = 0.22;
+        this.bgmGain.connect(this.master);
+        this.sfxGain = this.ctx.createGain();
+        this.sfxGain.gain.value = 0.55;
+        this.sfxGain.connect(this.master);
+      },
+
+      async resume() {
+        this.init();
+        if (!this.ctx) return false;
+        if (this.ctx.state === 'suspended') await this.ctx.resume();
+        return true;
+      },
+
+      playSquare(freq, duration, gain, when, destination) {
+        if (!this.ctx) return;
+        const t0 = when ?? this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freq, t0);
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(gain, t0 + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+        osc.connect(g);
+        g.connect(destination ?? this.sfxGain);
+        osc.start(t0);
+        osc.stop(t0 + duration + 0.05);
+      },
+
+      playNoise(duration, gain, when) {
+        if (!this.ctx) return;
+        const t0 = when ?? this.ctx.currentTime;
+        const bufferSize = this.ctx.sampleRate * duration;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const src = this.ctx.createBufferSource();
+        src.buffer = buffer;
+        const g = this.ctx.createGain();
+        g.gain.setValueAtTime(gain, t0);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+        src.connect(g);
+        g.connect(this.sfxGain);
+        src.start(t0);
+        src.stop(t0 + duration);
+      },
+
+      getBgmMelody() {
+        return [
+          622, 622, 739, 622, 880, 739, 622, 554,
+          622, 622, 739, 622, 988, 880, 739, 622,
+          880, 880, 988, 880, 739, 622, 554, 494,
+          622, 739, 880, 739, 622, 554, 622, 622,
+        ];
+      },
+
+      tickBgm() {
+        if (!this.ctx || !this.enabled) return;
+        const melody = this.getBgmMelody();
+        const freq = melody[this.bgmStep % melody.length];
+        this.playSquare(freq, 0.11, 0.12, this.ctx.currentTime, this.bgmGain);
+        this.bgmStep += 1;
+      },
+
+      startBgm() {
+        if (!this.enabled || this.bgmTimer) return;
+        this.tickBgm();
+        this.bgmTimer = window.setInterval(() => this.tickBgm(), 190);
+      },
+
+      stopBgm() {
+        if (this.bgmTimer) {
+          clearInterval(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      },
+
+      playEvolutionFanfare() {
+        if (!this.ctx || !this.enabled) return;
+        const t0 = this.ctx.currentTime;
+        const notes = [262, 330, 392, 523, 659, 784, 988];
+        notes.forEach((freq, i) => {
+          this.playSquare(freq, 0.14, 0.2, t0 + i * 0.11);
+        });
+        [0.35, 0.55, 0.75, 1.0].forEach((offset) => {
+          this.playNoise(0.08, 0.08, t0 + offset);
+        });
+      },
+
+      playSparkle() {
+        if (!this.ctx || !this.enabled) return;
+        const t0 = this.ctx.currentTime;
+        [1047, 1319, 1568].forEach((f, i) => {
+          this.playSquare(f, 0.08, 0.1, t0 + i * 0.06);
+        });
+      },
+
+      async bootFromGesture() {
+        if (!(await this.resume())) return;
+        this.started = true;
+        this.startBgm();
+      },
+
+      setEnabled(on) {
+        this.enabled = on;
+        localStorage.setItem('pokedex-music', on ? 'true' : 'false');
+        if (on && this.started) this.startBgm();
+        else this.stopBgm();
+        updateMusicButton();
+      },
+
+      toggle() {
+        this.setEnabled(!this.enabled);
+        if (this.enabled) showToast(t('musicOn'));
+        else showToast(t('musicOff'));
+      },
+    };
+
+    function updateMusicButton() {
+      const on = PokeAudio.enabled;
+      btnMusic.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btnMusic.title = on ? t('musicTitleOn') : t('musicTitleOff');
+      btnMusicIcon.textContent = on ? '🔊' : '🔇';
+      btnMusic.classList.toggle('is-muted', !on);
+    }
+
+    function delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function pulseEvoFlash() {
+      evoFlash.classList.remove('pulse');
+      void evoFlash.offsetWidth;
+      evoFlash.classList.add('pulse');
+    }
+
+    async function runEvolutionAnimation(pokemonName, onReveal) {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) {
+        await onReveal?.();
+        return;
+      }
+
+      const sprite = document.getElementById('sprite');
+      const wrap = document.querySelector('.visual__sprite-wrap');
+
+      evoCaption.textContent = t('evolving').replace('{name}', pokemonName);
+      evoOverlay.hidden = false;
+      evoOverlay.setAttribute('aria-hidden', 'false');
+      evoOverlay.classList.add('is-active');
+      mainCard.classList.add('is-evolving');
+      wrap?.classList.add('is-evolving');
+      sprite?.classList.add('evo-sprite');
+
+      const flashSchedule = [0, 380, 760, 1140, 1520, 1880, 2200];
+      flashSchedule.forEach((ms, i) => {
+        setTimeout(() => {
+          pulseEvoFlash();
+          if (i % 2 === 1) PokeAudio.playSparkle();
+        }, ms);
+      });
+
+      setTimeout(() => void onReveal?.(), 2100);
+
+      await delay(2600);
+
+      sprite?.classList.remove('evo-sprite');
+      wrap?.classList.remove('is-evolving');
+      mainCard.classList.remove('is-evolving');
+      evoOverlay.classList.remove('is-active');
+      evoOverlay.hidden = true;
+      evoOverlay.setAttribute('aria-hidden', 'true');
+    }
 
     function t(key) {
       return I18N[locale][key] ?? I18N.es[key] ?? key;
@@ -931,6 +1281,7 @@
       footerText.innerHTML = t('footer');
       langEs.classList.toggle('is-active', locale === 'es');
       langEn.classList.toggle('is-active', locale === 'en');
+      updateMusicButton();
       if (lastView) {
         renderPokemon(lastView.data, lastView.species, loadToken, lastView.megaNames, lastView.defaultName);
       }
@@ -1066,13 +1417,68 @@
         </div>`;
     }
 
+    async function evolveToMega(megaName) {
+      if (isEvolving || !lastView) return;
+
+      const baseName = getLocalizedName(lastView.species, lastView.defaultName);
+      isEvolving = true;
+      btnRandom.disabled = true;
+
+      try {
+        await PokeAudio.resume();
+        PokeAudio.playEvolutionFanfare();
+
+        const fetchPromise = (async () => {
+          const data = await fetchPokemon(megaName);
+          const species = await fetchSpeciesForPokemon(data);
+          const fast = getFastSprite(data.id);
+          const hd = getHdSprite(data);
+          await preloadImage(fast);
+          try { await preloadImage(hd); } catch { /* optional HD */ }
+          return { data, species, fast, hd };
+        })();
+
+        await runEvolutionAnimation(baseName, async () => {
+          const { data, species, fast, hd } = await fetchPromise;
+          const sprite = document.getElementById('sprite');
+          if (sprite) {
+            sprite.src = fast;
+            sprite.classList.add('pop');
+            if (hd !== fast) {
+              sprite.classList.add('is-loading');
+              await preloadImage(hd).catch(() => {});
+              sprite.src = hd;
+              sprite.classList.remove('is-loading');
+            }
+          }
+          const token = loadToken;
+          const defaultName = getDefaultVarietyName(species);
+          const megaNames = getMegaVarieties(species);
+          if (defaultName !== data.name) {
+            const baseData = await fetchPokemon(defaultName);
+            currentId = baseData.id;
+          } else {
+            currentId = data.id;
+          }
+          renderPokemon(data, species, token, megaNames, defaultName);
+          PokeAudio.playSparkle();
+        });
+      } catch {
+        showToast(t('notFound'));
+      } finally {
+        isEvolving = false;
+        btnRandom.disabled = false;
+      }
+    }
+
     function bindMegaButtons(megaNames, defaultName) {
       document.getElementById('btnNormalForm')?.addEventListener('click', () => {
+        if (isEvolving) return;
         loadPokemon(defaultName);
       });
       megaNames.forEach((name, i) => {
         document.getElementById(`btnMega${i}`)?.addEventListener('click', () => {
-          loadPokemon(name);
+          void evolveToMega(name);
         });
       });
     }
@@ -1213,6 +1619,7 @@
     }
 
     async function loadPokemon(query, initial = false) {
+      if (isEvolving) return;
       const token = ++loadToken;
       if (initial || !currentId) renderLoading();
       else mainCard.classList.add('is-navigating');
@@ -1269,14 +1676,35 @@
 
     searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      void PokeAudio.bootFromGesture();
       const q = searchInput.value.trim();
       if (!q) { showToast(t('emptySearch')); return; }
       loadPokemon(q.replace(/^#/, ''));
     });
 
-    btnRandom.addEventListener('click', loadRandom);
-    langEs.addEventListener('click', () => setLocale('es'));
-    langEn.addEventListener('click', () => setLocale('en'));
+    btnRandom.addEventListener('click', () => {
+      void PokeAudio.bootFromGesture();
+      loadRandom();
+    });
+    langEs.addEventListener('click', () => {
+      void PokeAudio.bootFromGesture();
+      setLocale('es');
+    });
+    langEn.addEventListener('click', () => {
+      void PokeAudio.bootFromGesture();
+      setLocale('en');
+    });
+    btnMusic.addEventListener('click', async () => {
+      await PokeAudio.resume();
+      PokeAudio.started = true;
+      PokeAudio.toggle();
+    });
+
+    document.body.addEventListener(
+      'pointerdown',
+      () => { void PokeAudio.bootFromGesture(); },
+      { once: true },
+    );
 
     document.addEventListener('keydown', (e) => {
       if (document.activeElement === searchInput) return;
@@ -1284,6 +1712,7 @@
       if (e.key === 'ArrowRight' && currentId < MAX_ID) loadPokemon(currentId + 1);
     });
 
+    updateMusicButton();
     applyLocaleUI();
     loadPokemon(25, true);
   </script>
