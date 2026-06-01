@@ -70,23 +70,39 @@ type ProjectLabels = {
 function ProjectCard({
   project,
   labels,
+  visitHref,
 }: {
   project: Project;
   labels: ProjectLabels;
+  visitHref?: string;
 }) {
   const linkText = project.url?.startsWith("/")
     ? labels.demo
     : project.displayUrl || project.url?.replace("https://", "");
+  const isExternalVisit =
+    !!visitHref &&
+    (visitHref.startsWith("http://") || visitHref.startsWith("https://"));
 
   return (
     <article
       className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br ${project.color} p-6 shadow-lg shadow-black/20 transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/40 hover:shadow-emerald-500/10`}
     >
+      {visitHref && (
+        <a
+          href={visitHref}
+          target={isExternalVisit ? "_blank" : undefined}
+          rel={isExternalVisit ? "noopener noreferrer" : undefined}
+          className="absolute inset-0 z-[1] rounded-3xl"
+          aria-label={`${labels.visit}: ${project.title}`}
+        />
+      )}
+      <div className="relative z-[2] flex min-h-0 flex-1 flex-col pointer-events-none">
       {project.screenshots && project.screenshots.length > 0 && (
         <ProjectGallery
           compact
           screenshots={project.screenshots}
           browserUrl={project.browserUrl ?? project.displayUrl ?? project.url?.replace("https://", "")}
+          siteUrl={visitHref}
           accent={project.galleryAccent ?? "emerald"}
           previewBg={project.galleryPreviewBg}
           labels={{
@@ -139,6 +155,7 @@ function ProjectCard({
           {linkText} ↗
         </p>
       )}
+      </div>
     </article>
   );
 }
@@ -225,30 +242,19 @@ function ProjectItem({
     );
   }
 
-  const card = <ProjectCard project={project} labels={labels} />;
   const href = resolveProjectUrl(project.url);
-  const isExternal = href && !href.startsWith("/");
-
-  if (href) {
-    return (
-      <ProjectCardHover>
-        <MagneticButton cursorText={labels.visit} className="block h-full w-full">
-          <a
-            href={href}
-            target={isExternal ? "_blank" : undefined}
-            rel={isExternal ? "noopener noreferrer" : undefined}
-            className="interactive-focus block h-full w-full rounded-3xl"
-          >
-            {card}
-          </a>
-        </MagneticButton>
-      </ProjectCardHover>
-    );
-  }
+  const card = (
+    <ProjectCard project={project} labels={labels} visitHref={href} />
+  );
 
   return (
     <ProjectCardHover>
-      <MagneticButton cursorText={labels.view} className="block h-full w-full">{card}</MagneticButton>
+      <MagneticButton
+        cursorText={href ? labels.visit : labels.view}
+        className="block h-full w-full"
+      >
+        {card}
+      </MagneticButton>
     </ProjectCardHover>
   );
 }

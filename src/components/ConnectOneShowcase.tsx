@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import ImageLightbox from "@/components/ImageLightbox";
 import type { ConnectShowcaseData } from "@/i18n/translations";
 
 type ConnectOneShowcaseProps = {
@@ -41,19 +42,6 @@ export default function ConnectOneShowcase({
   useEffect(() => {
     setInternalId(data.screenshots[0]?.id ?? "");
   }, [data.screenshots]);
-
-  useEffect(() => {
-    if (!lightbox) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setLightbox(false);
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [lightbox]);
 
   if (!active) return null;
 
@@ -186,35 +174,15 @@ export default function ConnectOneShowcase({
         </p>
       </div>
 
-      {lightbox && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-label={active.caption}
-          onClick={() => setLightbox(false)}
-        >
-          <button
-            type="button"
-            className="absolute right-4 top-4 rounded-full border border-zinc-700 bg-zinc-900/90 px-3 py-1.5 font-mono text-xs text-zinc-400 hover:text-zinc-200"
-            onClick={() => setLightbox(false)}
-          >
-            {labels.closeLabel}
-          </button>
-          <div
-            className="max-h-[90vh] max-w-[95vw] overflow-auto rounded-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Image
-              src={active.image}
-              alt={active.caption}
-              width={imgW}
-              height={imgH}
-              className="block h-auto max-h-[90vh] w-auto max-w-[95vw] rounded-lg"
-            />
-          </div>
-        </div>
-      )}
+      <ImageLightbox
+        open={lightbox}
+        onClose={() => setLightbox(false)}
+        src={active.image}
+        alt={active.caption}
+        width={imgW}
+        height={imgH}
+        closeLabel={labels.closeLabel}
+      />
     </>
   );
 }

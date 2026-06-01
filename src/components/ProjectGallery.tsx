@@ -2,11 +2,14 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useState, type MouseEvent } from "react";
+import ImageLightbox from "@/components/ImageLightbox";
 import type { ProjectScreenshot } from "@/components/ProjectsGrid";
 
 type ProjectGalleryProps = {
   screenshots: readonly ProjectScreenshot[];
   browserUrl?: string;
+  /** Resolved visit URL — makes the address bar open the live site or demo. */
+  siteUrl?: string;
   accent?: "emerald" | "amber" | "violet" | "cyan" | "red";
   previewBg?: string;
   compact?: boolean;
@@ -28,6 +31,7 @@ const ACCENT_RING: Record<NonNullable<ProjectGalleryProps["accent"]>, string> = 
 export default function ProjectGallery({
   screenshots,
   browserUrl,
+  siteUrl,
   accent = "emerald",
   previewBg = "#f5f0e8",
   compact = false,
@@ -43,23 +47,12 @@ export default function ProjectGallery({
     setActiveId(screenshots[0]?.id ?? "");
   }, [screenshots]);
 
-  useEffect(() => {
-    if (!lightbox) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setLightbox(false);
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [lightbox]);
-
-  const stopNav = useCallback((e: MouseEvent) => {
-    e.preventDefault();
+  const stopCardNav = useCallback((e: MouseEvent) => {
     e.stopPropagation();
   }, []);
+
+  const isExternalSite =
+    !!siteUrl && (siteUrl.startsWith("http://") || siteUrl.startsWith("https://"));
 
   if (!active) return null;
 
@@ -69,12 +62,7 @@ export default function ProjectGallery({
 
   return (
     <>
-      <div
-        className={compact ? "mb-4" : "mb-6"}
-        onClick={stopNav}
-        onKeyDown={(e) => e.stopPropagation()}
-        role="presentation"
-      >
+      <div className={compact ? "mb-4" : "mb-6"}>
         <div className="connect-browser overflow-hidden rounded-2xl border border-zinc-700/70 bg-zinc-950 shadow-xl shadow-black/40">
           <div className="flex items-center gap-2 border-b border-zinc-800 bg-zinc-900/95 px-3 py-2 sm:px-4 sm:py-2.5">
             <div className="flex gap-1.5" aria-hidden="true">
@@ -83,35 +71,65 @@ export default function ProjectGallery({
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
             </div>
             {browserUrl && (
-              <div className="mx-auto flex min-w-0 max-w-xs flex-1 items-center justify-center gap-1.5 rounded-md border border-zinc-800 bg-zinc-950/80 px-2 py-1 sm:max-w-md sm:px-3">
-                <svg
-                  aria-hidden="true"
-                  className="h-3 w-3 shrink-0 text-zinc-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
+              siteUrl ? (
+                <a
+                  href={siteUrl}
+                  target={isExternalSite ? "_blank" : undefined}
+                  rel={isExternalSite ? "noopener noreferrer" : undefined}
+                  onClick={stopCardNav}
+                  className="interactive-focus pointer-events-auto relative z-10 mx-auto flex min-w-0 max-w-xs flex-1 items-center justify-center gap-1.5 rounded-md border border-zinc-800 bg-zinc-950/80 px-2 py-1 transition-colors hover:border-emerald-400/40 hover:bg-zinc-900 sm:max-w-md sm:px-3"
+                  aria-label={browserUrl}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3zm0 2c-2.761 0-5 1.79-5 4v1h10v-1c0-2.21-2.239-4-5-4z"
-                  />
-                </svg>
-                <span className="truncate font-mono text-[9px] text-zinc-500 sm:text-[10px]">
-                  {browserUrl}
-                </span>
-              </div>
+                  <svg
+                    aria-hidden="true"
+                    className="h-3 w-3 shrink-0 text-zinc-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3zm0 2c-2.761 0-5 1.79-5 4v1h10v-1c0-2.21-2.239-4-5-4z"
+                    />
+                  </svg>
+                  <span className="truncate font-mono text-[9px] text-zinc-500 transition-colors group-hover:text-emerald-400/90 sm:text-[10px]">
+                    {browserUrl}
+                  </span>
+                </a>
+              ) : (
+                <div className="mx-auto flex min-w-0 max-w-xs flex-1 items-center justify-center gap-1.5 rounded-md border border-zinc-800 bg-zinc-950/80 px-2 py-1 sm:max-w-md sm:px-3">
+                  <svg
+                    aria-hidden="true"
+                    className="h-3 w-3 shrink-0 text-zinc-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3zm0 2c-2.761 0-5 1.79-5 4v1h10v-1c0-2.21-2.239-4-5-4z"
+                    />
+                  </svg>
+                  <span className="truncate font-mono text-[9px] text-zinc-500 sm:text-[10px]">
+                    {browserUrl}
+                  </span>
+                </div>
+              )
             )}
           </div>
 
           <button
             type="button"
             onClick={(e) => {
-              stopNav(e);
+              e.preventDefault();
+              stopCardNav(e);
               setLightbox(true);
             }}
-            className="group relative block w-full cursor-zoom-in overflow-hidden p-1 sm:p-1.5"
+            className="pointer-events-auto group relative z-10 block w-full cursor-zoom-in overflow-hidden p-1 sm:p-1.5"
             style={{ backgroundColor: previewBg }}
             aria-label={labels.expandLabel}
           >
@@ -153,10 +171,10 @@ export default function ProjectGallery({
                   aria-selected={isActive}
                   aria-label={shot.label}
                   onClick={(e) => {
-                    stopNav(e);
+                    stopCardNav(e);
                     setActiveId(shot.id);
                   }}
-                  className={`connect-thumb group/thumb overflow-hidden rounded-lg border transition-all ${
+                  className={`pointer-events-auto connect-thumb group/thumb relative z-10 overflow-hidden rounded-lg border transition-all ${
                     isActive
                       ? thumbActive
                       : "border-zinc-700/60 opacity-75 hover:border-zinc-600 hover:opacity-100"
@@ -180,31 +198,15 @@ export default function ProjectGallery({
         )}
       </div>
 
-      {lightbox && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-label={active.label}
-          onClick={() => setLightbox(false)}
-        >
-          <button
-            type="button"
-            onClick={() => setLightbox(false)}
-            className="absolute right-4 top-4 rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1 font-mono text-xs text-zinc-300 transition hover:border-zinc-500"
-          >
-            {labels.closeLabel}
-          </button>
-          <Image
-            src={active.image}
-            alt={active.label}
-            width={imgW}
-            height={imgH}
-            className="max-h-[90vh] max-w-full w-auto rounded-lg object-contain shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
+      <ImageLightbox
+        open={lightbox}
+        onClose={() => setLightbox(false)}
+        src={active.image}
+        alt={active.label}
+        width={imgW}
+        height={imgH}
+        closeLabel={labels.closeLabel}
+      />
     </>
   );
 }
