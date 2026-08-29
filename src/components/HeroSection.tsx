@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import CodeRevealHero from "@/components/CodeRevealHero";
 import Typewriter from "@/components/Typewriter";
 import { MagneticButton } from "@/components/MagneticCursor";
 import { useLanguage } from "@/i18n/LanguageProvider";
@@ -26,11 +27,13 @@ export default function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
+      className="relative isolate flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
     >
       <div className="hero-glow hero-glow--pulse" aria-hidden="true" />
 
-      <p className="mb-6 font-mono text-xs uppercase tracking-[0.4em] text-emerald-400/80">
+      <CodeRevealHero />
+
+      <p className="relative z-10 mb-6 font-mono text-xs uppercase tracking-[0.4em] text-emerald-400/80">
         <Typewriter
           key={`${locale}-taglines`}
           texts={t.hero.taglines}
@@ -44,7 +47,7 @@ export default function HeroSection() {
         />
       </p>
 
-      <h1 className="max-w-5xl text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl lg:text-8xl">
+      <h1 className="relative z-10 max-w-5xl text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl lg:text-8xl">
         <span className="block bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
           <Typewriter
             texts={["Felipe Landinez"]}
@@ -72,7 +75,7 @@ export default function HeroSection() {
         </span>
       </h1>
 
-      <p className="mt-8 max-w-2xl text-lg leading-relaxed text-zinc-400 md:text-xl">
+      <p className="relative z-10 mt-8 max-w-2xl text-lg leading-relaxed text-zinc-400 md:text-xl">
         <Typewriter
           key={`${locale}-desc`}
           texts={t.hero.descriptions}
@@ -87,7 +90,7 @@ export default function HeroSection() {
         />
       </p>
 
-      <div className="mt-14 flex flex-wrap items-center justify-center gap-5">
+      <div className="relative z-10 mt-14 flex flex-wrap items-center justify-center gap-5">
         <MagneticButton strength="strong" cursorText={t.hero.ctaProjects}>
           <a
             href="#proyectos"
@@ -107,7 +110,7 @@ export default function HeroSection() {
         </MagneticButton>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 animate-bounce">
         <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-600">
           {t.hero.scroll}
         </span>
