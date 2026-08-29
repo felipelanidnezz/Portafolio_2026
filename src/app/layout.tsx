@@ -14,24 +14,37 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Dominio público del sitio. Cuando compres un dominio propio, define
-// NEXT_PUBLIC_SITE_URL en Vercel (Settings -> Environment Variables) y no
-// hace falta volver a tocar este archivo.
-const siteUrl =
+// El sitio se publica en dos lados a la vez: Vercel y GitHub Pages.
+//
+// canonicalUrl es la que quieres que Google indexe, siempre la misma, para que
+// las dos copias no compitan entre ellas. Cuando compres un dominio propio,
+// define NEXT_PUBLIC_SITE_URL en Vercel y no hace falta tocar este archivo.
+//
+// deployUrl es el ORIGEN del deploy que se está compilando, sin basePath:
+// en GitHub Pages la imagen de Open Graph tiene que resolverse contra
+// github.io y no contra vercel.app. Next le antepone /Portafolio_2026 solo,
+// así que incluirlo aquí lo duplicaría.
+const canonicalUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
   "https://portafolio-2026-felipe-landinez-s-projects.vercel.app";
+
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+const deployUrl = basePath
+  ? "https://felipelanidnezz.github.io"
+  : canonicalUrl;
 
 const title = "Felipe Landinez · Desarrollo web para negocios";
 const description =
   "Desarrollo sitios web para negocios que necesitan que los encuentren en Google. Next.js, React y SEO local. Tres proyectos en producción.";
 
 export const metadata: Metadata = {
-  // Base para resolver las rutas relativas de canonical y Open Graph.
-  metadataBase: new URL(siteUrl),
+  // Base contra la que se resuelven las rutas relativas (og:image, íconos).
+  metadataBase: new URL(deployUrl),
   title,
   description,
   applicationName: "Felipe Landinez",
-  authors: [{ name: "Felipe Landinez", url: siteUrl }],
+  authors: [{ name: "Felipe Landinez", url: canonicalUrl }],
   creator: "Felipe Landinez",
   keywords: [
     "desarrollo web",
@@ -44,14 +57,16 @@ export const metadata: Metadata = {
     "Felipe Landinez",
   ],
   alternates: {
-    canonical: "/",
+    // Absoluta a propósito: las dos copias del sitio apuntan a la misma URL
+    // canónica para no pelearse el posicionamiento.
+    canonical: canonicalUrl,
   },
   // og:image, su ancho, alto y alt los genera Next a partir de
   // opengraph-image.png y opengraph-image.alt.txt, que viven en esta carpeta.
   openGraph: {
     type: "website",
     siteName: "Felipe Landinez",
-    url: "/",
+    url: canonicalUrl,
     title,
     description,
     locale: "es_CO",
