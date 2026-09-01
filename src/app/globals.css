@@ -464,3 +464,55 @@ body.keyboard-nav .cursor-glow-trail {
 .connect-thumb img {
   image-rendering: auto;
 }
+
+/* --- Proyectos: paneles apilados scroll-driven --- */
+.projects-stack {
+  --panel-top: 0px;
+}
+
+.project-panel {
+  position: relative;
+}
+
+.project-panel-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 100svh;
+  overflow: hidden;
+  border-top-left-radius: 2rem;
+  border-top-right-radius: 2rem;
+  box-shadow: 0 -24px 60px -30px rgba(0, 0, 0, 0.9);
+}
+
+@media (min-width: 768px) {
+  .project-panel {
+    position: sticky;
+    top: var(--panel-top);
+    height: 100svh;
+  }
+}
+
+/* Sin sticky en móvil: los paneles se apilan en flujo normal. */
+@media (max-width: 767px) {
+  .project-panel-inner {
+    min-height: 0;
+    padding-block: 1rem;
+    overflow: visible;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-panel {
+    position: relative;
+    height: auto;
+  }
+
+  .project-panel-inner {
+    min-height: 0;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
