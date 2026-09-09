@@ -6,7 +6,7 @@ import LiveCodePlayground from "@/components/LiveCodePlayground";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { MagneticButton } from "@/components/MagneticCursor";
 import TechStack3DSection from "@/components/tech-stack/TechStack3DSection";
-import ProjectsStack from "@/components/ProjectsStack";
+import ProjectsGrid from "@/components/ProjectsGrid";
 
 export default function HomePage() {
   const { t } = useLanguage();
@@ -88,32 +88,31 @@ export default function HomePage() {
 
       <TechStack3DSection />
 
-      <section id="proyectos" className="scroll-mt-0 px-0">
-        <div className="mx-auto max-w-6xl px-6 pt-32">
+      <section id="proyectos" className="scroll-mt-24 px-6 py-32">
+        <div className="mx-auto max-w-6xl">
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-400">
             {t.projects.label}
           </p>
           <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
             {t.projects.title}
           </h2>
-          {t.projects.subtitle && (
-            <p className="mt-4 max-w-xl text-zinc-400">{t.projects.subtitle}</p>
-          )}
+          <p className="mt-4 max-w-lg text-zinc-400">{t.projects.subtitle}</p>
+
+          <ProjectsGrid
+            projects={t.projects.items}
+            labels={{
+              feature: t.projects.featureLabel,
+              live: t.projects.liveLabel,
+              demo: t.projects.demoLabel,
+              visit: t.cursor.visit,
+              view: t.cursor.view,
+              expandHint: t.projects.expandHint,
+              expandLabel: t.projects.expandLabel,
+              closeLabel: t.projects.closeLabel,
+              privateLabel: t.projects.privateLabel,
+            }}
+          />
         </div>
-        <ProjectsStack
-          projects={t.projects.items}
-          labels={{
-            feature: t.projects.featureLabel,
-            live: t.projects.liveLabel,
-            demo: t.projects.demoLabel,
-            visit: t.cursor.visit,
-            view: t.cursor.view,
-            privateLabel: t.projects.privateLabel,
-            expandHint: t.projects.expandHint,
-            expandLabel: t.projects.expandLabel,
-            closeLabel: t.projects.closeLabel,
-          }}
-        />
       </section>
 
       <section className="bg-zinc-300 px-6 py-32 text-zinc-900">
