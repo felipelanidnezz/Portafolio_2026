@@ -1,18 +1,17 @@
 "use client";
 
 import HeroSection from "@/components/HeroSection";
-import ProjectsStack from "@/components/ProjectsStack";
 import LanguageToggle from "@/components/LanguageToggle";
 import LiveCodePlayground from "@/components/LiveCodePlayground";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { MagneticButton } from "@/components/MagneticCursor";
-import SkillIconCarousel from "@/components/SkillIconCarousel";
+import TechStack3DSection from "@/components/tech-stack/TechStack3DSection";
 
 export default function HomePage() {
   const { t } = useLanguage();
 
   return (
-    <div className="relative min-h-screen bg-[#050505] text-zinc-100">
+    <div className="relative min-h-screen bg-[#050505] text-zinc-100 overflow-x-hidden">
       <div className="noise-overlay" aria-hidden="true" />
 
       <nav className="fixed top-0 z-50 w-full border-b border-zinc-800/50 bg-[#050505]/80 backdrop-blur-md">
@@ -86,65 +85,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section
-        id="skills"
-        className="scroll-mt-24 border-y border-zinc-800/50 bg-zinc-950/50 px-6 py-32"
-      >
-        <div className="mx-auto max-w-6xl">
-          <p className="text-center font-mono text-xs uppercase tracking-[0.3em] text-emerald-400">
-            {t.skills.label}
-          </p>
-          <h2 className="mt-4 text-center text-4xl font-bold tracking-tight">
-            {t.skills.title}
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-zinc-500">
-            {t.skills.subtitle}
-          </p>
-
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {t.skills.categories.map((cat) => (
-              <MagneticButton key={cat.title} cursorText="→">
-                <article className="group h-full rounded-2xl border border-zinc-800 bg-zinc-900/30 p-6 transition-colors hover:border-emerald-400/30">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg" aria-hidden="true">
-                      {cat.emoji}
-                    </span>
-                    <h3 className="font-semibold text-zinc-200">{cat.title}</h3>
-                  </div>
-                  <SkillIconCarousel skills={cat.skills} />
-                </article>
-              </MagneticButton>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="proyectos" className="relative scroll-mt-24 pt-32">
-        <div className="mx-auto max-w-6xl px-6">
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-400">
-            {t.projects.label}
-          </p>
-          <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
-            {t.projects.title}
-          </h2>
-          <p className="mt-4 max-w-lg text-zinc-400">{t.projects.subtitle}</p>
-        </div>
-
-        <ProjectsStack
-          projects={t.projects.items}
-          labels={{
-            feature: t.projects.featureLabel,
-            live: t.projects.liveLabel,
-            demo: t.projects.demoLabel,
-            visit: t.cursor.visit,
-            view: t.cursor.view,
-            expandHint: t.projects.expandHint,
-            expandLabel: t.projects.expandLabel,
-            closeLabel: t.projects.closeLabel,
-            privateLabel: t.projects.privateLabel,
-          }}
-        />
-      </section>
+      <TechStack3DSection />
 
       <section className="bg-zinc-300 px-6 py-32 text-zinc-900">
         <div className="mx-auto max-w-6xl">

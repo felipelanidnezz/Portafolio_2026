@@ -48,6 +48,7 @@ export default function ArcadePreviewGame({
   const keysRef = useRef({ left: false, right: false, shoot: false });
   const activeRef = useRef(false);
   const mouseXRef = useRef<number | null>(null);
+
   const stateRef = useRef({
     playerX: W / 2,
     aliens: [] as Alien[],
@@ -66,6 +67,8 @@ export default function ArcadePreviewGame({
     phase: "boot" as "boot" | "ready" | "playing" | "over" | "win",
     blink: true,
     lastShot: 0,
+    isAutoPlay: true, // Default: game plays automatically by itself!
+    manualTimeout: 0,
   });
 
   const [hud, setHud] = useState({
@@ -74,6 +77,7 @@ export default function ArcadePreviewGame({
     hi: 1240,
     level: 1,
     phase: "boot" as string,
+    isAutoPlay: true,
   });
 
   const spawnAliens = useCallback((level: number) => {
@@ -95,29 +99,31 @@ export default function ArcadePreviewGame({
     return aliens;
   }, []);
 
-  const applyLevelConfig = useCallback((level: number) => {
-    const s = stateRef.current;
-    const cfg = getLevelConfig(level);
-    s.level = level;
-    s.alienSpeed = cfg.alienSpeed;
-    s.shootChance = cfg.shootChance;
-    s.maxEnemyBullets = cfg.maxEnemyBullets;
-    s.stepDown = cfg.stepDown;
-    s.aliens = spawnAliens(level);
-    s.bullets = [];
-    s.alienDir = 1;
-  }, [spawnAliens]);
+  const applyLevelConfig = useCallback(
+    (level: number) => {
+      const s = stateRef.current;
+      const cfg = getLevelConfig(level);
+      s.level = level;
+      s.alienSpeed = cfg.alienSpeed;
+      s.shootChance = cfg.shootChance;
+      s.maxEnemyBullets = cfg.maxEnemyBullets;
+      s.stepDown = cfg.stepDown;
+      s.aliens = spawnAliens(level);
+      s.bullets = [];
+      s.alienDir = 1;
+    },
+    [spawnAliens]
+  );
 
   const startPlaying = useCallback(
     (level = 1) => {
       const s = stateRef.current;
       activeRef.current = true;
-      canvasRef.current?.focus({ preventScroll: true });
       s.playerX = W / 2;
       s.phase = "playing";
       s.levelFlash = 0;
       applyLevelConfig(level);
-      setHud((h) => ({ ...h, level, phase: "playing" }));
+      setHud((h) => ({ ...h, level, phase: "playing", isAutoPlay: s.isAutoPlay }));
     },
     [applyLevelConfig]
   );
@@ -132,7 +138,7 @@ export default function ArcadePreviewGame({
     s.bullets = [];
     s.levelFlash = 0;
     s.aliens = spawnAliens(1);
-    setHud({ score: 0, lives: 3, hi: s.hi, level: 1, phase: "ready" });
+    setHud({ score: 0, lives: 3, hi: s.hi, level: 1, phase: "ready", isAutoPlay: s.isAutoPlay });
   }, [spawnAliens]);
 
   const advanceLevel = useCallback(() => {
@@ -148,6 +154,18 @@ export default function ArcadePreviewGame({
     setHud((h) => ({ ...h, level: next, score: s.score }));
   }, [applyLevelConfig]);
 
+  // Transition to manual mode when user interacts
+  const switchToManual = useCallback(() => {
+    const s = stateRef.current;
+    s.isAutoPlay = false;
+    setHud((h) => ({ ...h, isAutoPlay: false }));
+
+    if (s.phase === "ready" || s.phase === "over" || s.phase === "win") {
+      fullReset();
+      startPlaying(1);
+    }
+  }, [fullReset, startPlaying]);
+
   useEffect(() => {
     if (!ready) {
       stateRef.current.phase = "boot";
@@ -157,18 +175,13 @@ export default function ArcadePreviewGame({
 
     stateRef.current.phase = "ready";
     stateRef.current.aliens = spawnAliens(1);
-    setHud((h) => ({ ...h, phase: "ready" }));
-  }, [ready, spawnAliens]);
+    startPlaying(1); // Auto-start game in demo autoplay mode!
+  }, [ready, spawnAliens, startPlaying]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const panel = panelRef.current;
     if (!canvas) return;
-
-    const focusCanvas = () => {
-      activeRef.current = true;
-      canvas.focus({ preventScroll: true });
-    };
 
     const onKey = (e: KeyboardEvent, down: boolean) => {
       const gameKey =
@@ -191,17 +204,13 @@ export default function ArcadePreviewGame({
       e.preventDefault();
       e.stopPropagation();
 
+      // Switch to manual player mode
+      switchToManual();
+
       if (e.code === "ArrowLeft" || e.code === "KeyA") keysRef.current.left = down;
       if (e.code === "ArrowRight" || e.code === "KeyD") keysRef.current.right = down;
       if (e.code === "Space" || e.code === "Enter") {
         keysRef.current.shoot = down;
-        if (down && stateRef.current.phase === "ready") startPlaying(1);
-        if (
-          down &&
-          (stateRef.current.phase === "over" || stateRef.current.phase === "win")
-        ) {
-          fullReset();
-        }
       }
     };
 
@@ -211,64 +220,33 @@ export default function ArcadePreviewGame({
     const onMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       mouseXRef.current = ((e.clientX - rect.left) / rect.width) * W;
+      if (stateRef.current.isAutoPlay && activeRef.current) {
+        switchToManual();
+      }
     };
 
     const onClick = () => {
-      focusCanvas();
-      const s = stateRef.current;
-      if (s.phase === "ready") startPlaying(1);
-      else if (s.phase === "over" || s.phase === "win") fullReset();
-      else keysRef.current.shoot = true;
+      switchToManual();
+      keysRef.current.shoot = true;
       setTimeout(() => {
         keysRef.current.shoot = false;
-      }, 80);
-    };
-
-    const onPanelEnter = () => {
-      activeRef.current = true;
-    };
-
-    const onPanelLeave = () => {
-      activeRef.current = false;
-      keysRef.current.left = false;
-      keysRef.current.right = false;
-      keysRef.current.shoot = false;
-      mouseXRef.current = null;
-    };
-
-    const onBlur = () => {
-      if (!panel?.matches(":hover")) {
-        activeRef.current = false;
-        keysRef.current.left = false;
-        keysRef.current.right = false;
-        keysRef.current.shoot = false;
-      }
+      }, 100);
     };
 
     document.addEventListener("keydown", down, true);
     document.addEventListener("keyup", up, true);
     canvas.addEventListener("mousemove", onMouseMove);
     canvas.addEventListener("click", onClick);
-    canvas.addEventListener("focus", () => {
-      activeRef.current = true;
-    });
-    canvas.addEventListener("blur", onBlur);
-    panel?.addEventListener("mouseenter", onPanelEnter);
-    panel?.addEventListener("mouseleave", onPanelLeave);
-    panel?.addEventListener("pointerdown", focusCanvas);
 
     return () => {
       document.removeEventListener("keydown", down, true);
       document.removeEventListener("keyup", up, true);
       canvas.removeEventListener("mousemove", onMouseMove);
       canvas.removeEventListener("click", onClick);
-      canvas.removeEventListener("blur", onBlur);
-      panel?.removeEventListener("mouseenter", onPanelEnter);
-      panel?.removeEventListener("mouseleave", onPanelLeave);
-      panel?.removeEventListener("pointerdown", focusCanvas);
     };
-  }, [fullReset, startPlaying]);
+  }, [fullReset, startPlaying, switchToManual]);
 
+  // Main Render & AutoPlay AI Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -297,6 +275,8 @@ export default function ArcadePreviewGame({
       ctx.fillRect(x + size * 0.1, y + size * 0.15, size * 0.25, 3);
     };
 
+    let autoRestartTimer = 0;
+
     const loop = (time: number) => {
       const s = stateRef.current;
       s.tick += 0.016;
@@ -323,21 +303,60 @@ export default function ArcadePreviewGame({
         return;
       }
 
-      if (s.phase === "playing") {
-        if (s.levelFlash > 0) s.levelFlash -= 1;
+      // Auto-start in autoplay if ready
+      if (s.phase === "ready") {
+        startPlaying(1);
+      }
 
+      // AutoPlay AI Bot Control
+      if (s.isAutoPlay && s.phase === "playing") {
+        const aliveAliens = s.aliens.filter((a) => a.alive);
+        if (aliveAliens.length > 0) {
+          // Track nearest alien cluster or lowest alien
+          const target = aliveAliens.reduce(
+            (best, cur) => (cur.y > best.y ? cur : best),
+            aliveAliens[0]
+          );
+
+          // Dodge incoming enemy bullets
+          const dangerBullet = s.bullets.find(
+            (b) => !b.fromPlayer && Math.abs(b.x - s.playerX) < 22 && b.y > H - 100
+          );
+
+          let targetX = target.x;
+          if (dangerBullet) {
+            targetX = dangerBullet.x > W / 2 ? dangerBullet.x - 28 : dangerBullet.x + 28;
+          }
+
+          s.playerX += (targetX - s.playerX) * 0.08;
+
+          // AI Shooting logic
+          if (time - s.lastShot > 280) {
+            s.bullets.push({ x: s.playerX, y: H - 36, vy: -5.5, fromPlayer: true });
+            s.lastShot = time;
+          }
+        }
+      }
+
+      // Manual Control Updates
+      if (!s.isAutoPlay && s.phase === "playing") {
         const speed = 3.6;
         if (keysRef.current.left) s.playerX -= speed;
         if (keysRef.current.right) s.playerX += speed;
         if (mouseXRef.current !== null && activeRef.current) {
           s.playerX += (mouseXRef.current - s.playerX) * 0.18;
         }
-        s.playerX = Math.max(18, Math.min(W - 18, s.playerX));
 
         if (keysRef.current.shoot && time - s.lastShot > 260) {
           s.bullets.push({ x: s.playerX, y: H - 36, vy: -5.5, fromPlayer: true });
           s.lastShot = time;
         }
+      }
+
+      s.playerX = Math.max(18, Math.min(W - 18, s.playerX));
+
+      if (s.phase === "playing") {
+        if (s.levelFlash > 0) s.levelFlash -= 1;
 
         if (s.levelFlash <= 0) {
           const alive = s.aliens.filter((a) => a.alive);
@@ -374,6 +393,7 @@ export default function ArcadePreviewGame({
             b.y += b.vy;
           });
 
+          // Bullet collisions with aliens
           s.bullets.forEach((b) => {
             if (!b.fromPlayer) return;
             s.aliens.forEach((a) => {
@@ -390,6 +410,7 @@ export default function ArcadePreviewGame({
             });
           });
 
+          // Bullet collisions with player
           s.bullets.forEach((b) => {
             if (b.fromPlayer) return;
             if (Math.abs(b.x - s.playerX) < 16 && Math.abs(b.y - (H - 28)) < 12) {
@@ -403,6 +424,7 @@ export default function ArcadePreviewGame({
                   hi: s.hi,
                   level: s.level,
                   phase: "over",
+                  isAutoPlay: s.isAutoPlay,
                 });
               } else {
                 setHud((h) => ({ ...h, lives: s.lives }));
@@ -421,6 +443,7 @@ export default function ArcadePreviewGame({
               hi: s.hi,
               level: s.level,
               phase: "over",
+              isAutoPlay: s.isAutoPlay,
             });
           }
         }
@@ -428,15 +451,17 @@ export default function ArcadePreviewGame({
         setHud((h) => ({ ...h, score: s.score, level: s.level }));
       }
 
+      // Draw aliens
       s.aliens.forEach((a) => {
         if (!a.alive) return;
         drawInvader(a.x, a.y, s.tick * 4 + a.wobble, 20);
       });
 
+      // Draw player ship
       if (s.phase === "playing" || s.phase === "ready") {
-        ctx.shadowColor = "#22d3ee";
+        ctx.shadowColor = s.isAutoPlay ? "#34d399" : "#22d3ee";
         ctx.shadowBlur = 12;
-        ctx.fillStyle = "#22d3ee";
+        ctx.fillStyle = s.isAutoPlay ? "#34d399" : "#22d3ee";
         ctx.beginPath();
         ctx.moveTo(s.playerX, H - 22);
         ctx.lineTo(s.playerX - 14, H - 6);
@@ -446,6 +471,7 @@ export default function ArcadePreviewGame({
         ctx.shadowBlur = 0;
       }
 
+      // Draw bullets
       s.bullets.forEach((b) => {
         ctx.fillStyle = b.fromPlayer ? "#fbbf24" : "#f87171";
         ctx.shadowColor = ctx.fillStyle;
@@ -454,6 +480,7 @@ export default function ArcadePreviewGame({
         ctx.shadowBlur = 0;
       });
 
+      // Level Flash
       if (s.levelFlash > 0) {
         ctx.fillStyle = "rgba(0,0,0,0.5)";
         ctx.fillRect(0, 0, W, H);
@@ -463,13 +490,7 @@ export default function ArcadePreviewGame({
         ctx.fillText(`${labels.levelClear} ${s.level}`, W / 2, H / 2);
       }
 
-      if (s.phase === "ready" && s.blink) {
-        ctx.fillStyle = "#fde047";
-        ctx.font = "bold 9px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText(labels.pressStart, W / 2, H / 2);
-      }
-
+      // Game Over Screen (auto reset in autoplay)
       if (s.phase === "over") {
         ctx.fillStyle = "rgba(0,0,0,0.65)";
         ctx.fillRect(0, 0, W, H);
@@ -477,14 +498,22 @@ export default function ArcadePreviewGame({
         ctx.font = "bold 12px monospace";
         ctx.textAlign = "center";
         ctx.fillText(labels.gameOver, W / 2, H / 2 - 10);
-        ctx.fillStyle = "#a1a1aa";
-        ctx.font = "8px monospace";
-        ctx.fillText(`${labels.level} ${s.level}/10`, W / 2, H / 2 + 6);
-        if (s.blink) {
-          ctx.fillText(labels.pressStart, W / 2, H / 2 + 20);
+
+        if (s.isAutoPlay) {
+          autoRestartTimer++;
+          if (autoRestartTimer > 60) {
+            autoRestartTimer = 0;
+            fullReset();
+            startPlaying(1);
+          }
+        } else if (s.blink) {
+          ctx.fillStyle = "#a1a1aa";
+          ctx.font = "8px monospace";
+          ctx.fillText(labels.pressStart, W / 2, H / 2 + 14);
         }
       }
 
+      // Win Screen (auto reset in autoplay)
       if (s.phase === "win") {
         ctx.fillStyle = "rgba(0,0,0,0.55)";
         ctx.fillRect(0, 0, W, H);
@@ -492,10 +521,14 @@ export default function ArcadePreviewGame({
         ctx.font = "bold 11px monospace";
         ctx.textAlign = "center";
         ctx.fillText(labels.youWin, W / 2, H / 2 - 6);
-        if (s.blink) {
-          ctx.fillStyle = "#a1a1aa";
-          ctx.font = "8px monospace";
-          ctx.fillText(labels.pressStart, W / 2, H / 2 + 12);
+
+        if (s.isAutoPlay) {
+          autoRestartTimer++;
+          if (autoRestartTimer > 60) {
+            autoRestartTimer = 0;
+            fullReset();
+            startPlaying(1);
+          }
         }
       }
 
@@ -506,19 +539,30 @@ export default function ArcadePreviewGame({
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
-  }, [ready, labels, advanceLevel]);
+  }, [ready, labels, advanceLevel, fullReset, startPlaying]);
 
   return (
     <div
       ref={panelRef}
       className="arcade-cabinet flex h-full min-h-[360px] flex-col p-3 sm:min-h-[420px]"
     >
-      <div className="arcade-marquee mb-2 shrink-0 rounded-md px-3 py-1.5 text-center">
-        <p className="font-mono text-[11px] font-bold tracking-[0.35em] text-fuchsia-200 sm:text-xs">
+      {/* Cabinet Marquee Header */}
+      <div className="arcade-marquee mb-2 flex items-center justify-between shrink-0 rounded-md px-3 py-1.5 text-center">
+        <p className="font-mono text-[11px] font-bold tracking-[0.25em] text-fuchsia-200 sm:text-xs">
           ★ {labels.title} ★
         </p>
+        <span
+          className={`rounded-full border px-2 py-0.5 font-mono text-[9px] font-medium tracking-tight ${
+            hud.isAutoPlay
+              ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-300 animate-pulse"
+              : "border-cyan-500/50 bg-cyan-500/20 text-cyan-300"
+          }`}
+        >
+          {hud.isAutoPlay ? "▶ AUTOPLAY" : "🎮 MANUAL"}
+        </span>
       </div>
 
+      {/* Arcade HUD Stats */}
       <div className="mb-2 grid shrink-0 grid-cols-4 gap-1 font-mono text-[8px] uppercase tracking-wider sm:text-[9px]">
         <span className="text-cyan-400">
           {labels.score} {String(hud.score).padStart(4, "0")}
@@ -534,21 +578,31 @@ export default function ArcadePreviewGame({
         </span>
       </div>
 
+      {/* Arcade CRT Screen */}
       <div className="arcade-screen relative mx-auto w-full max-w-[280px] flex-1">
         <canvas
           ref={canvasRef}
           width={W}
           height={H}
           tabIndex={0}
-          className="arcade-canvas h-auto w-full cursor-crosshair rounded-sm outline-none focus:ring-2 focus:ring-cyan-400/40"
+          className="arcade-canvas h-auto w-full cursor-pointer rounded-sm outline-none focus:ring-2 focus:ring-emerald-400/40"
           aria-label={labels.title}
         />
+
+        {hud.isAutoPlay && (
+          <div className="pointer-events-none absolute bottom-2 left-0 right-0 text-center font-mono text-[9px] text-emerald-400/90 drop-shadow">
+            ✦ CLICK PARA JUGAR MANUALMENTE
+          </div>
+        )}
+
         <div className="arcade-scanlines pointer-events-none absolute inset-0 rounded-sm" aria-hidden="true" />
         <div className="arcade-screen-glare pointer-events-none absolute inset-0 rounded-sm" aria-hidden="true" />
       </div>
 
-      <p className="mt-2 shrink-0 text-center font-mono text-[8px] uppercase tracking-widest text-zinc-600">
-        {labels.controls}
+      <p className="mt-2 shrink-0 text-center font-mono text-[8px] uppercase tracking-widest text-zinc-500">
+        {hud.isAutoPlay
+          ? "Modo demo automático · Click en la pantalla para tomar el control"
+          : labels.controls}
       </p>
     </div>
   );

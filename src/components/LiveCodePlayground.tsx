@@ -46,8 +46,6 @@ function highlightLine(line: string) {
   return parts;
 }
 
-const SCROLL_BOTTOM_THRESHOLD = 48;
-
 export default function LiveCodePlayground() {
   const { t, locale } = useLanguage();
   const p = t.about.playground;
@@ -60,10 +58,10 @@ export default function LiveCodePlayground() {
   const preRef = useRef<HTMLPreElement>(null);
   const gutterRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
-  const userScrolledUpRef = useRef(false);
+  const isUserInteractingRef = useRef(false);
   const stateRef = useRef({ charIndex: 0, lastTime: 0, done: false });
   const highlightCacheRef = useRef<Map<number, ReturnType<typeof highlightLine>>>(
-    new Map(),
+    new Map()
   );
 
   const lines = useMemo(() => fullCode.split("\n"), [fullCode]);
@@ -76,6 +74,7 @@ export default function LiveCodePlayground() {
     ? Math.round((typedCode.length / fullCode.length) * 100)
     : 0;
 
+  // IntersectionObserver to start/pause typing when visible
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -88,37 +87,53 @@ export default function LiveCodePlayground() {
     return () => observer.disconnect();
   }, []);
 
+  // Track manual user scrolling
   useEffect(() => {
     const pre = preRef.current;
     if (!pre) return;
 
+    let timeoutId: NodeJS.Timeout;
     const onScroll = () => {
-      const atBottom =
-        pre.scrollHeight - pre.scrollTop - pre.clientHeight < SCROLL_BOTTOM_THRESHOLD;
-      userScrolledUpRef.current = !atBottom;
+      // Sync line number gutter scroll position
       if (gutterRef.current) {
         gutterRef.current.scrollTop = pre.scrollTop;
       }
     };
 
+    const onWheelOrTouch = () => {
+      isUserInteractingRef.current = true;
+      clearTimeout(timeoutId);
+      // Resume auto-scroll after 3 seconds of user inactivity
+      timeoutId = setTimeout(() => {
+        isUserInteractingRef.current = false;
+      }, 3000);
+    };
+
     pre.addEventListener("scroll", onScroll, { passive: true });
-    return () => pre.removeEventListener("scroll", onScroll);
+    pre.addEventListener("wheel", onWheelOrTouch, { passive: true });
+    pre.addEventListener("touchstart", onWheelOrTouch, { passive: true });
+
+    return () => {
+      pre.removeEventListener("scroll", onScroll);
+      pre.removeEventListener("wheel", onWheelOrTouch);
+      pre.removeEventListener("touchstart", onWheelOrTouch);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
+  // Continuous auto-scroll as lines are typed
   useEffect(() => {
     const pre = preRef.current;
-    if (!pre || userScrolledUpRef.current) return;
+    if (!pre || isUserInteractingRef.current) return;
 
-    const atBottom =
-      pre.scrollHeight - pre.scrollTop - pre.clientHeight < SCROLL_BOTTOM_THRESHOLD;
-    if (atBottom) {
-      pre.scrollTop = pre.scrollHeight;
-      if (gutterRef.current) {
-        gutterRef.current.scrollTop = pre.scrollTop;
-      }
+    // Smoothly scroll down to follow new typed lines
+    pre.scrollTop = pre.scrollHeight;
+    if (gutterRef.current) {
+      gutterRef.current.scrollTop = pre.scrollTop;
     }
   }, [typedCode]);
 
+  // Typewriter effect logic: slower typing speed + automatic restart loop
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
@@ -130,37 +145,43 @@ export default function LiveCodePlayground() {
     if (!isVisible) return;
 
     stateRef.current = { charIndex: 0, lastTime: 0, done: false };
-    userScrolledUpRef.current = false;
+    isUserInteractingRef.current = false;
     highlightCacheRef.current.clear();
     setTypedCode("");
     setTypingComplete(false);
 
+    let restartTimeout: NodeJS.Timeout;
+
     const tick = (time: number) => {
       const s = stateRef.current;
-
       if (s.done) return;
 
       if (!s.lastTime) s.lastTime = time;
       const elapsed = time - s.lastTime;
 
-      if (s.charIndex >= fullCode.length) {
-        s.done = true;
-        setTypingComplete(true);
-        return;
-      }
-
-      const char = fullCode[s.charIndex];
-      const delay = char === "\n" ? 18 : char === " " ? 5 : 3;
-      const chunk = char === "\n" ? 1 : 6;
+      // Realistic, slower typing speed (1 character per tick with natural delays)
+      const currentChar = fullCode[s.charIndex];
+      const delay = currentChar === "\n" ? 90 : currentChar === " " ? 18 : 24;
 
       if (elapsed >= delay) {
-        s.charIndex = Math.min(s.charIndex + chunk, fullCode.length);
+        s.charIndex += 1;
         setTypedCode(fullCode.slice(0, s.charIndex));
         s.lastTime = time;
 
         if (s.charIndex >= fullCode.length) {
           s.done = true;
           setTypingComplete(true);
+
+          // Restart typing loop after 5 seconds pause
+          restartTimeout = setTimeout(() => {
+            if (isVisible) {
+              stateRef.current = { charIndex: 0, lastTime: 0, done: false };
+              setTypedCode("");
+              setTypingComplete(false);
+              highlightCacheRef.current.clear();
+              rafRef.current = requestAnimationFrame(tick);
+            }
+          }, 5000);
           return;
         }
       }
@@ -172,6 +193,7 @@ export default function LiveCodePlayground() {
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      clearTimeout(restartTimeout);
     };
   }, [fullCode, isVisible, locale]);
 
@@ -182,6 +204,7 @@ export default function LiveCodePlayground() {
       aria-label={p.ariaLabel}
       role="img"
     >
+      {/* Editor Header Bar */}
       <div className="flex items-center gap-3 border-b border-zinc-800 bg-zinc-900/80 px-4 py-2.5">
         <div className="flex gap-1.5" aria-hidden="true">
           <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
@@ -201,6 +224,7 @@ export default function LiveCodePlayground() {
       </div>
 
       <div className="grid sm:grid-cols-2">
+        {/* Left Column: Code Editor */}
         <div className="relative border-b border-zinc-800 sm:border-b-0 sm:border-r">
           <div
             ref={gutterRef}
@@ -238,7 +262,7 @@ export default function LiveCodePlayground() {
                       </span>
                     ))}
                     {!typingComplete && isLastLine && (
-                      <span className="typewriter-cursor ml-px inline-block h-[1em] w-[2px] align-text-bottom" />
+                      <span className="typewriter-cursor ml-px inline-block h-[1em] w-[2px] align-text-bottom bg-emerald-400" />
                     )}
                   </div>
                 );
@@ -247,8 +271,9 @@ export default function LiveCodePlayground() {
           </pre>
         </div>
 
+        {/* Right Column: Interactive Arcade Game Preview */}
         <div className="relative bg-[#08080c]">
-          <div className="absolute left-3 top-2 z-10 font-mono text-[9px] uppercase tracking-widest text-zinc-600">
+          <div className="absolute left-3 top-2 z-10 font-mono text-[9px] uppercase tracking-widest text-zinc-500">
             {p.previewLabel}
           </div>
           <ArcadePreviewGame ready={isVisible} labels={p.game} />
